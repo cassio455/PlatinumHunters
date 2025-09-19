@@ -4,7 +4,7 @@ import "./Navbar.css"
 function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg fixed-top w-100">
-      <div className="container-fluid" style={{padding: "0px 30px"}}>
+      <div className="container">
         <Link className="navbar-brand mb-0 h1" to="/main" style={{color: "white"}}>
           Platinum Hunters
         </Link>
@@ -15,13 +15,14 @@ function Navbar() {
         </button>
 
         <div className="collapse navbar-collapse justify-content-between" id="navbarMenu">
-          {/* Search Bar */}
-          <form className="d-flex mt-2 mt-lg-0 w-100 w-lg-auto">
-            <input className="form-control me-2" type="search" placeholder="Pesquisar" />
-            <button className="btn search-btn" type="submit">
-                <i className="bi bi-search"></i>
-            </button>
-          </form>
+
+        {/* Search Bar */}
+        <form className="d-flex mt-2 mt-lg-0 w-100 w-lg-auto">
+          <input className="form-control me-2" type="search" placeholder="Pesquisar" />
+          <button className="btn search-btn" type="submit">
+              <i className="bi bi-search"></i>
+          </button>
+        </form>
 
           {/* Links on the right */}
           <ul className="navbar-nav mx-auto flex-column flex-lg-row text-center">
