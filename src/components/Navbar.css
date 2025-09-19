@@ -1,0 +1,37 @@
+nav{
+    background-color: #282828;
+}
+
+.nav-link:hover {
+    color: #FF6E77;
+}
+
+.nav-link {
+    color: #FFFF;
+}
+
+.navbar-toggler-icon {
+    filter: invert(1);
+}
+
+.navbar-toggler:hover {
+  filter: invert(0.7) sepia(1) saturate(5) hue-rotate(-50deg); /* example pink-ish tweak */
+}
+
+.search-btn:focus, 
+.search-btn:active, 
+.navbar-toggler:focus, 
+.navbar-toggler:active {
+  outline: none;
+  box-shadow: none; /* removes the shadow Bootstrap adds */
+}
+
+.search-btn {
+    border-color: #FFFF; 
+    color: #FFFF;       
+}
+
+.search-btn:hover{
+    border-color: #FF6E77;
+    color: #FF6E77;
+}
