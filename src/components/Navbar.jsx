@@ -27,7 +27,7 @@ function Navbar() {
           {/* Links on the right */}
           <ul className="navbar-nav mx-auto flex-column flex-lg-row text-center">
             <li className="nav-item mx-2">
-              <Link className="nav-link" to="/screen1">Biblioteca</Link>
+              <Link className="nav-link" to="/biblioteca">Biblioteca</Link>
             </li>
             <li className="nav-item mx-2">
               <Link className="nav-link" to="/screen2">Jogos</Link>
