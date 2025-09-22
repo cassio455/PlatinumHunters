@@ -4,6 +4,7 @@ import Ranking from "./RankingScreens/RankingMain"
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import "./App.css"
+import Trophy from "./TrophyScreens/TrophyMain"
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/main" element={<Main />} />
+          <Route path="/trophy" element={<Trophy />} />
           <Route path="/ranking" element={<Ranking />} />
         </Routes>
       <Footer />
