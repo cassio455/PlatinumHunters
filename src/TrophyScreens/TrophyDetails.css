@@ -1,0 +1,59 @@
+.section-title {
+  font-weight: bold;
+  color: #ccc;
+}
+
+.section-line {
+  height: 2px;
+  background-color: #ccc;
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+.card {
+  border-radius: 10px;
+  background-color: #1a1a1a;
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  height: 120px;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 1rem;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+.completed-rose {
+  background-color: #dc3545; /* mesma cor da barra de progresso da Main */
+}
+
+.trophy-info {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.trophy-name {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.trophy-desc {
+  font-size: 0.85rem;
+  color: #ccc;
+  margin: 0;
+}
+
+.trophy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
