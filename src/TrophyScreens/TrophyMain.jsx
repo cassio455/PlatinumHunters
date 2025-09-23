@@ -119,7 +119,7 @@ function TrophyMain() {
                       className="progress-bar-custom"
                       style={{ width: `${game.progress}%` }}
                     >
-                      {game.progress}%
+                      <p>{game.progress}%</p>
                     </div>
                   </div>
                 </div>
