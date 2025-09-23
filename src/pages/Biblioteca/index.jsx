@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { Card, InputGroup, Form } from 'react-bootstrap';
 import { sampleGames } from '../../sample';
-import '../../Main/Main.css';
+import './index.css';
 
 const Biblioteca = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,10 +45,10 @@ const Biblioteca = () => {
         )}
         {filteredGames.map((game) => (
           <div className="col-12 col-md-6 col-lg-4 mb-4" key={game.id}>
-            <Card className="game-card border-light bg-dark text-white h-100">
+            <Card className="game-card border-light bg-dark text-white">
               <div className="game-image-container">
                 <Link to={`/biblioteca/detalhes/${game.id}`}>
-                  <Card.Img variant="top" src={game.img} alt={game.name} className="card-img-top" />
+                  <Card.Img src={game.img} alt={game.name} />
                 </Link>
                 <div className="overlay">
                   <h5 className="game-title">{game.name}</h5>
@@ -56,14 +56,14 @@ const Biblioteca = () => {
               </div>
               <Card.Body>
                 <div className="d-flex justify-content-between mb-2">
-                  <span style={{ color: '#FF6E77', fontWeight: 'bold' }}>Status:</span>
+                  <span className="game-info-label" style={{ color: '#FF6E77', fontWeight: 'bold' }}>Status:</span>
                   <span className="fw-bold text-white">{game.status || '-'}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-2">
-                  <span style={{ color: '#FF6E77', fontWeight: 'bold' }}>Progresso:</span>
+                  <span className="game-info-label" style={{ color: '#FF6E77', fontWeight: 'bold' }}>Progresso:</span>
                   <span className="fw-bold text-white">{game.progresso || '-'}</span>
                 </div>
-                <div className="d-flex justify-content-end">
+                <div className="d-flex justify-content-center">
                   <Link to={`/biblioteca/detalhes/${game.id}`} className="btn btn-outline-light btn-sm">
                     Detalhes
                   </Link>

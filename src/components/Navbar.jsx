@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { User } from "lucide-react";
 import "./Navbar.css"
 
 function Navbar() {
@@ -28,7 +29,6 @@ function Navbar() {
           <ul className="navbar-nav mx-auto flex-column flex-lg-row text-center">
             <li className="nav-item mx-2">
               <NavLink className="nav-link" to="/biblioteca">Biblioteca</NavLink>
-
             </li>
             <li className="nav-item mx-2">
               <NavLink className="nav-link" to="/screen2">Jogos</NavLink>
@@ -41,6 +41,11 @@ function Navbar() {
             </li>
             <li className="nav-item mx-2">
               <NavLink className="nav-link" to="/ranking">Ranking</NavLink>
+            </li>
+            <li className="nav-item mx-2 d-flex align-items-center">
+              <NavLink className="nav-link" to="/user/login">
+                <User size={22} style={{ verticalAlign: 'middle' }} />
+              </NavLink>
             </li>
           </ul>
         </div>
