@@ -1,0 +1,11 @@
+.site-footer {
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.site-footer .site-name {
+  color: rgba(255, 255, 255, 0.5); 
+  font-size: 0.9rem;
+}

@@ -1,0 +1,53 @@
+@import './RankingMain.css';
+
+.btn-outline-pink {
+  color: #FF6E77;
+  border-color: #FF6E77;
+  background: transparent;
+  font-weight: bold;
+}
+
+.challenge-card {
+  width: 100%;
+  background: #222;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.challenge-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 10px rgba(0,0,0,0.5);
+}
+
+.calendar {
+  display: flex;
+  flex-wrap: wrap;        
+  justify-content: center;  
+  gap: 8px;                 
+  margin-bottom: 20px;
+}
+
+.calendar-day {
+  width: 40px;
+  height: 40px;
+  background: #222;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.calendar-day:hover {
+  background: #333;
+}
+
+.calendar-day.selected {
+  background: #ff6e77;
+  color: white;
+  font-weight: bold;
+}

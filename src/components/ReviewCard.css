@@ -1,0 +1,23 @@
+.review-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #121212;
+  color: #FFF;
+  transition: transform 0.2s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.review-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.review-text {
+  font-size: 0.9rem;
+}
