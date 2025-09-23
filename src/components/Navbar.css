@@ -2,6 +2,11 @@ nav{
     background-color: #282828;
 }
 
+.nav-link.active {
+  color: #FF6E77 !important;  /* pink for the active link */
+}
+
+
 .nav-link:hover {
     color: #FF6E77;
 }

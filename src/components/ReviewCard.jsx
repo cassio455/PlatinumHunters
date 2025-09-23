@@ -13,7 +13,7 @@ function ReviewCard({ reviewer, game, image, rating, text, likes }) {
     <div className="card review-card h-100 p-3">
       <div className="d-flex align-items-center mb-2">
         <img src={image} alt={game} className="review-img me-2" />
-        <p className="mb-0 text-nowrap"><strong>{reviewer}</strong> publicou uma review em <p><strong>{game}</strong></p></p>
+        <p className="mb-0"><strong>{reviewer}</strong> publicou uma review em <p><strong>{game}</strong></p></p>
       </div>
 
       <div className="mb-2">
