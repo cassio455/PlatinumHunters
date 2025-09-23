@@ -45,27 +45,24 @@ function Main() {
     <div className="main-page container mt-5 pt-5">
       <h1 className="welcome-text mb-4">Bem-vindo @user! Seus troféus lhe aguardam...</h1>
 
-      {/* Popular Games Section */}
-        <div className="trending-header">
-          <p className="section-title text-start mb-2">Jogos Populares Recentemente</p>
+      {/* Jogos Populares */}
+      <div className="trending-header">
+        <p className="section-title text-start mb-2">Jogos Populares Recentemente</p>
         <div className="section-line"></div>
 
-        <div className="row mt-4">
-        {games.map((game) => (
-          <div className="col-6 col-md-2 mb-4" key={game.id}>
-            <div className="card game-card border-0">
-              <div className="game-image-container">
-                <img src={game.image} className="card-img-top" alt={game.title} />
-                <div className="overlay">
-                  <h5 className="game-title">{game.title}</h5>
-                </div>
+        <div className="games-grid mt-4">
+          {games.map((game) => (
+            <div className="game-card" key={game.id}>
+              <img src={game.image} alt={game.title} />
+              <div className="overlay">
+                <h5 className="game-title">{game.title}</h5>
               </div>
             </div>
-          </div>
           ))}
         </div>
 
-        <div className="reviews-header">
+        {/* Reviews */}
+        <div className="reviews-header mt-5">
           <p className="section-title text-start mb-2">Reviews Populares Recentemente</p>
           <div className="section-line"></div>
 
