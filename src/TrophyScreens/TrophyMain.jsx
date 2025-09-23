@@ -1,60 +1,99 @@
+import { Link } from "react-router-dom";
 import "./TrophyMain.css";
 
 function TrophyMain() {
   const games = [
     {
+      id: "hollow-knight",
       image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co93cr.jpg",
       progress: 70,
       unlocked: 14,
       total: 20,
     },
     {
+      id: "silksong",
       image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3vtl.jpg",
       progress: 45,
       unlocked: 9,
       total: 20,
     },
     {
+      id: "expedition-33",
       image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9gam.jpg",
       progress: 100,
       unlocked: 20,
       total: 20,
     },
     { 
+      id: "peak", 
       image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa1i1.jpg",
       progress: 70, 
       unlocked: 14, 
       total: 20 
     },
     { 
+      id: "metal-gear-snake-eater", 
       image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coac1n.jpg", 
       progress: 45, 
       unlocked: 9, 
       total: 20 
     },
     { 
+      id: "donkey-kong-bananza", 
       image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa082.jpg", 
       progress: 100, 
       unlocked: 20, 
       total: 20 
     },
     { 
+      id: "elden-ring", 
       image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co4jni.jpg", 
       progress: 30, 
       unlocked: 6, 
       total: 20
     },
     { 
+      id: "skyrim", 
       image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1tnw.jpg", 
       progress: 80, 
       unlocked: 16, 
       total: 20 
     },
-    { image: "/images/jogo6.jpg", progress: 55, unlocked: 11, total: 20 },
-    { image: "/images/jogo7.jpg", progress: 90, unlocked: 18, total: 20 },
-    { image: "/images/jogo8.jpg", progress: 25, unlocked: 5, total: 20 },
-    { image: "/images/jogo9.jpg", progress: 60, unlocked: 12, total: 20 },
-    { image: "/images/jogo10.jpg", progress: 75, unlocked: 15, total: 20 },
+    { 
+      id: "god-of-war-2018", 
+      image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1tmu.jpeg", 
+      progress: 55, 
+      unlocked: 11, 
+      total: 20 
+    },
+    { 
+      id: "red-dead-redemption-2", 
+      image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1q1f.jpeg", 
+      progress: 90, 
+      unlocked: 18, 
+      total: 20 
+    },
+    { 
+      id: "the-last-of-us-remastered", 
+      image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co5zks.jpeg", 
+      progress: 25, 
+      unlocked: 5, 
+      total: 20 
+    },
+    { 
+      id: "undertale", 
+      image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co2855.jpeg", 
+      progress: 60, 
+      unlocked: 12, 
+      total: 20 
+    },
+    { 
+      id: "minecraft", 
+      image: "https://images.igdb.com/igdb/image/upload/t_cover_big/co8fu7.jpeg", 
+      progress: 75, 
+      unlocked: 15, 
+      total: 20 
+    },
   ];
 
   return (
@@ -67,9 +106,9 @@ function TrophyMain() {
 
       <div className="row">
         {games.map((game, index) => (
-          <div className="col-6 col-md-4 col-lg-3 mb-4" key={index}>
+          <div className="col-6 col-md-4 col-lg-3 mb-4" key={game.id}>
 
-            <div className="game-card">
+            <Link to={`/trophy/${game.id}`} className="game-card">
               <div className="game-image-container">
                 <img src={game.image} alt="Jogo" />
 
@@ -85,7 +124,7 @@ function TrophyMain() {
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           </div>
         ))}
       </div>
