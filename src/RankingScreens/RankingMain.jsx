@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import "./RankingMain.css";
 
@@ -42,7 +43,12 @@ function RankingMain() {
 
   return (
     <div className="container mt-5 pt-5 text-center">
-      <h1 className="mb-4">Ranking</h1>
+      <div className="d-flex justify-content-center align-items-center mb-4">
+        <h1 className="me-2">Ranking</h1>
+        <Link to="/challenge" className="btn btn-sm">
+          <i className="bi bi-arrow-repeat text-danger"></i>
+        </Link>
+      </div>
 
       {/* Time Tabs */}
       <ul className="nav nav-tabs justify-content-center mb-3">
@@ -65,7 +71,7 @@ function RankingMain() {
 
       <div className="game-search-bar container">
         <form className="d-flex mt-2 mt-lg-0 w-100 w-lg-auto">
-          <input className="form-control me-2" type="search" placeholder="Pesquisar"/>
+          <input className="form-control me-2" type="search" placeholder="Pesquisar usuário ou jogo"/>
           <button className="btn search-btn" type="submit">
               <i className="bi bi-search"></i>
           </button>
@@ -94,17 +100,19 @@ function RankingMain() {
       </div>
 
       {/* Remaining Rankings */}
-      <div className="ranking-list mt-5 text-start">
-        {others.map((user, index) => (
-          <div key={user.id} className="ranking-row d-flex align-items-center justify-content-between">
-            <div className="d-flex align-items-center">
-              <span className="rank-number">{index + 4}</span>
-              <img src={user.avatar} alt={user.name} className="avatar-small ms-3" />
-              <span className="username ms-3">{user.name}</span>
+      <div className="ranking-list container">
+        <div className="ranking-list mt-5 text-start">
+          {others.map((user, index) => (
+            <div key={user.id} className="ranking-row d-flex align-items-center justify-content-between">
+              <div className="d-flex align-items-center">
+                <span className="rank-number">{index + 4}</span>
+                <img src={user.avatar} alt={user.name} className="avatar-small ms-3" />
+                <span className="username ms-3">{user.name}</span>
+              </div>
+              <div className="trophies">🏆 {user.points}</div>
             </div>
-            <div className="trophies">🏆 {user.points}</div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
