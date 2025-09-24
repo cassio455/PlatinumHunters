@@ -10,7 +10,7 @@ import Biblioteca from "./pages/Biblioteca";
 import Detalhes from "./pages/Biblioteca/detalhes";
 import Login from "./pages/User/Login";
 import Challenge from "./RankingScreens/Challenge"
-
+import SignUp from "./pages/User/SignUp";
 function App() {
   return (
     <Router>
@@ -25,6 +25,7 @@ function App() {
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/challenge" element={<Challenge />} />
           <Route path="/user/login" element={<Login />} />
+          <Route path="/user/signup" element={<SignUp />} />
         </Routes>
       <Footer />
     </Router>

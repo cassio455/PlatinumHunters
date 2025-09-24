@@ -223,7 +223,7 @@ export const trophyData = [
     dateEarned: "2024-03-05"
   }
 ];
-// ainda não usado.
+
 export const TROPHY_TYPES = {
   BRONZE: 'Bronze',
   SILVER: 'Prata', 

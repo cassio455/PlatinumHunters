@@ -2,12 +2,7 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { InputGroup, Form, Button, Card, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-
-const MOCK_USER = {
-  email: 'admin123@gmail.com',
-  password: '12345678',
-  token: 'TESTETESTE',
-};
+import { MOCK_USER } from './userMock';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors }, setError } = useForm();
