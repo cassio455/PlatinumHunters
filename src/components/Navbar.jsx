@@ -42,9 +42,11 @@ function Navbar() {
             <li className="nav-item mx-2">
               <NavLink className="nav-link" to="/ranking">Ranking</NavLink>
             </li>
-            <li className="nav-item mx-2 d-flex align-items-center">
+            <li className="nav-item mx-2 user-mobile-center">
               <NavLink className="nav-link" to="/user/login">
-                <User size={22} style={{ verticalAlign: 'middle' }} />
+                <div className="user-icon-mobile-center">
+                  <User size={22} style={{ verticalAlign: 'middle' }}/>
+                </div>
               </NavLink>
             </li>
           </ul>

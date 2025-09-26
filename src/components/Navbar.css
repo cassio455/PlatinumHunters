@@ -40,3 +40,21 @@ nav{
     border-color: #FF6E77;
     color: #FF6E77;
 }
+
+@media (max-width: 768px) {
+  .user-icon-mobile-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .nav-item.user-mobile-center {
+    width: 100%;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { InputGroup, Form, Button, Card, Container } from 'react-bootstrap';
+import { InputGroup, Form, Button, Card} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_USER } from './userMock';
+import { Link } from 'react-router-dom';
+import './auth.css';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors }, setError } = useForm();
@@ -25,8 +27,8 @@ const Login = () => {
   };
 
   return (
-    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh', maxWidth: '400px', width: '100%' }}>
-        <Card.Body className="p-4">
+    <Card className="d-flex align-items-center justify-content-center mx-auto" style={{ minHeight: '80vh', maxWidth: '450px', width: '100%', marginTop: '5vh'}}>
+      <Card.Body className="p-4 w-100">
           <h2 className="mb-4 text-center">Login</h2>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Form.Group className="mb-3" controlId="formEmail">
@@ -35,7 +37,7 @@ const Login = () => {
                 <Form.Control
                   type="email"
                   placeholder="Digite seu email"
-                  className="bg-dark text-white border-secondary"
+                  className="bg-dark text-white border-secondary custom-placeholder"
                   {...register('email', { required: 'Email obrigatório' })}
                   isInvalid={!!errors.email}
                 />
@@ -50,7 +52,7 @@ const Login = () => {
                 <Form.Control
                   type="password"
                   placeholder="Digite sua senha"
-                  className="bg-dark text-white border-secondary"
+                  className="bg-dark text-white border-secondary custom-placeholder"
                   {...register('password', { required: 'Senha obrigatória' })}
                   isInvalid={!!errors.password}
                 />
@@ -63,8 +65,9 @@ const Login = () => {
               Entrar
             </Button>
           </Form>
+          <Link to="/user/signup" className="d-block mt-3 text-center">Não possui conta? Crie uma</Link>
         </Card.Body>
-    </Container>
+    </Card>
   );
 };
 
