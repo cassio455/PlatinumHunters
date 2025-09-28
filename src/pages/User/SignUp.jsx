@@ -1,15 +1,26 @@
 import { useForm } from 'react-hook-form';
 import { InputGroup, Form, Button, Card, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { loginSuccess } from '../../app/slices/authSlice';
 import { MOCK_USER } from './userMock';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import './auth.css';
 const SignUp = () => {
   const { register, handleSubmit, formState: { errors }, setError, reset } = useForm();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [success, setSuccess] = useState("");
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/biblioteca', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
   // simulacao
   const onSubmit = (data) => {
     if (data.email === MOCK_USER.email) {
@@ -17,15 +28,16 @@ const SignUp = () => {
       return;
     }
     localStorage.setItem('token', MOCK_USER.token);
+    dispatch(loginSuccess({ token: MOCK_USER.token, user: MOCK_USER }));
     setSuccess('Cadastro realizado com sucesso! Redirecionando...');
     setTimeout(() => {
-      navigate('/main');
+      navigate('/main', { replace: true });
     }, 1500);
     reset();
   };
 
   return (
-    <Card className="d-flex align-items-center justify-content-center mx-auto" style={{ minHeight: '80vh', maxWidth: '450px', width: '100%', marginTop: '5vh'}}>
+    <Card className="d-flex align-items-center justify-content-center mx-auto" style={{ minHeight: '80vh', maxWidth: '450px', width: '100%', marginTop: '5vh' }}>
       <Card.Body className="p-4 w-100">
         <h2 className="mb-4 text-center">Registrar-se</h2>
         {success && <Alert variant="success">{success}</Alert>}

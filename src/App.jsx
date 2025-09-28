@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Main from "./Main/Main";
+import AuthSync from "./app/AuthSync";
 import Ranking from "./RankingScreens/RankingMain"
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -17,6 +18,7 @@ import Profile from "./pages/User/Profile";
 function App() {
   return (
     <Router>
+      <AuthSync />
       <Navbar />
         <Routes>
           <Route path="/" element={<Main />} />
