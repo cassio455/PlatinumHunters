@@ -31,7 +31,7 @@ function Navbar() {
               <NavLink className="nav-link" to="/biblioteca">Biblioteca</NavLink>
             </li>
             <li className="nav-item mx-2">
-              <NavLink className="nav-link" to="/screen2">Jogos</NavLink>
+              <NavLink className="nav-link" to="/jogos">Jogos</NavLink>
             </li>
             <li className="nav-item mx-2">
               <NavLink className="nav-link" to="/trophy">Troféus</NavLink>

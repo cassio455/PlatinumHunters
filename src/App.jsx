@@ -9,7 +9,8 @@ import TrophyDetails from "./TrophyScreens/TrophyDetails";
 import Biblioteca from "./pages/Biblioteca";
 import Detalhes from "./pages/Biblioteca/detalhes";
 import Login from "./pages/User/Login";
-import Challenge from "./RankingScreens/Challenge"
+import Challenge from "./RankingScreens/Challenge";
+import Jogos from "./pages/Jogos/Jogos";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/biblioteca" element={<Biblioteca />} />
           <Route path="/biblioteca/detalhes/:id" element={<Detalhes />} />
           <Route path="/ranking" element={<Ranking />} />
+          <Route path="/jogos" element={<Jogos />} />
           <Route path="/challenge" element={<Challenge />} />
           <Route path="/user/login" element={<Login />} />
         </Routes>
