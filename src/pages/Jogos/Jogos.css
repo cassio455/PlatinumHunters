@@ -1,0 +1,217 @@
+.game-card-jogos {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  aspect-ratio: 3 / 4;
+}
+
+.game-card-jogos:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(255, 110, 119, 0.2);
+}
+
+.game-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.overlay-jogos {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 1;
+  padding: 15px;
+  text-align: center;
+}
+
+.game-title-jogos {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0;
+  transition: opacity 0.3s ease;
+}
+
+.page-subtitle {
+    text-align: center;
+    color: #ccc;
+    margin-top: 10px;
+}
+
+/* --- Estilos para a secção "Mais Populares" --- */
+.most-played-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #eee;
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+
+.most-played-container {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 15px;
+}
+
+.most-played-container::-webkit-scrollbar {
+  display: none;
+}
+
+.most-played-card {
+  position: relative;
+  flex: 0 0 280px;
+  height: 160px;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.most-played-card:hover {
+  transform: scale(1.04);
+}
+
+.most-played-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.most-played-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, transparent 70%);
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+}
+
+.most-played-name {
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* --- Estilos para o Painel de Detalhes Estilo Netflix --- */
+.details-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 2rem;
+  backdrop-filter: blur(4px);
+}
+
+.details-modal-body {
+  width: 100%;
+  max-width: 850px;
+  background-color: #181818;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  animation: modal-fade-in 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-video-container {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* Proporção 16:9 para o vídeo */
+}
+
+.modal-video-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: rgba(20, 20, 20, 0.7);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  z-index: 10;
+}
+
+.modal-video-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(24, 24, 24, 1) 10%, rgba(24, 24, 24, 0));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.modal-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+  margin-bottom: 1.5rem;
+}
+
+.modal-content-area {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex-shrink: 1;
+}
+
+.modal-description {
+  color: #ccc;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* --- Media Query para Responsividade em Ecrãs Pequenos --- */
+@media (max-width: 768px) {
+  .modal-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .details-modal-body {
+    max-height: 95vh;
+  }
+
+  .modal-video-overlay,
+  .modal-content-area {
+    padding: 1rem;
+  }
+
+  .modal-description {
+    font-size: 0.9rem;
+  }
+}

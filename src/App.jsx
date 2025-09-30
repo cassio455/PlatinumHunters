@@ -10,7 +10,8 @@ import TrophyDetails from "./TrophyScreens/TrophyDetails";
 import Biblioteca from "./pages/Biblioteca";
 import Detalhes from "./pages/Biblioteca/detalhes";
 import Login from "./pages/User/Login";
-import Challenge from "./RankingScreens/Challenge"
+import Challenge from "./RankingScreens/Challenge";
+import Jogos from "./pages/Jogos/Jogos";
 import SignUp from "./pages/User/SignUp";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/User/Profile";
@@ -31,6 +32,7 @@ function App() {
               </ProtectedRoute>} />
           <Route path="/biblioteca/detalhes/:id" element={<Detalhes />} />
           <Route path="/ranking" element={<Ranking />} />
+          <Route path="/jogos" element={<Jogos />} />
           <Route path="/challenge" element={<Challenge />} />
           <Route path="/user/login" element={<Login />} />
           <Route path="/user/signup" element={<SignUp />} />
