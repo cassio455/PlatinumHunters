@@ -1,8 +1,19 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { User } from "lucide-react";
 import "./Navbar.css"
 
 function Navbar() {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const navigate = useNavigate();
+  const handleUserIconClick = () => {
+    if (isAuthenticated) {
+      navigate('/user/profile');
+    } else {
+      navigate('/user/login');
+    }
+  };
+  
   return (
     <nav className="navbar navbar-expand-lg fixed-top w-100">
       <div className="container">
@@ -42,10 +53,10 @@ function Navbar() {
             <li className="nav-item mx-2">
               <NavLink className="nav-link" to="/ranking">Ranking</NavLink>
             </li>
-            <li className="nav-item mx-2 d-flex align-items-center">
-              <NavLink className="nav-link" to="/user/login">
-                <User size={22} style={{ verticalAlign: 'middle' }} />
-              </NavLink>
+            <li className="nav-item mx-2 user-mobile-center">
+              <div className="nav-link user-icon-mobile-center" style={{cursor: 'pointer'}} onClick={handleUserIconClick}>
+                <User size={22} style={{ verticalAlign: 'middle' }}/>
+              </div>
             </li>
           </ul>
         </div>
