@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginSuccess, logout } from './slices/authSlice';
 import { setCurrentUser, clearCurrentUser } from '../app/slices/shopSlice';
 import { MOCK_USER } from '../pages/User/userMock';
-import { setCurrentTrophyUser, clearCurrentTrophyUser } from './slices/trophySlice'; 
+import { setCurrentTrophyUser, clearCurrentTrophyUser } from './slices/trophySlice';
 
 const AuthSync = () => {
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ const AuthSync = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      dispatch(setCurrentTrophyUser(userId)); 
+      dispatch(setCurrentTrophyUser(userId));
     } else {
       dispatch(clearCurrentTrophyUser());
     }

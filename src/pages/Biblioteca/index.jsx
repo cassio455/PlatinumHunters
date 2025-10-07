@@ -16,11 +16,11 @@ const Biblioteca = () => {
   return (
     <div className="main-page container mt-5 pt-5">
       <div className="section-header mb-4">
-        <h1 className="section-title text-center mb-2">Minha Biblioteca</h1>
-        <div className="section-line"></div>
-        <p className="page-subtitle">Gerencie seus jogos e acompanhe seu progresso</p>
-        <div className="row justify-content-center mt-4">
-          <div className="col-12 col-md-6">
+        <h1 className="title-text mb-2">Minha Biblioteca</h1>
+        <div className="section-line mb-3"></div>
+        <p className="page-subtitle mb-4">Gerencie seus jogos e acompanhe seu progresso</p>
+        <div className="search-bar-biblioteca">
+          <div style={{ width: '100%', maxWidth: 400 }}>
             <InputGroup>
               <InputGroup.Text className="bg-dark border-secondary" style={{ borderRight: 0 }}>
                 <Search size={18} className="text-secondary" />
@@ -70,5 +70,6 @@ const Biblioteca = () => {
     </div>
   );
 };
+
 
 export default Biblioteca;

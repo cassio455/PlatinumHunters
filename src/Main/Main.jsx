@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import ReviewCard from "../components/ReviewCard";
-import { useSelector } from 'react-redux';
 import "./Main.css"
 
 function Main() {
@@ -49,7 +48,7 @@ function Main() {
     <div className="main-page container mt-5 pt-5">
       <h1 className="welcome-text mb-4">
         {isAuthenticated && user
-          ? `Bem-vindo ${user.name}! Seus troféus lhe aguardam...`
+          ? `Bem-vindo ${name}! Seus troféus lhe aguardam...`
           : "Bem-vindo! Seus troféus lhe aguardam..."}
       </h1>
 
