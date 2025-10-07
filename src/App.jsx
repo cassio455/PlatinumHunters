@@ -15,6 +15,7 @@ import Jogos from "./pages/Jogos/Jogos";
 import SignUp from "./pages/User/SignUp";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/User/Profile";
+import Shop from "./RankingScreens/Shop";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/jogos" element={<Jogos />} />
           <Route path="/challenge" element={<Challenge />} />
+          <Route path="/shop" element={<Shop />} />
           <Route path="/user/login" element={<Login />} />
           <Route path="/user/signup" element={<SignUp />} />
           <Route path="/user/profile" element={

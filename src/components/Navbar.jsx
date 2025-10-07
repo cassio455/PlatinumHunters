@@ -21,14 +21,12 @@ function Navbar() {
           Platinum Hunters
         </NavLink>
 
-        {/* Toggler for small screens */}
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
 
         <div className="collapse navbar-collapse justify-content-between" id="navbarMenu">
 
-        {/* Search Bar */}
         <form className="d-flex mt-2 mt-lg-0 w-100 w-lg-auto">
           <input className="form-control me-2" type="search" placeholder="Pesquisar" />
           <button className="btn search-btn" type="submit">
@@ -36,7 +34,6 @@ function Navbar() {
           </button>
         </form>
 
-          {/* Links on the right */}
           <ul className="navbar-nav mx-auto flex-column flex-lg-row text-center">
             <li className="nav-item mx-2">
               <NavLink className="nav-link" to="/biblioteca">Biblioteca</NavLink>

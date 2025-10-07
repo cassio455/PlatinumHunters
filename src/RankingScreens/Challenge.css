@@ -47,7 +47,12 @@
 }
 
 .calendar-day.selected {
-  background: #ff6e77; /* highlight selected day */
+  background: #ff6e77; 
   color: white;
   font-weight: bold;
+}
+
+.calendar-day.disabled {
+  background: #444;
+  color: #888;
 }

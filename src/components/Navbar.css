@@ -3,7 +3,7 @@ nav{
 }
 
 .nav-link.active {
-  color: #FF6E77 !important;  /* pink for the active link */
+  color: #FF6E77 !important;  
 }
 
 
@@ -20,7 +20,7 @@ nav{
 }
 
 .navbar-toggler:hover {
-  filter: invert(0.7) sepia(1) saturate(5) hue-rotate(-50deg); /* example pink-ish tweak */
+  filter: invert(0.7) sepia(1) saturate(5) hue-rotate(-50deg); 
 }
 
 .search-btn:focus, 
@@ -28,7 +28,7 @@ nav{
 .navbar-toggler:focus, 
 .navbar-toggler:active {
   outline: none;
-  box-shadow: none; /* removes the shadow Bootstrap adds */
+  box-shadow: none; 
 }
 
 .search-btn {

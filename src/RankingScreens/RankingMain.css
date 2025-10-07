@@ -1,3 +1,32 @@
+.floating-shop {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.floating-shop:hover {
+  transform: scale(1.1);
+  color: #fff;
+}
+
+.title-text {
+  text-align: center;
+  color: #ccc;
+  font-weight: bold;
+}
+
 .podium {
   gap: 20px;
   margin-top: 40px;
@@ -54,9 +83,9 @@
 
 .ranking-list {
   margin-top: 20px;
-  padding: 0 40px; /* space on left/right */
-  width: 70vw; /* FULL width of the viewport */
-  box-sizing: border-box; /* so padding doesn't add extra size */
+  padding: 0 40px; 
+  width: 70vw; 
+  box-sizing: border-box; 
 }
 
 .ranking-row {
@@ -123,8 +152,6 @@ ul.nav.nav-tabs .nav-link.active:focus {
   color: #ff4d8d !important;
   border: none !important;
 }
-
-/* Make hover match too */
 ul.nav.nav-tabs .nav-link:hover {
   background-color: transparent !important;
   color: #ff4d8d !important;

@@ -3,7 +3,6 @@ import { useState } from "react";
 import "./RankingMain.css";
 
 function RankingMain() {
-  // Database examples
   const weekly = [
     { id: 1, name: "Alice", points: 1500, avatar: "https://i.pravatar.cc/100?img=20" },
     { id: 2, name: "Maria", points: 1400, avatar: "https://i.pravatar.cc/100?img=16" },
@@ -44,13 +43,16 @@ function RankingMain() {
   return (
     <div className="container mt-5 pt-5 text-center">
       <div className="d-flex justify-content-center align-items-center mb-4">
-        <h1 className="me-2">Ranking</h1>
+        <h1 className="title-text me-2">Ranking</h1>
         <Link to="/challenge" className="btn btn-sm">
           <i className="bi bi-arrow-repeat text-danger"></i>
         </Link>
       </div>
 
-      {/* Time Tabs */}
+      <Link to="/shop" className="floating-shop" aria-label="Abrir Loja">
+        <i className="bi bi-shop"></i>
+      </Link>
+
       <ul className="nav nav-tabs justify-content-center mb-3">
         <li className="nav-item">
           <button className={`nav-link ${activeTab === "week" ? "active" : ""}`} onClick={() => handleTabChange("week")}>
@@ -68,17 +70,7 @@ function RankingMain() {
           </button>
         </li>
       </ul>
-
-      <div className="game-search-bar container">
-        <form className="d-flex mt-2 mt-lg-0 w-100 w-lg-auto">
-          <input className="form-control me-2" type="search" placeholder="Pesquisar usuário ou jogo"/>
-          <button className="btn search-btn" type="submit">
-              <i className="bi bi-search"></i>
-          </button>
-        </form>
-      </div>
-
-      {/* Podium */}
+      
       <div className="podium d-flex justify-content-center align-items-end pt-5">
         <div className="podium-spot second">
           <img src={top3[1]?.avatar} alt={top3[1]?.name} className="avatar" />
@@ -99,9 +91,7 @@ function RankingMain() {
         </div>
       </div>
 
-      {/* Remaining Rankings */}
-      <div className="ranking-list container">
-        <div className="ranking-list mt-5 text-start">
+        <div className="ranking-list container mt-5 pt-5 text-start">
           {others.map((user, index) => (
             <div key={user.id} className="ranking-row d-flex align-items-center justify-content-between">
               <div className="d-flex align-items-center">
@@ -113,7 +103,6 @@ function RankingMain() {
             </div>
           ))}
         </div>
-      </div>
     </div>
   );
 }
