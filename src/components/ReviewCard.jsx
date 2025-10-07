@@ -1,7 +1,6 @@
 import "./ReviewCard.css"; 
 
 function ReviewCard({ reviewer, game, image, rating, text, likes }) {
-  // Create an array to render filled stars
   const stars = [];
   for (let i = 1; i <= 5; i++) {
     if (i <= Math.floor(rating)) stars.push(<i key={i} className="bi bi-star-fill text-danger"></i>);

@@ -46,7 +46,6 @@ function Main() {
     <div className="main-page container mt-5 pt-5">
       <h1 className="welcome-text mb-4">Bem-vindo {name}! Seus troféus lhe aguardam...</h1>
 
-      {/* Jogos Populares */}
       <div className="trending-header">
         <p className="section-title text-start mb-2">Jogos Populares Recentemente</p>
         <div className="section-line"></div>
@@ -62,7 +61,6 @@ function Main() {
           ))}
         </div>
 
-        {/* Reviews */}
         <div className="reviews-header mt-5">
           <p className="section-title text-start mb-2">Reviews Populares Recentemente</p>
           <div className="section-line"></div>
