@@ -6,7 +6,9 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import "./App.css"
 import Trophy from "./TrophyScreens/TrophyMain"
+import TrophyRecommended from "./TrophyScreens/TrophyRecommended";
 import TrophyDetails from "./TrophyScreens/TrophyDetails";
+import TrophyConquistados from "./TrophyScreens/TrophyConquistados";
 import Biblioteca from "./pages/Biblioteca";
 import Detalhes from "./pages/Biblioteca/detalhes";
 import Login from "./pages/User/Login";
@@ -26,6 +28,8 @@ function App() {
           <Route path="/main" element={<Main />} />
           <Route path="/trophy" element={<Trophy />} />
           <Route path="/trophy/:id" element={<TrophyDetails />} />
+          <Route path="/trophy-recommended" element={<TrophyRecommended />} />
+           <Route path="/trophy-conquistados" element={<TrophyConquistados />} />
           <Route path="/biblioteca" element={
             <ProtectedRoute>
               <Biblioteca />
