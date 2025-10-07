@@ -1,13 +1,78 @@
-.info-label {
-  color: #FF6E77;
-  font-weight: bold;
+/* Estilos base (mobile-first) */
+.detalhes-page {
+  padding: 80px 20px 40px;
+  min-height: 100vh;
+}
+
+.game-details-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.card-content {
+  border-radius: 12px;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.image-section {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .game-image {
-  width: 200px;
-  height: 280px;
+  width: 180px;
+  height: 250px;
   object-fit: cover;
+  border-radius: 8px;
 }
+
+.info-section {
+  padding: 20px;
+  width: 100%;
+}
+
+.game-title {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin-bottom: 15px;
+  gap: 5px;
+}
+
+.info-label {
+  color: #FF6E77;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: #fff;
+}
+
+.actions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.btn-action {
+  width: 100%;
+  padding: 12px;
+}
+
+/* Tablet e maiores */
 @media (min-width: 768px) {
   .detalhes-page {
     padding: 40px 0;
@@ -73,6 +138,7 @@
     gap: 20px;
   }
 }
+
 @media (min-width: 1024px) {
   .detalhes-page {
     padding: 60px 0;
@@ -114,6 +180,7 @@
     font-size: 1.2rem;
   }
 }
+
 @media (min-width: 1440px) {
   .game-details-container {
     max-width: 1000px;

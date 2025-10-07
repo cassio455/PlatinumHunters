@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess, logout } from '../app/slices/authSlice';
 import { MOCK_USER } from '../pages/User/userMock';
 
-//Synchronize authentication state with localStorage!!!! important
 const AuthSync = () => {
   const dispatch = useDispatch();
 
