@@ -1,3 +1,11 @@
+/* Header vertical e centralizado */
+.section-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+	width: 100%;
+}
 .game-card-biblioteca {
 	position: relative;
 	border-radius: 12px;
@@ -41,16 +49,17 @@
 }
 
 .page-subtitle {
-	text-align: center;
-	color: #ccc;
-	margin-top: 10px;
+text-align: center;
+color: #ccc;
+margin: 16px 0 24px 0;
 }
 
 .section-line {
 	height: 2px;
 	background-color: #ccc;
-	margin-top: 5px;
+	margin: 8px 0 0 0;
 	width: 100%;
+	max-width: 400px;
 }
 
 .section-title {
@@ -98,4 +107,11 @@
 	.overlay-biblioteca {
 		padding: 10px;
 	}
+}
+
+.search-bar-biblioteca {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 24px;
+	width: 100%;
 }

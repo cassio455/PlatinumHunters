@@ -49,7 +49,7 @@ const Profile = () => {
                 <div className="alert alert-danger text-center">
                     <h4>Erro ao carregar biblioteca</h4>
                     <p>{error}</p>
-                    <Button variant="primary" onClick={() => dispatch(fetchUserLibrary(1))}>
+                    <Button variant="secondary" onClick={() => dispatch(fetchUserLibrary(1))}>
                         Tentar Novamente
                     </Button>
                 </div>
