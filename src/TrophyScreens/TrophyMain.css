@@ -1,17 +1,12 @@
-/* Apenas ajustes que o Bootstrap não cobre */
-
-
-/* Card inteiro sobre a imagem com hover leve */
 .trophy-card {
   border-radius: 12px;
   overflow: hidden;
   position: relative;
   cursor: pointer;
   transition: transform 0.2s;
-  max-width: 250px;  /* define largura máxima menor */
-  margin: 0 auto;    /* centraliza o card dentro da coluna */
+  max-width: 250px;
+  margin: 0 auto; 
 }
-
 
 .trophy-card:hover {
   transform: scale(1.03);
@@ -31,62 +26,58 @@
   transition: opacity 0.3s ease;
 }
 
-/* Mostra o número quando passar o mouse no card */
 .trophy-card:hover .hover-number {
   opacity: 1;
 }
 
 .trophy-card .card-img {
-  width: 100%;       /* garante que ocupe toda a largura */
-  height: 200px;     /* altura fixa */
-  object-fit: cover; /* corta a imagem sem distorcer */
-  transition: transform 0.3s ease, filter 0.3s ease; /* adiciona transição suave para hover */
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .trophy-card:hover .card-img {
-  transform: scale(1.05);   /* leve zoom da imagem */
-  filter: brightness(0.6);   /* escurece a imagem ao passar o mouse */
+  transform: scale(1.05);
+  filter: brightness(0.6);
 }
 
-/* Gradiente escuro sobre a imagem para legibilidade */
 .card-img-overlay {
   background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0));
   border-radius: 12px;
 }
 
-/* Container fixo da barra no rodapé */
 .progress-container {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 22px; /* Ajuste a altura da barra de progresso */
-  background: rgba(0, 0, 0, 0.4); /* Fundo escuro para a barra */
-  z-index: 1; /* Coloca a barra de progresso acima da imagem, mas abaixo do texto */
-  border-radius: 0 0 12px 12px; /* Borda arredondada na parte inferior */
+  height: 22px;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+  border-radius: 0 0 12px 12px;
   overflow:hidden;
 }
 
-/* Barra de progresso customizada */
 .progress-bar-custom {
-  height: 100%; /* A altura vai preencher o container da barra */
-  background: #dc3545; /* Cor da barra de progresso */
-  transition: width 0.5s ease-in-out; /* Transição suave da largura */
+  height: 100%;
+  background: #dc3545;
+  transition: width 0.5s ease-in-out;
   color: white;
   font-size: 0.8rem;
   font-weight: bold;
   text-align: center;
-  line-height: 22px; /* Centraliza o texto dentro da barra */
-  border-radius: 0; /* Sem arredondamento nas bordas */
-  width: 0%; /* Inicializa a barra com largura zero e será controlado pelo estilo inline */
+  line-height: 22px;
+  border-radius: 0;
+  width: 0%;
 }
 
 .progress-bar-custom p {
   margin: 0;
-  z-index: 2; /* Garante que os números fiquem acima da cor da barra */
+  z-index: 2;
 }
 
 .game-image-container {
-  position: relative; /* Agora podemos posicionar elementos filhos dentro dele */
-  overflow: hidden;   /* Impede que elementos saiam da área da imagem */
+  position: relative;
+  overflow: hidden;
 }
