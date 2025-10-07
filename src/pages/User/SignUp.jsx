@@ -21,7 +21,6 @@ const SignUp = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  // simulacao
   const onSubmit = (data) => {
     if (data.email === MOCK_USER.email) {
       setError('email', { type: 'manual', message: 'Email já cadastrado.' });

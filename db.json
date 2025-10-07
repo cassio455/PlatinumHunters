@@ -1,0 +1,350 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "name": "João Silva",
+            "email": "admin123@gmail.com",
+            "password": "12345678",
+            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=joao",
+            "createdAt": "2023-01-01T00:00:00.000Z",
+            "stats": {
+                "totalGames": 5,
+                "platinumCount": 15,
+                "totalTrophies": 1247,
+                "rank": "B+",
+                "points": 4700,
+                "totalPlayTime": 450
+            }
+        }
+    ],
+    "games": [
+        {
+            "id": 1,
+            "name": "Hollow Knight: Silksong",
+            "image": "https://upload.wikimedia.org/wikipedia/en/5/5d/Hollow_Knight_Silksong_first_cover_art.jpg",
+            "platform": "PC",
+            "genre": "Metroidvania",
+            "releaseDate": "2024-06-12",
+            "description": "Hollow Knight: Silksong é a continuação épica de Hollow Knight, o premiado jogo de ação e aventura aclamado pela crítica. Explore um vasto reino interligado de insetos e heróis.",
+            "totalAchievements": 50
+        },
+        {
+            "id": 2,
+            "name": "Hollow Knight",
+            "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0PkpfjmguEnQbkqY2SCNqjoC_3hEJUmrTMQ&s",
+            "platform": "PC",
+            "genre": "Metroidvania",
+            "releaseDate": "2017-02-24",
+            "description": "Forje seu caminho em Hollow Knight! Uma aventura de ação épica em um vasto reino arruinado de insetos e heróis.",
+            "totalAchievements": 63
+        },
+        {
+            "id": 3,
+            "name": "Metal Gear Solid Delta: Snake Eater",
+            "image": "https://image.api.playstation.com/vulcan/ap/rnd/202406/0513/d35b305652ee922a72b4020bd5d6ef36675cf526dd4945d1.png",
+            "platform": "PS5",
+            "genre": "Stealth Action",
+            "releaseDate": "2024-11-17",
+            "description": "Metal Gear Solid Delta: Snake Eater é um remake do clássico jogo de espionagem tática.",
+            "totalAchievements": 45
+        },
+        {
+            "id": 4,
+            "name": "Clair Obscur: Expedition 33",
+            "image": "https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/Clair_Obscur%2C_Expedition_33_Cover_1.webp/250px-Clair_Obscur%2C_Expedition_33_Cover_1.webp.png",
+            "platform": "PC",
+            "genre": "RPG",
+            "releaseDate": "2025-04-24",
+            "description": "Um RPG cinematográfico de estratégia em turnos ambientado em um mundo de fantasia sombria.",
+            "totalAchievements": 42
+        },
+        {
+            "id": 5,
+            "name": "Peak",
+            "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3527290/c6791f0f1b7b29f6304e283ac7a2cabc27c7eb0d/capsule_616x353.jpg?t=1757111056",
+            "platform": "PC",
+            "genre": "Adventure",
+            "releaseDate": "2024-09-15",
+            "description": "Uma jornada emocionante de escalada e descoberta.",
+            "totalAchievements": 30
+        }
+    ],
+    "library": [
+        {
+            "id": 1,
+            "userId": 1,
+            "gameId": 1,
+            "status": "jogando",
+            "progress": 72,
+            "startedAt": "2024-08-15T10:30:00.000Z",
+            "completedAt": null,
+            "playTime": 45,
+            "rating": null,
+            "notes": "Jogabilidade incrível, gráficos lindos!",
+            "achievements": {
+                "unlocked": 36,
+                "total": 50
+            },
+            "lastPlayed": "2024-10-06T18:00:00.000Z",
+            "favorite": true
+        },
+        {
+            "id": 2,
+            "userId": 1,
+            "gameId": 2,
+            "status": "platinado",
+            "progress": 100,
+            "startedAt": "2024-01-10T14:20:00.000Z",
+            "completedAt": "2024-05-22T20:15:00.000Z",
+            "playTime": 85,
+            "rating": 5,
+            "notes": "Obra-prima absoluta! Melhor metroidvania que já joguei.",
+            "achievements": {
+                "unlocked": 63,
+                "total": 63
+            },
+            "lastPlayed": "2024-05-22T20:15:00.000Z",
+            "favorite": true
+        },
+        {
+            "id": 3,
+            "userId": 1,
+            "gameId": 3,
+            "status": "não iniciado",
+            "progress": 0,
+            "startedAt": null,
+            "completedAt": null,
+            "playTime": 0,
+            "rating": null,
+            "notes": "Quero começar em breve!",
+            "achievements": {
+                "unlocked": 0,
+                "total": 45
+            },
+            "lastPlayed": null,
+            "favorite": false
+        },
+        {
+            "id": 4,
+            "userId": 1,
+            "gameId": 4,
+            "status": "pausado",
+            "progress": 35,
+            "startedAt": "2024-09-01T16:00:00.000Z",
+            "completedAt": null,
+            "playTime": 22,
+            "rating": 4,
+            "notes": "Jogabilidade interessante, mas pausei para jogar outras coisas.",
+            "achievements": {
+                "unlocked": 15,
+                "total": 42
+            },
+            "lastPlayed": "2024-09-20T12:30:00.000Z",
+            "favorite": false
+        },
+        {
+            "id": 5,
+            "userId": 1,
+            "gameId": 5,
+            "status": "abandonado",
+            "progress": 15,
+            "startedAt": "2024-07-05T09:00:00.000Z",
+            "completedAt": null,
+            "playTime": 8,
+            "rating": 2,
+            "notes": "Não me prendeu muito, vou deixar para depois.",
+            "achievements": {
+                "unlocked": 4,
+                "total": 30
+            },
+            "lastPlayed": "2024-07-12T15:45:00.000Z",
+            "favorite": false
+        }
+    ],
+    "achievements": [
+        {
+            "id": 1,
+            "gameId": 2,
+            "name": "Campeão de Hollow Knight",
+            "description": "Complete o jogo 100%",
+            "type": "platinum",
+            "rarity": "Ultra Raro",
+            "icon": "🏆",
+            "points": 100
+        },
+        {
+            "id": 2,
+            "gameId": 2,
+            "name": "Mestre dos Sonhos",
+            "description": "Derrote todos os chefes dos sonhos",
+            "type": "gold",
+            "rarity": "Raro",
+            "icon": "⭐",
+            "points": 50
+        },
+        {
+            "id": 3,
+            "gameId": 1,
+            "name": "Explorador Incansável",
+            "description": "Explore 50% do mapa",
+            "type": "silver",
+            "rarity": "Comum",
+            "icon": "🗺️",
+            "points": 25
+        }
+    ],
+    "userAchievements": [
+        {
+            "id": 1,
+            "userId": 1,
+            "achievementId": 1,
+            "gameId": 2,
+            "unlockedAt": "2024-05-22T20:15:00.000Z"
+        },
+        {
+            "id": 2,
+            "userId": 1,
+            "achievementId": 2,
+            "gameId": 2,
+            "unlockedAt": "2024-05-20T18:30:00.000Z"
+        },
+        {
+            "id": 3,
+            "userId": 1,
+            "achievementId": 3,
+            "gameId": 1,
+            "unlockedAt": "2024-09-10T14:00:00.000Z"
+        }
+    ],
+    "guides": [
+        {
+            "id": 1,
+            "title": "Platina Completa - Celeste",
+            "description": "Guia completo para conseguir a platina em Celeste, incluindo dicas para as fases mais difíceis.",
+            "author": "GameMaster",
+            "authorId": 1,
+            "difficulty": "Difícil",
+            "estimatedTime": "25-30 horas",
+            "rating": 4.8,
+            "views": 1250,
+            "category": "Platina",
+            "tags": [
+                "Indie",
+                "Plataforma",
+                "Desafio"
+            ],
+            "image": "https://i.imgur.com/sample1.jpg",
+            "type": "guide",
+            "createdAt": "2024-01-15T10:00:00.000Z"
+        },
+        {
+            "id": 2,
+            "title": "Todos os Coletáveis - Hollow Knight",
+            "description": "Localização de todos os itens coletáveis e segredos escondidos no reino de Hallownest.",
+            "author": "TrophyHunter",
+            "authorId": 2,
+            "difficulty": "Médio",
+            "estimatedTime": "15-20 horas",
+            "rating": 4.9,
+            "views": 2340,
+            "category": "Coletáveis",
+            "tags": [
+                "Metroidvania",
+                "Exploração",
+                "RPG"
+            ],
+            "image": "https://i.imgur.com/sample2.jpg",
+            "type": "guide",
+            "createdAt": "2024-02-10T12:00:00.000Z"
+        }
+    ],
+    "ranking": [
+        {
+            "id": 1,
+            "position": 1,
+            "userId": 2,
+            "username": "kaori",
+            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=kaori",
+            "platinums": 153,
+            "totalTrophies": 2847,
+            "rank": "S+",
+            "points": 15300,
+            "monthlyGain": 12
+        },
+        {
+            "id": 2,
+            "position": 2,
+            "userId": 3,
+            "username": "nineko",
+            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=nineko",
+            "platinums": 120,
+            "totalTrophies": 2156,
+            "rank": "S",
+            "points": 12000,
+            "monthlyGain": 8
+        },
+        {
+            "id": 3,
+            "position": 3,
+            "userId": 4,
+            "username": "player_three",
+            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=player3",
+            "platinums": 98,
+            "totalTrophies": 1876,
+            "rank": "A+",
+            "points": 9800,
+            "monthlyGain": 15
+        },
+        {
+            "id": 4,
+            "position": 4,
+            "userId": 1,
+            "username": "João Silva",
+            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=joao",
+            "platinums": 47,
+            "totalTrophies": 1247,
+            "rank": "B+",
+            "points": 4700,
+            "monthlyGain": 5,
+            "isCurrentUser": true
+        }
+    ],
+    "challenges": [
+        {
+            "id": 1,
+            "title": "Indie Master",
+            "description": "Platine 1 jogo indie em 30 dias",
+            "participants": 234,
+            "timeLeft": "15 dias",
+            "reward": "Título especial + 500 pts",
+            "difficulty": "Médio",
+            "startDate": "2024-09-01T00:00:00.000Z",
+            "endDate": "2024-10-31T23:59:59.000Z",
+            "active": true
+        },
+        {
+            "id": 2,
+            "title": "Speed Runner",
+            "description": "Complete 3 jogos em uma semana",
+            "participants": 89,
+            "timeLeft": "3 dias",
+            "reward": "Badge exclusivo + 300 pts",
+            "difficulty": "Difícil",
+            "startDate": "2024-10-01T00:00:00.000Z",
+            "endDate": "2024-10-10T23:59:59.000Z",
+            "active": true
+        },
+        {
+            "id": 3,
+            "title": "Colecionador",
+            "description": "Colete 100 troféus este mês",
+            "participants": 456,
+            "timeLeft": "20 dias",
+            "reward": "Avatar especial + 200 pts",
+            "difficulty": "Fácil",
+            "startDate": "2024-10-01T00:00:00.000Z",
+            "endDate": "2024-10-31T23:59:59.000Z",
+            "active": true
+        }
+    ]
+}

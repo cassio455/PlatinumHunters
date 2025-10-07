@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import ReviewCard from "../components/ReviewCard";
+import { useSelector } from 'react-redux';
 import "./Main.css"
 
 function Main() {
@@ -9,9 +10,9 @@ function Main() {
     { id: 1, title: "Hollow Knight: Silksong", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3vtl.jpg" },
     { id: 2, title: "Hollow Knight", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co93cr.jpg" },
     { id: 3, title: "Clair Obscur: Expedition 33", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9gam.jpg" },
-    { id: 4, title: "Peak", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa1i1.jpg"},
-    { id: 5, title: "Metal Gear Solid Delta: Snake Eater", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coac1n.jpg"},
-    { id: 6, title: "Donkey Kong Bananza", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa082.jpg"},
+    { id: 4, title: "Peak", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa1i1.jpg" },
+    { id: 5, title: "Metal Gear Solid Delta: Snake Eater", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coac1n.jpg" },
+    { id: 6, title: "Donkey Kong Bananza", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa082.jpg" },
   ];
 
   const reviews = [
@@ -43,7 +44,7 @@ function Main() {
       likes: 18
     }
   ];
-
+  const name = useSelector((state) => state.auth.user?.name) || "visitante";
   return (
     <div className="main-page container mt-5 pt-5">
       <h1 className="welcome-text mb-4">
