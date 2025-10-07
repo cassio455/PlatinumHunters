@@ -1,0 +1,19 @@
+.section-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.section-line {
+  height: 2px;
+  width: 100%;
+  background-color: #ffffff;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+}
