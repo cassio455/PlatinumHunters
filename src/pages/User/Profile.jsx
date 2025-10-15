@@ -1,6 +1,7 @@
 import { Image, Button, Container, Row, Col, Card, ListGroup, Spinner } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../app/slices/authSlice';
+import { clearCurrentUser } from '../../app/slices/shopSlice';
 import { fetchUserLibrary } from '../../app/thunks/libraryThunks';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -11,10 +12,10 @@ const Profile = () => {
     const navigate = useNavigate();
     const name = useSelector((state) => state.auth.user?.name);
 
-    const stats = useSelector((state) => state.library.stats);
-    const library = useSelector((state) => state.library.library);
-    const loading = useSelector((state) => state.library.loading);
-    const error = useSelector((state) => state.library.error);
+    const stats = useSelector((state) => state.library?.stats || { total: 0, platinado: 0, jogando: 0 });
+    const library = useSelector((state) => state.library?.library || []);
+    const loading = useSelector((state) => state.library?.loading || false);
+    const error = useSelector((state) => state.library?.error || null);
 
     useEffect(() => {
         dispatch(fetchUserLibrary(1));

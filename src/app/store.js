@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice';
 import trophyReducer from './slices/trophySlice';
 import shopReducer from './slices/shopSlice'
+import libraryReducer from './slices/librarySlice';
 
 const authPersistConfig = {
   key: 'auth',
@@ -23,6 +24,12 @@ const trophyPersistConfig = {
   whitelist: ['userData', 'currentUserId'],
 };
 
+const libraryPersistConfig = {
+  key: 'library',
+  storage,
+  whitelist: ['library', 'stats', 'currentUserId'],
+};
+
 
 const persistConfig = {
   key: 'shop',
@@ -31,14 +38,14 @@ const persistConfig = {
 };
 
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
-const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 const persistedTrophyReducer = persistReducer(trophyPersistConfig, trophyReducer);
 const persistedShopReducer = persistReducer(persistConfig, shopReducer);
+const persistedLibraryReducer = persistReducer(libraryPersistConfig, libraryReducer);
 
 export const store = configureStore({
   reducer: {
-      user: userReducer,
-      auth: authReducer,
+      auth: persistedAuthReducer,
+      library: persistedLibraryReducer,
       trophies: persistedTrophyReducer,
       shop: persistedShopReducer,
   },

@@ -21,7 +21,7 @@ import SignUp from "./pages/User/SignUp";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/User/Profile";
 import Shop from "./RankingScreens/Shop";
-
+import AdicionarJogo from "./pages/Biblioteca/adicionarJogo";
 function App() {
   return (
     <Provider store={store}>
@@ -50,6 +50,10 @@ function App() {
             <Route path="/user/profile" element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>} />
+            <Route path="/biblioteca/adicionar" element={
+              <ProtectedRoute>
+                <AdicionarJogo />
               </ProtectedRoute>} />
           </Routes>
           <Footer />
