@@ -18,35 +18,39 @@ import SignUp from "./pages/User/SignUp";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/User/Profile";
 import Shop from "./RankingScreens/Shop";
-
+import AdicionarJogo from "./pages/Biblioteca/adicionarJogo";
 function App() {
   return (
     <Router>
       <AuthSync />
       <Navbar />
-        <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/main" element={<Main />} />
-          <Route path="/trophy" element={<Trophy />} />
-          <Route path="/trophy/:id" element={<TrophyDetails />} />
-          <Route path="/trophy-recommended" element={<TrophyRecommended />} />
-           <Route path="/trophy-conquistados" element={<TrophyConquistados />} />
-          <Route path="/biblioteca" element={
-            <ProtectedRoute>
-              <Biblioteca />
-              </ProtectedRoute>} />
-          <Route path="/biblioteca/detalhes/:id" element={<Detalhes />} />
-          <Route path="/ranking" element={<Ranking />} />
-          <Route path="/jogos" element={<Jogos />} />
-          <Route path="/challenge" element={<Challenge />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/user/login" element={<Login />} />
-          <Route path="/user/signup" element={<SignUp />} />
-          <Route path="/user/profile" element={
-            <ProtectedRoute>
-              <Profile />
-              </ProtectedRoute>} />
-        </Routes>
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/main" element={<Main />} />
+        <Route path="/trophy" element={<Trophy />} />
+        <Route path="/trophy/:id" element={<TrophyDetails />} />
+        <Route path="/trophy-recommended" element={<TrophyRecommended />} />
+        <Route path="/trophy-conquistados" element={<TrophyConquistados />} />
+        <Route path="/biblioteca" element={
+          <ProtectedRoute>
+            <Biblioteca />
+          </ProtectedRoute>} />
+        <Route path="/biblioteca/detalhes/:id" element={<Detalhes />} />
+        <Route path="/ranking" element={<Ranking />} />
+        <Route path="/jogos" element={<Jogos />} />
+        <Route path="/challenge" element={<Challenge />} />
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/biblioteca/adicionar" element={
+          <ProtectedRoute>
+            <AdicionarJogo />
+          </ProtectedRoute>} />
+        <Route path="/user/login" element={<Login />} />
+        <Route path="/user/signup" element={<SignUp />} />
+        <Route path="/user/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>} />
+      </Routes>
       <Footer />
     </Router>
   );

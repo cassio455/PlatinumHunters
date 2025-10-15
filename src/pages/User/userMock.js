@@ -1,4 +1,5 @@
 export const MOCK_USER = {
+  id: 1,
   name: 'João Silva',
   email: 'admin123@gmail.com',
   password: '12345678',
