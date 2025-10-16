@@ -1,10 +1,11 @@
-import { Image, Button, Container, Row, Col, Card, ListGroup, Spinner } from 'react-bootstrap';
+import { Image, Button, Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../app/slices/authSlice';
 import { clearCurrentUser } from '../../app/slices/shopSlice';
 import { fetchUserLibrary } from '../../app/thunks/libraryThunks';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import LibraryStatus from '../../components/LibraryStatus';
 import { ChevronRight, ChevronLeft, Search, Trophy, Gamepad2 } from 'lucide-react';
 
 const Profile = () => {
@@ -36,26 +37,16 @@ const Profile = () => {
     const totalPages = Math.ceil(platinumGames.length / pageSize);
     const paginatedGames = platinumGames.slice(page * pageSize, (page + 1) * pageSize);
 
-    if (loading) {
+    if (loading || error) {
         return (
-            <Container className="py-5 text-center" style={{ minHeight: '80vh' }}>
-                <Spinner animation="border" variant="light" />
-                <p className="mt-3">Carregando biblioteca...</p>
-            </Container>
-        );
-    }
-
-    if (error) {
-        return (
-            <Container className="py-5" style={{ minHeight: '80vh' }}>
-                <div className="alert alert-danger text-center">
-                    <h4>Erro ao carregar biblioteca</h4>
-                    <p>{error}</p>
-                    <Button variant="secondary" onClick={() => dispatch(fetchUserLibrary(1))}>
-                        Tentar Novamente
-                    </Button>
-                </div>
-            </Container>
+            <LibraryStatus
+                loading={loading}
+                loadingMessage="Carregando biblioteca..."
+                error={!!error}
+                errorMessage={error}
+                onRetry={() => dispatch(fetchUserLibrary(1))}
+                errorTitle="Erro ao carregar biblioteca"
+            />
         );
     }
 
