@@ -17,23 +17,25 @@ export const fetchUserLibrary = (userId = 1) => async (dispatch) => {
       libraryData.map(async (item) => {
         const gameResponse = await fetch(`${API_URL}/games/${item.gameId}`);
         const gameData = await gameResponse.json();
-        
+
+        const gameName = gameData.nome;
+        const gameImg = gameData.backgroundimage;
+        const gamePlaytime = gameData.playtime;
+
         return {
           id: item.id,
+          userId: item.userId,
           gameId: item.gameId,
-          name: gameData.name,
-          img: gameData.image,
+          name: gameName,
+          img: gameImg,
           status: item.status,
-          progresso: `${item.progress}%`, // como porcentagem, depois corrigir
+          progresso: item.progress != null ? `${item.progress}%` : null,
           progress: item.progress,
-          playTime: item.playTime,
+          playTime: gamePlaytime,
           rating: item.rating,
-          notes: item.notes,
-          achievements: item.achievements,
-          favorite: item.favorite,
-          startedAt: item.startedAt,
-          completedAt: item.completedAt,
-          lastPlayed: item.lastPlayed,
+          dateAdded: item.dateAdded,
+          platforms: item.platforms,
+          genres: gameData.genres,
         };
       })
     );

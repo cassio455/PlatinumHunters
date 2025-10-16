@@ -1,11 +1,11 @@
-import { Image, Button, Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
+import { Image, Button, Container, Row, Col, Card, ListGroup, Badge } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../app/slices/authSlice';
 import { fetchUserLibrary } from '../../app/thunks/libraryThunks';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import LibraryStatus from '../../components/LibraryStatus';
-import { ChevronRight, ChevronLeft, Search, Trophy, Gamepad2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Search, Trophy, Gamepad2, Star } from 'lucide-react';
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -30,6 +30,22 @@ const Profile = () => {
     const platinumGames = library.filter(game => game.status === 'platinado');
     const playingGames = library.filter(game => game.status === 'jogando');
 
+    const renderStarRating = (rating) => {
+        if (!rating) return null;
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(
+                <Star
+                    key={i}
+                    size={12}
+                    fill={i <= rating ? "#ffc107" : "none"}
+                    color={i <= rating ? "#ffc107" : "#ccc"}
+                />
+            );
+        }
+        return <div className="d-flex gap-1">{stars}</div>;
+    };
+
     const [page, setPage] = useState(0);
     const pageSize = 5;
     const totalPages = Math.ceil(platinumGames.length / pageSize);
@@ -39,11 +55,11 @@ const Profile = () => {
         return (
             <LibraryStatus
                 loading={loading}
-                loadingMessage="Carregando biblioteca..."
+                loadingMessage="Carregando itens..."
                 error={!!error}
                 errorMessage={error}
                 onRetry={() => dispatch(fetchUserLibrary(1))}
-                errorTitle="Erro ao carregar biblioteca"
+                errorTitle="Erro ao carregar jogos"
             />
         );
     }
@@ -126,7 +142,26 @@ const Profile = () => {
                             ) : (
                                 paginatedGames.map((game, idx) => (
                                     <ListGroup.Item key={idx} className="d-flex justify-content-between align-items-center">
-                                        <span>{game.name}</span>
+                                        <div className="d-flex flex-column">
+                                            <span>{game.name}</span>
+                                            <div className="d-flex align-items-center gap-2 mt-1">
+                                                {renderStarRating(game.rating)}
+                                                {game.platforms && game.platforms.length > 0 && (
+                                                    <div className="d-flex gap-1">
+                                                        {game.platforms.slice(0, 2).map((platform, i) => (
+                                                            <Badge key={i} bg="secondary" style={{ fontSize: '0.7rem' }}>
+                                                                {platform}
+                                                            </Badge>
+                                                        ))}
+                                                        {game.platforms.length > 2 && (
+                                                            <Badge bg="light" text="dark" style={{ fontSize: '0.7rem' }}>
+                                                                +{game.platforms.length - 2}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                         <span style={{ fontSize: 13, color: '#aaa' }}>{game.progresso}</span>
                                     </ListGroup.Item>
                                 ))
@@ -176,9 +211,26 @@ const Profile = () => {
                                         />
                                         <Card.Body className="p-2">
                                             <Card.Title style={{ fontSize: '0.9rem' }}>{game.name}</Card.Title>
-                                            <Card.Text className="text-muted" style={{ fontSize: '0.8rem' }}>
-                                                {game.progresso}
-                                            </Card.Text>
+                                            <div className="d-flex justify-content-between align-items-center mb-1">
+                                                <Card.Text className="text-muted mb-0" style={{ fontSize: '0.8rem' }}>
+                                                    {game.progresso}
+                                                </Card.Text>
+                                                {renderStarRating(game.rating)}
+                                            </div>
+                                            {game.platforms && game.platforms.length > 0 && (
+                                                <div className="d-flex gap-1 flex-wrap">
+                                                    {game.platforms.slice(0, 2).map((platform, i) => (
+                                                        <Badge key={i} bg="info" style={{ fontSize: '0.6rem' }}>
+                                                            {platform}
+                                                        </Badge>
+                                                    ))}
+                                                    {game.platforms.length > 2 && (
+                                                        <Badge bg="light" text="dark" style={{ fontSize: '0.6rem' }}>
+                                                            +{game.platforms.length - 2}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            )}
                                         </Card.Body>
                                     </Card>
                                 </div>
