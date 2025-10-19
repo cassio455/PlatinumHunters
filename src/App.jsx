@@ -35,7 +35,7 @@ function App() {
             <Route path="/trophy" element={<Trophy />} />
             <Route path="/trophy/:id" element={<TrophyDetails />} />
             <Route path="/trophy-recommended" element={<TrophyRecommended />} />
-            <Route path="/trophy-conquistados" element={<TrophyConquistados />} />
+            <Route path="/add-trophy-games" element={<AddTrophyGames />} />
             <Route path="/biblioteca" element={
               <ProtectedRoute>
                 <Biblioteca />
