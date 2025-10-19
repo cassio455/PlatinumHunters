@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { loginSuccess, logout } from '../app/slices/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginSuccess, logout } from './slices/authSlice';
 import { MOCK_USER } from '../pages/User/userMock';
+import { setCurrentTrophyUser, clearCurrentTrophyUser } from './slices/trophySlice'; 
 
-//Synchronize authentication state with localStorage!!!! important
 const AuthSync = () => {
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const userId = MOCK_USER.id || MOCK_USER.email;
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -16,6 +18,13 @@ const AuthSync = () => {
     }
   }, [dispatch]);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(setCurrentTrophyUser(userId)); 
+    } else {
+      dispatch(clearCurrentTrophyUser());
+    }
+  }, [isAuthenticated, userId, dispatch]);
   return null;
 };
 

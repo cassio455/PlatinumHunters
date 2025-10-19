@@ -1,568 +1,100 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleTrophyCompletion, markAllTrophies, unmarkAllTrophies } from "../app/slices/trophySlice";
 import "./TrophyDetails.css";
-
-const TROPHIES = {
-  "hollow-knight": [
-    { name: "Coração de Hallownest", description: "Adquira todos os outros troféus" },
-    { name: "Falsidade", description: "Derrote o Falso Cavaleiro" },
-    { name: "Teste de Resolução", description: "Derrote Hornet no Caminho Verde" },
-    { name: "Prova de Resolução", description: "Derrote Hornet na Borda do Reino" },
-    { name: "Observador", description: "Destrua Lurien o Observador" },
-    { name: "Besta", description: "Destrua Herrah a Besta" },
-    { name: "Professora", description: "Destrua Monomon a Professora" },
-    { name: "O Cavaleiro Vazio", description: "Derrote o Cavaleiro Vazio e complete o jogo" },
-    { name: "Afortunado", description: "Adquira seu primeiro Amuleto" },
-    { name: "Encantado", description: "Adquira metade dos Amuletos de Hallownest" },
-    { name: "Abençoado", description: "Adquira todos os Amuletos e receba a bênção de Salubra" },
-    { name: "Protegido", description: "Adquira 4 Fragmentos de Máscara" },
-    { name: "Mascarado", description: "Adquira todos os Fragmentos de Máscara" },
-    { name: "Cheio de Alma", description: "Adquira 3 Fragmentos de Receptáculo" },
-    { name: "Alma do Mundo", description: "Adquira todos os Fragmentos de Receptáculo" },
-    { name: "Conexão", description: "Abra metade das Estações de Besouro de Hallownest" },
-    { name: "Esperança", description: "Abra todas as Estações de Besouro de Hallownest e descubra o Ninho dos Besouros" },
-    { name: "Amigo das Larvas", description: "Resgate metade das larvas prisioneiras" },
-    { name: "Metamorfose", description: "Resgate todas as larvas prisioneiras" },
-    { name: "Cartógrafo", description: "Adquira um mapa de cada área" },
-    { name: "Sintonia", description: "Colete 600 Essências" },
-    { name: "Despertar", description: "Colete 1800 Essências e desperte o Ferrão dos Sonhos" },
-    { name: "Ascensão", description: "Colete 2400 Essências e ouça as palavras finais da Vidente" },
-    { name: "Caçador Habilidoso", description: "Registre todas as criaturas de Hallownest no Diário do Caçador" },
-    { name: "Verdadeiro Caçador", description: "Receba a Marca do Caçador" },
-    { name: "Consolação", description: "Traga a paz para a Pranteadora Cinzenta" },
-    { name: "Guerreiro", description: "Complete a Provação do Guerreiro" },
-    { name: "Conquistador", description: "Complete a Provação do Conquistador" },
-    { name: "Tolo", description: "Complete a Provação do Tolo" },
-    { name: "Grande Atuação", description: "Derrote o Líder da Trupe Grimm" },
-    { name: "Fim do Pesadelo", description: "Complete o conto da Trupe Grimm" },
-    { name: "Alma & Sombra", description: "Complete o Panteão do Cavaleiro" },
-    { name: "Abrace o Vazio", description: "Ascenda no Panteão de Hallownest e tome o seu lugar no pico" },
-    { name: "Conclusão Pura", description: "Conquiste 112% de conclusão e termine o jogo" },
-    { name: "Passagem da Era", description: "Ajude o Arauto a seguir em frente" }
-  ],
-  "silksong": [
-    { name: "Equipped", description: "Acquire your first Tool" },
-    { name: "Arsenal", description: "Acquire all Tools" },
-    { name: "Bound", description: "Bind your first Silk Skill" },
-    { name: "Woven", description: "Bind all Silk Skills" },
-    { name: "Claimed", description: "Claim your first Crest" },
-    { name: "Consumed", description: "Claim all Crests" },
-    { name: "Protected", description: "Acquire 4 Mask Shards" },
-    { name: "Masked", description: "Acquire all Mask Shards" },
-    { name: "Restored", description: "Acquire 2 Spool Fragments" },
-    { name: "Extended", description: "Acquire all Spool Fragments" },
-    { name: "Regenerated", description: "Acquire all Silk Hearts" },
-    { name: "Cartographer", description: "Acquire a map of each area" },
-    { name: "Connected", description: "Open all of Pharloom's Bellways" },
-    { name: "Bonded", description: "Learn the Beastling Call" },
-    { name: "Transported", description: "Open all of the Citadel's Ventrica Stations" },
-    { name: "Keen Hunter", description: "Grant Nuu's wish" },
-    { name: "True Hunter", description: "Receive the Hunter's Memento" },
-    { name: "Flea Finder", description: "Rescue half of Pharloom's lost fleas" },
-    { name: "Fleafriend", description: "Rescue all of Pharloom's lost fleas and receive their final gift" },
-    { name: "Liberated", description: "Defeat the Bell Beast" },
-    { name: "Pharloom's Welcome", description: "Defeat Lace in Deep Docks" },
-    { name: "Servant", description: "Defeat Fourth Chorus" },
-    { name: "Fanatic", description: "Defeat Widow" },
-    { name: "Judge", description: "Defeat the Last Judge" },
-    { name: "Last Dance", description: "Defeat the Cogwork Dancers" },
-    { name: "Tragedian", description: "Defeat Trobbio" },
-    { name: "White Knight", description: "Defeat Lace in the Cradle" },
-    { name: "Grey Ghost", description: "Defeat Phantom" },
-    { name: "Heretic", description: "Defeat First Sinner" },
-    { name: "Tyrant", description: "Defeat Crust King Khann" },
-    { name: "Seed", description: "Defeat Nyleth" },
-    { name: "Diva", description: "Defeat Skarrsinger Karmelita" },
-    { name: "Lamenter", description: "Defeat the Clover Dancers" },
-    { name: "Granted", description: "Grant your first wish" },
-    { name: "Glutton", description: "Satiate the Grand Gourmand" },
-    { name: "Trail's End", description: "Grant Shakra's wish" },
-    { name: "Hero's Call", description: "Defeat Lost Garmond" },
-    { name: "Fatal Resolve", description: "Defeat Pinstress" },
-    { name: "Entwined", description: "Bind Eva" },
-    { name: "Resident", description: "Acquire your own Bellhome" },
-    { name: "Harmonious", description: "Learn the Citadel's Threefold song" },
-    { name: "Remembrance", description: "Claim the Everbloom from within a distant memory" },
-    { name: "Weaver Queen", description: "Defeat Grand Mother Silk and bind her power" },
-    { name: "Snared Silk", description: "Defeat Grand Mother Silk and entrap her with the Soul Snare" },
-    { name: "Twisted Child", description: "Defeat Grand Mother Silk while cursed" },
-    { name: "Sister of the Void", description: "Defeat Lost Lace and free Pharloom" },
-    { name: "Passing of the Age", description: "Grant the Herald's wish and finish the game" },
-    { name: "Completion", description: "Achieve 100% game completion and finish the game" },
-    { name: "Speedrunner", description: "Complete the game in under 5 hours" },
-    { name: "Speed Completion", description: "Achieve 100% game completion and finish the game in under 30 hours" },
-    { name: "Steel Soul", description: "Finish the game in Steel Soul mode" },
-    { name: "Steel Heart", description: "Achieve 100% game completion and finish the game in Steel Soul mode" }
-  ],
-  "expedition-33" : [
-    { name: "Lumière", description: "Embark on the Expedition." },
-    { name: "Spring Meadows", description: "Find your way through Spring Meadows." },
-    { name: "Flying Waters", description: "Find your way through Flying Waters." },
-    { name: "Ancient Sanctuary", description: "Find your way through Ancient Sanctuary." },
-    { name: "Gestral Village", description: "Find your way through the Gestral Village." },
-    { name: "Esquie's Nest", description: "Find your way through Esquie's Nest." },
-    { name: "Stone Wave Cliffs", description: "Find your way through Stone Wave Cliffs." },
-    { name: "Forgotten Battlefield", description: "Find your way through Forgotten Battlefield." },
-    { name: "Monoco's Station", description: "Find your way through the Grandis Station." },
-    { name: "Old Lumière", description: "Find your way through Old Lumière." },
-    { name: "First Axon", description: "Defeat the first Axon." },
-    { name: "Second Axon", description: "Defeat the second Axon." },
-    { name: "Monolith", description: "Reach the Monolith." },
-    { name: "Paintress", description: "Defeat the Paintress." },
-    { name: "Back to Lumière", description: "Go back to Lumière." },
-    { name: "The End", description: "Reach the end." },
-    { name: "Plane, Train, and Submarine", description: "Discover all of Esquie’s abilities." },
-    { name: "Follow The Trail", description: "Find all of the journals from prior expeditions." },
-    { name: "Aiding the Enemy", description: "Finish all of the Nevron quests." },
-    { name: "Peace At Last", description: "Beat Simon." },
-    { name: "Gestral Games", description: "Win all of the Gestral games." },
-    { name: "Clea", description: "Beat Clea." },
-    { name: "Endless", description: "Reach the top of the Endless Tower." },
-    { name: "Lost Gestrals", description: "Find all of the Lost Gestrals." },
-    { name: "À On", description: "Beat the Serpenphare." },
-    { name: "Sprong", description: "Beat Sprong." },
-    { name: "Noir et Blanc", description: "Solve the Painting Workshop’s mystery." },
-    { name: "Sciel", description: "Reach relationship level 7 with Sciel." },
-    { name: "Monoco", description: "Reach relationship level 7 with Monoco." },
-    { name: "Maelle", description: "Reach relationship level 7 with Maelle." },
-    { name: "Lune", description: "Reach relationship level 7 with Lune." },
-    { name: "Esquie", description: "Reach relationship level 7 with Esquie." },
-    { name: "Weapon Upgrade", description: "Upgrade a weapon once." },
-    { name: "Weapon Mastery", description: "Fully upgrade a weapon." },
-    { name: "Lumina", description: "Consume a Lumina point." },
-    { name: "Expeditioner", description: "Reach level 33." },
-    { name: "Trailbreaker", description: "Reach level 66." },
-    { name: "Survivor", description: "Reach level 99." },
-    { name: "Overcharge", description: "With Gustave, use a fully charged Overcharge that Breaks an enemy." },
-    { name: "Perfect Flow", description: "With Lune, consume Stains 4 turns in a row." },
-    { name: "Synergy", description: "With Maelle, use Percée on a Marked enemy while in Virtuose Stance." },
-    { name: "Maximization", description: "With Sciel, consume 20 Foretell on a single target during Twilight." },
-    { name: "Perfection", description: "With Verso, reach Rank S." },
-    { name: "Wheel Control", description: "With Monoco, cast an Upgraded Skill 4 turns in a row." },
-    { name: "Carreau Parfait", description: "Beat the Chromatic Pétank." },
-    { name: "Feet Collection", description: "Acquire all of Monoco’s skills." },
-    { name: "Expedition 33", description: "Unlock all playable characters." },
-    { name: "Chroma Proficiency", description: "Use a level 3 Gradient Attack." },
-    { name: "Connoisseur", description: "Find all 33 music records." },
-    { name: "Paint Cage", description: "Break a Paint Cage." },
-    { name: "Time to Spill Some Ink", description: "Break an enemy." },
-    { name: "Professional", description: "Defeat a boss without taking any damage." },
-    { name: "Curious", description: "Witness an optional scene at camp." },
-    { name: "Legend", description: "Unlock Esquie." },
-    { name: "A Peculiar Encounter", description: "Defeat the Mime in Lumière." }
-  ],
-  "peak" : [
-  { name: "Peak Badge", description: "Reach the PEAK." },
-  { name: "Cooking Badge", description: "Cook 20 meals at campfires." },
-  { name: "Knot Tying Badge", description: "Place 100m of rope in a single expedition." },
-  { name: "Beachcomber Badge", description: "Climb past the SHORE." },
-  { name: "Participation Badge", description: "Have a friend escape the island without you." },
-  { name: "Trailblazer Badge", description: "Climb past the TROPICS." },
-  { name: "Happy Camper Badge", description: "Receive 5 Morale Boosts from campfires." },
-  { name: "Alpinist Badge", description: "Climb past the ALPINE." },
-  { name: "Volcanology Badge", description: "Climb past the CALDERA." },
-  { name: "Bouldering Badge", description: "Place 10 pitons." },
-  { name: "Toxicology Badge", description: "Restore 200 total poison by using items." },
-  { name: "Foraging Badge", description: "Eat 5 different berries in a single expedition." },
-  { name: "Esoterica Badge", description: "Obtain a mystical item." },
-  { name: "Lone Wolf Badge", description: "Escape the island in a solo expedition." },
-  { name: "Clutch Badge", description: "Resurrect 3 scouts in a single expedition." },
-  { name: "Balloon Badge", description: "Escape the island without taking fall damage." },
-  { name: "Leave No Trace Badge", description: "Escape the island without placing anything on the mountain." },
-  { name: "Speed Climber Badge", description: "Escape the island in under an hour." },
-  { name: "Bing Bong Badge", description: "Help Bing Bong escape the island." },
-  { name: "Naturalist Badge", description: "Escape the island without eating any packaged food." },
-  { name: "Gourmand Badge", description: "Escape the island after cooking and eating a coconut half, a honeycomb, a yellow winterberry, and an egg." },
-  { name: "Mycology Badge", description: "Eat four different non-toxic mushrooms in a single expedition." },
-  { name: "First Aid Badge", description: "Heal your friends for 100 points of injury in a single expedition." },
-  { name: "Survivalist Badge", description: "Escape the island without ever losing consciousness." },
-  { name: "Animal Serenading Badge", description: "Play the bugle for a capybara." },
-  { name: "Arborist Badge", description: "Reach the top of a really big tree." },
-  { name: "Mentorship Badge", description: "Have a 1-on-1 with the Scoutmaster." },
-  { name: "Emergency Preparedness Badge", description: "Heal an unconscious friend with an item to save them from death." },
-  { name: "High Altitude Badge", description: "Climb 5000m total." },
-  { name: "Plunderer Badge", description: "Open 15 luggages in a single expedition." },
-  { name: "Bookworm Badge", description: "Read all of Scoutmaster Myres's journal entries." },
-  { name: "Endurance Badge", description: "Climb 50m upwards without touching the ground." },
-  { name: "Nomad Badge", description: "Climb past the MESA." },
-  { name: "Ultimate Badge", description: "Catch a Flying Disc from 100m away." },
-  { name: "Cool Cucumber Badge", description: "Climb past the MESA without ever having more than 10% Heat." },
-  { name: "Needlepoint Badge", description: "Have a lot of cactuses stuck to you." },
-  { name: "Aeronautics Badge", description: "Achieve flight." },
-  { name: "24 Karat Badge", description: "Offer The Kiln a worthy sacrifice." },
-  { name: "Resourcefulness Badge", description: "Give in to your hunger." },
-  { name: "Daredevil Badge", description: "Shoot across the MESA canyon in a Scout Cannon." },
-  { name: "Megaentomology Badge", description: "Survive an Antlion attack." },
-  { name: "Astronomy Badge", description: "Look a little too closely at the blazing sun." }
-  ],
-  "metal-gear-snake-eater" : [
-    { name: "Young Gun", description: "Stun Ocelot" },
-  { name: "Pain Relief", description: "Seize victory against The Pain" },
-  { name: "If It Bleeds, We Can Kill It", description: "Seize victory against The Fear" },
-  { name: "The End", description: "Seize victory against The End" },
-  { name: "Houston, We HAD a Problem", description: "Seize victory against The Fury" },
-  { name: "River of Pain", description: "Seize victory against The Sorrow" },
-  { name: "Grounded", description: "Seize victory against Volgin" },
-  { name: "Shagadelic", description: "Seize victory against The Shagohod" },
-  { name: "The Patriot", description: "Seize victory against The Boss" },
-  { name: "Mama Said", description: "CQC Slam a guard and knock him out" },
-  { name: "Tell Me Where the Bomb Is", description: "CQC Interrogate an enemy" },
-  { name: "Like He Just Doesn't Care", description: "Hold up an enemy" },
-  { name: "Don't Touch the Sides", description: "Use a knife to remove a bullet" },
-  { name: "Ocelot Always Gets His Man", description: "Spot Ocelot in the background when Snake is shaking the President's hand" },
-  { name: "Prince Charming", description: "Attack a Kerotan for the first time" },
-  { name: "Ugly Duckling", description: "Attack a GA-KO for the first time" },
-  { name: "Ralph Called", description: "Make Snake throw up" },
-  { name: "Can I Keep It?", description: "Capture any animal alive" },
-  { name: "Snake Eater", description: "Eat a snake of any type" },
-  { name: "Foodie", description: "Record any food item into your Food Collection" },
-  { name: "A Good Man Is Hard to Find", description: "Achieve a Camo Index of 100%" },
-  { name: "I Can Totally See You", description: "Achieve a Camo Index of 90% or higher" },
-  { name: "Time Paradox", description: "Create the Ocelot Time Paradox" },
-  { name: "Taste the poison!", description: "Throw a poisonous creature at an enemy" },
-  { name: "Cinephile", description: "Listen to Para-Medic talk about movies after you save" },
-  { name: "Friendly Fire", description: "Call in fire support" },
-  { name: "Serenity Now", description: "Call one Healing Radio frequency" },
-  { name: "Beekeeper", description: "Use bees to harass an enemy" },
-  { name: "Just Because", description: "Blow up an armory or provisions storehouse with TNT" },
-  { name: "Mostly Dead", description: "Use the Fake Death pill" },
-  { name: "You Snooze, You Lose", description: "Sneak up on The End and hold him up to make him drop an item" },
-  { name: "The Early End", description: "Kill The End before the boss battle" },
-  { name: "Mud Scientist", description: "Get dirty while wearing the Scientist uniform" },
-  { name: "War Has Changed", description: "Start a game in New Style" },
-  { name: "Old Snake, New Tricks", description: "Start a game in Legacy Style" },
-  { name: "Paparazzo Snake", description: "Use Photo Mode for the first time" },
-  { name: "Wax On, Wax Off", description: "Parry all of The Boss's CQC attacks" },
-  { name: "Believe It or Not", description: "Catch a tsuchinoko" },
-  { name: "It Ain't Easy Being Green", description: "Attack all 64 Kerotans" },
-  { name: "It's Duck Season", description: "Attack all 64 GA-KOs" },
-  { name: "Like a Boss", description: "Clear the game on any difficulty" },
-  { name: "PEACE WALKER", description: "Clear the game without killing anyone" },
-  { name: "Gastronome", description: "Achieve a 100% for your Food Collection" },
-  { name: "A Snake Has Many Skins", description: "Obtain every camouflage uniform and face paint" },
-  { name: "FOXHOUND", description: "Acquire the FOXHOUND title" }
-  ],
-  "elden-ring": [
-  { name: "Elden Ring", description: "Obtained all trophies" },
-  { name: "Elden Lord", description: "Achieved the 'Elden Lord' ending" },
-  { name: "Age of the Stars", description: "Achieved the 'Age of the Stars' ending" },
-  { name: "Lord of Frenzied Flame", description: "Achieved the 'Lord of Frenzied Flame' ending" },
-  { name: "Shardbearer Godrick", description: "Defeated Shardbearer Godrick" },
-  { name: "Shardbearer Radahn", description: "Defeated Shardbearer Radahn" },
-  { name: "Shardbearer Morgott", description: "Defeated Shardbearer Morgott" },
-  { name: "Shardbearer Rykard", description: "Defeated Shardbearer Rykard" },
-  { name: "Shardbearer Malenia", description: "Defeated Shardbearer Malenia" },
-  { name: "Shardbearer Mohg", description: "Defeated Shardbearer Mohg" },
-  { name: "Maliketh the Black Blade", description: "Defeated Maliketh the Black Blade" },
-  { name: "Hoarah Loux, Warrior", description: "Defeated Hoarah Loux, Warrior" },
-  { name: "Dragonlord Placidusax", description: "Defeated Dragonlord Placidusax" },
-  { name: "God-Slaying Armament", description: "Upgraded any armament to its highest stage" },
-  { name: "Legendary Armaments", description: "Acquired all legendary armaments" },
-  { name: "Legendary Ashen Remains", description: "Acquired all legendary ashen remains" },
-  { name: "Legendary Sorceries and Incantations", description: "Acquired all legendary sorceries and incantations" },
-  { name: "Legendary Talismans", description: "Acquired all legendary talismans" },
-  { name: "Rennala, Queen of the Full Moon", description: "Defeated Rennala, Queen of the Full Moon" },
-  { name: "Lichdragon Fortissax", description: "Defeated Lichdragon Fortissax" },
-  { name: "Godskin Duo", description: "Defeated Godskin Duo" },
-  { name: "Fire Giant", description: "Defeated Fire Giant" },
-  { name: "Dragonkin Soldier of Nokstella", description: "Defeated Dragonkin Soldier of Nokstella" },
-  { name: "Regal Ancestor Spirit", description: "Defeated Regal Ancestor Spirit" },
-  { name: "Valiant Gargoyles", description: "Defeated Valiant Gargoyles" },
-  { name: "Margit, the Fell Omen", description: "Defeated Margit, the Fell Omen" },
-  { name: "Red Wolf of Radagon", description: "Defeated the Red Wolf of Radagon" },
-  { name: "Godskin Noble", description: "Defeated Godskin Noble" },
-  { name: "Magma Wyrm Makar", description: "Defeated Magma Wyrm Makar" },
-  { name: "Godfrey, First Elden Lord", description: "Defeated Godfrey, First Elden Lord" },
-  { name: "Mohg, the Omen", description: "Defeated Mohg, the Omen" },
-  { name: "Mimic Tear", description: "Defeated Mimic Tear" },
-  { name: "Loretta, Knight of the Haligtree", description: "Defeated Loretta, Knight of the Haligtree" },
-  { name: "Astel, Naturalborn of the Void", description: "Defeated Astel, Naturalborn of the Void" },
-  { name: "Leonine Misbegotten", description: "Defeated the Leonine Misbegotten" },
-  { name: "Royal Knight Loretta", description: "Defeated Royal Knight Loretta" },
-  { name: "Elemer of the Briar", description: "Defeated Elemer of the Briar" },
-  { name: "Ancestor Spirit", description: "Defeated Ancestor Spirit" },
-  { name: "Commander Niall", description: "Defeated Commander Niall" },
-  { name: "Roundtable Hold", description: "Arrived at Roundtable Hold" },
-  { name: "Great Rune", description: "Restored the power of a Great Rune" },
-  { name: "Erdtree Aflame", description: "Used kindling to set the Erdtree aflame" }
-],
-"dark-souls": [
-  { name: "The Dark Soul", description: "All trophies obtained. Congratulations!" },
-  { name: "To Link the Fire", description: "Reach 'To Link the Fire' ending." },
-  { name: "Dark Lord", description: "Reach 'The Dark Lord' ending." },
-  { name: "Knight's Honor", description: "Acquire all rare weapons." },
-  { name: "Wisdom of a Sage", description: "Acquire all sorceries." },
-  { name: "Bond of a Pyromancer", description: "Acquire all pyromancies." },
-  { name: "Prayer of a Maiden", description: "Acquire all miracles." },
-  { name: "Covenant: Way of White", description: "Discover Way of White covenant." },
-  { name: "Covenant: Princess's Guard", description: "Discover Princess's Guard covenant." },
-  { name: "Covenant: Blade of the Darkmoon", description: "Discover Blade of the Darkmoon covenant." },
-  { name: "Covenant: Warrior of Sunlight", description: "Discover Warrior of Sunlight covenant." },
-  { name: "Covenant: Forest Hunter", description: "Discover Forest Hunter covenant." },
-  { name: "Covenant: Darkwraith", description: "Discover Darkwraith covenant." },
-  { name: "Covenant: Path of the Dragon", description: "Discover Path of the Dragon covenant." },
-  { name: "Covenant: Gravelord Servant", description: "Discover Gravelord Servant covenant." },
-  { name: "Covenant: Chaos Servant", description: "Discover Chaos Servant covenant." },
-  { name: "Strongest Weapon", description: "Acquire best weapon through standard reinforcement." },
-  { name: "Crystal Weapon", description: "Acquire best weapon through crystal reinforcement." },
-  { name: "Lightning Weapon", description: "Acquire best weapon through lightning reinforcement." },
-  { name: "Raw Weapon", description: "Acquire best weapon through raw reinforcement." },
-  { name: "Magic Weapon", description: "Acquire best weapon through magic reinforcement." },
-  { name: "Enchanted Weapon", description: "Acquire best weapon through enchanted reinforcement." },
-  { name: "Divine Weapon", description: "Acquire best weapon through divine reinforcement." },
-  { name: "Occult Weapon", description: "Acquire best weapon through occult reinforcement." },
-  { name: "Fire Weapon", description: "Acquire best weapon through fire reinforcement." },
-  { name: "Chaos Weapon", description: "Acquire best weapon through chaos reinforcement." },
-  { name: "Enkindle", description: "Light bonfire flame." },
-  { name: "Estus Flask", description: "Acquire Estus Flask." },
-  { name: "Reach Lordran", description: "Arrive in Lordran." },
-  { name: "Ring the Bell (Undead Church)", description: "Ring Bell of Awakening at Undead Church." },
-  { name: "Ring the Bell (Quelaag's Domain)", description: "Ring Bell of Awakening in Quelaag's domain." },
-  { name: "Rite of Kindling", description: "Acquire the Rite of Kindling." },
-  { name: "Art of Abysswalking", description: "Acquire the Art of Abysswalking." },
-  { name: "Reach Anor Londo", description: "Arrive in Anor Londo." },
-  { name: "Lordvessel", description: "Acquire the Lordvessel." },
-  { name: "Defeat Gravelord Nito", description: "Defeat the Soul Lord Gravelord Nito." },
-  { name: "Defeat Bed of Chaos", description: "Defeat the Soul Lord Bed of Chaos." },
-  { name: "Defeat the Four Kings", description: "Defeat the Four Kings, inheritors of souls." },
-  { name: "Defeat Seath the Scaleless", description: "Defeat Seath the Scaleless, inheritors of souls." },
-  { name: "Defeat the Dark Sun Gwyndolin", description: "Defeat Dark Sun Gwyndolin, the Darkmoon God." },
-  { name: "Defeat Crossbreed Priscilla", description: "Defeat Crossbreed Priscilla, the Lifehunter." }
-],
-"dark-souls-2": [
-  { name: "The Dark Soul", description: "Acquire all trophies." },
-  { name: "Self Recollection", description: "Reclaim flesh and set out as an Undead." },
-  { name: "King's Ring", description: "Acquire the King's Ring." },
-  { name: "Ancient Dragon", description: "Acquire Ashen Mist Heart." },
-  { name: "The Heir", description: "See the ending." },
-  { name: "Last Giant", description: "Defeat the Last Giant." },
-  { name: "Sinner's Bonfire", description: "Light the primal bonfire in Sinner's Rise." },
-  { name: "Iron Keep Bonfire", description: "Light the primal bonfire in the Iron Keep." },
-  { name: "Gulch Bonfire", description: "Light the primal bonfire in the Black Gulch." },
-  { name: "Brightstone Bonfire", description: "Light the primal bonfire in Brightstone Cove Tseldora." },
-  { name: "Looking Glass Knight", description: "Defeat Looking Glass Knight." },
-  { name: "Vendrick", description: "Defeat Vendrick." },
-  { name: "Supreme Weapon", description: "Reinforce a weapon to its limit." },
-  { name: "Gesture Maestro", description: "Learn all gestures." },
-  { name: "Master of Sorcery", description: "Learn all sorceries." },
-  { name: "Master of Miracles", description: "Learn all miracles." },
-  { name: "Master of Pyromancy", description: "Learn all pyromancies." },
-  { name: "Master of Hexes", description: "Learn all hexes." },
-  { name: "Brilliant Covenant", description: "Discover a most brilliant covenant." },
-  { name: "Protector Covenant", description: "Discover the covenant of the protectors." },
-  { name: "Sanguinary Covenant", description: "Discover the covenant of the bloodthirsty." },
-  { name: "Covenant of the Meek", description: "Discover the covenant of the meek." },
-  { name: "Gnawing Covenant", description: "Discover the covenant of rodents." },
-  { name: "Clangorous Covenant", description: "Discover the clangorous covenant." },
-  { name: "Covenant of Ancients", description: "Discover an ancient covenant." },
-  { name: "Covenant of the Fittest", description: "Discover the covenant of the fittest." },
-  { name: "Abysmal Covenant", description: "Discover the abysmal covenant." },
-  { name: "Selfless Giver", description: "Max-out devotion to covenant." },
-  { name: "Curious Map", description: "Light all flames on the map in Majula." },
-  { name: "Change of Clothes", description: "Give Rosabeth of Melfia something to wear." },
-  { name: "Gathering of Exiles", description: "Increase the population of Majula." },
-  { name: "Moonlight Greatsword", description: "Inherit Benhart of Jugo's equipment." },
-  { name: "Holder of the Fort", description: "Inherit Captain Drummond's equipment." },
-  { name: "Lucatiel", description: "Inherit equipment from Lucatiel of Mirrah." },
-  { name: "Smith for Life", description: "Inherit Steady Hand McDuff's equipment." },
-  { name: "Garrulous Miser", description: "Inherit Laddersmith Gilligan's equipment." },
-  { name: "Reflections on Disembodiment", description: "Inherit equipment from the head of Vengarl." },
-  { name: "This is Dark Souls", description: "Die for the first time." }
-],
-"dark-souls-3" : [
-  { name: "The Dark Soul", description: "Acquire all trophies." },
-{ name: "To Link the First Flame", description: "Reach 'To Link the First Flame' ending." },
-{ name: "The End of Fire", description: "Reach 'The End of Fire' ending." },
-{ name: "The Usurpation of Fire", description: "Reach 'The Usurpation of Fire' ending." },
-{ name: "Lords of Cinder: Abyss Watchers", description: "Defeat the Abyss Watchers, Lords of Cinder." },
-{ name: "Lord of Cinder: Yhorm the Giant", description: "Defeat Yhorm the Giant, Lord of Cinder." },
-{ name: "Lord of Cinder: Aldrich, Devourer of Gods", description: "Defeat Aldrich, Devourer of Gods, Lord of Cinder." },
-{ name: "Lord of Cinder: Lothric, Younger Prince", description: "Defeat Lothric, Younger Prince, Lord of Cinder." },
-{ name: "Supreme Weapon Reinforcement", description: "Reinforce any weapon to the highest level." },
-{ name: "Master of Infusion", description: "Perform all forms of infusion." },
-{ name: "Master of Sorceries", description: "Acquire all sorceries." },
-{ name: "Master of Pyromancies", description: "Acquire all pyromancies." },
-{ name: "Master of Miracles", description: "Acquire all miracles." },
-{ name: "Master of Rings", description: "Acquire all rings." },
-{ name: "Master of Expression", description: "Learn all gestures." },
-{ name: "Ultimate Bonfire", description: "Reinforce a bonfire to the highest level." },
-{ name: "Ultimate Estus", description: "Reinforce the Estus Flask to the highest level." },
-{ name: "Covenant: Warrior of Sunlight", description: "Discover Warrior of Sunlight covenant." },
-{ name: "Covenant: Way of Blue", description: "Discover Way of Blue covenant." },
-{ name: "Covenant: Blue Sentinels", description: "Discover Blue Sentinels covenant." },
-{ name: "Covenant: Blade of the Darkmoon", description: "Discover Blade of the Darkmoon covenant." },
-{ name: "Covenant: Rosaria's Fingers", description: "Discover Rosaria's Fingers covenant." },
-{ name: "Covenant: Mound-makers", description: "Discover Mound-makers covenant." },
-{ name: "Covenant: Watchdogs of Farron", description: "Discover Watchdogs of Farron covenant." },
-{ name: "Covenant: Aldrich Faithful", description: "Discover Aldrich Faithful covenant." },
-{ name: "Untended Graves", description: "Reach the Untended Graves." },
-{ name: "Archdragon Peak", description: "Reach Archdragon Peak." },
-{ name: "Iudex Gundyr", description: "Defeat Iudex Gundyr." },
-{ name: "Vordt of the Boreal Valley", description: "Defeat Vordt of the Boreal Valley." },
-{ name: "Curse-rotted Greatwood", description: "Defeat the Curse-rotted Greatwood." },
-{ name: "Crystal Sage", description: "Defeat Crystal Sage." },
-{ name: "Deacons of the Deep", description: "Defeat the Deacons of the Deep." },
-{ name: "High Lord Wolnir", description: "Defeat High Lord Wolnir." },
-{ name: "Pontiff Sulyvahn", description: "Defeat Pontiff Sulyvahn." },
-{ name: "Dancer of the Boreal Valley", description: "Defeat Dancer of the Boreal Valley." },
-{ name: "Dragonslayer Armour", description: "Defeat Dragonslayer Armour." },
-{ name: "Old Demon King", description: "Defeat Old Demon King." },
-{ name: "Oceiros, the Consumed King", description: "Defeat Oceiros, the Consumed King." },
-{ name: "Champion Gundyr", description: "Defeat Champion Gundyr." },
-{ name: "Ancient Wyvern", description: "Defeat Ancient Wyvern." },
-{ name: "The Nameless King", description: "Defeat Nameless King." },
-{ name: "Enkindle", description: "Light a bonfire flame for the first time." },
-{ name: "Embrace the Flame", description: "Become a Host of Embers for the first time." },
-],
-"sekiro" : [
-  { name: "Sekiro", description: "All trophies have been unlocked." },
-{ name: "Man Without Equal", description: "Defeated all bosses." },
-{ name: "Ashina Traveler", description: "Traveled to all areas of the game." },
-{ name: "Master of the Prosthetic", description: "Upgraded all Prosthetic Tools to their limit." },
-{ name: "Height of Technique", description: "Acquired all skills." },
-{ name: "All Prosthetic Tools", description: "Acquired all Prosthetic Tools." },
-{ name: "All Ninjutsu Techniques", description: "Acquired all Ninjutsu Techniques." },
-{ name: "Peak Physical Strength", description: "Upgraded Vitality and Posture to their limit." },
-{ name: "Ultimate Healing Gourd", description: "Fully upgraded the 'Healing Gourd'." },
-{ name: "Immortal Severance", description: "Attained the 'Immortal Severance' ending." },
-{ name: "Purification", description: "Attained the 'Purification' ending." },
-{ name: "Dragon's Homecoming", description: "Attained the 'Return' ending." },
-{ name: "Shura", description: "Attained the 'Shura' ending." },
-{ name: "Sword Saint, Isshin Ashina", description: "Defeated 'Sword Saint Isshin Ashina'." },
-{ name: "Master of the Arts", description: "Grasped the inner mysteries of any combat style." },
-{ name: "Lazuline Upgrade", description: "Used Lapis Lazuli to upgrade any tool to its limit." },
-{ name: "Revered Blade", description: "Received the 'Kusabimaru' from Kuro." },
-{ name: "Shinobi Prosthetic", description: "Acquired the Shinobi Prosthetic." },
-{ name: "Memorial Mob", description: "Encountered the Memorial Mob." },
-{ name: "Resurrection", description: "Returned from the dead using 'Resurrection' for the first time." },
-{ name: "Gyoubu Masataka Oniwa", description: "Defeated 'Gyoubu Masataka Oniwa'." },
-{ name: "The Phantom Lady Butterfly", description: "Defeated 'Lady Butterfly'." },
-{ name: "Genichiro Ashina", description: "Defeated 'Genichiro Ashina'." },
-{ name: "Guardian Ape", description: "Defeated the 'Guardian Ape'." },
-{ name: "Guardian Ape Immortality Severed", description: "Used the Mortal Blade to sever the Guardian Ape's undying." },
-{ name: "Folding Screen Monkeys", description: "Caught the Folding Screen Monkeys." },
-{ name: "Great Shinobi - Owl", description: "Defeated 'Great Shinobi - Owl'." },
-{ name: "Father Surpassed", description: "Defeated 'Great Shinobi - Owl' at the Hirata Estate." },
-{ name: "Corrupted Monk", description: "Defeated the 'Corrupted Monk'." },
-{ name: "Gracious Gift of Tears", description: "Defeated the 'Divine Dragon' and obtained the 'Divine Dragon's Tears'." },
-{ name: "Isshin Ashina", description: "Defeated 'Isshin Ashina'." },
-{ name: "Demon of Hatred", description: "Defeated the 'Demon of Hatred'." },
-{ name: "Great Serpent", description: "Defeated the 'Great Serpent'." },
-{ name: "Great Colored Carp", description: "Defeated the 'Great Colored Carp'." },
-],
-"bloodborne" : [
-  { name: "Bloodborne", description: "All trophies acquired. Hats off!" },
-{ name: "Yharnam Sunrise", description: "You lived through the hunt, and saw another day." },
-{ name: "Honouring Wishes", description: "Captivated by the moon presence, you pledge to watch over the hunter's dream." },
-{ name: "Childhood's Beginning", description: "You became an infant Great One, lifting humanity into its next childhood." },
-{ name: "Yharnam, Pthumerian Queen", description: "Defeat Yharnam, Blood Queen of the Old Labyrinth." },
-{ name: "Hunter's Essence", description: "Acquire all hunter weapons." },
-{ name: "Hunter's Craft", description: "Acquire all special hunter tools." },
-{ name: "Weapon Master", description: "Acquire a weapon of the highest level." },
-{ name: "Blood Gem Master", description: "Acquire an extremely precious blood gem." },
-{ name: "Rune Master", description: "Acquire an extremely precious Caryll Rune." },
-{ name: "Cainhurst", description: "Gain entry to Cainhurst, the lost and ruined castle." },
-{ name: "The Choir", description: "Gain entry to the realm of the Choir, the high stratum of the Healing Church." },
-{ name: "The Source of the Dream", description: "Discover the abandoned old workshop, the source of the hunter's dream." },
-{ name: "Nightmare Lecture Building", description: "Gain entry into the Byrgenwerth lecture building, that drifts within the realm of nightmare." },
-{ name: "Father Gascoigne", description: "Defeat the beast that once was Father Gascoigne." },
-{ name: "Vicar Amelia", description: "Defeat the beast that once was Vicar Amelia." },
-{ name: "Shadow of Yharnam", description: "Defeat the Shadow of Yharnam." },
-{ name: "Rom, the Vacuous Spider", description: "Defeat Great One: Rom, the Vacuous Spider." },
-{ name: "The One Reborn", description: "Defeat the One Reborn." },
-{ name: "Micolash, Host of the Nightmare", description: "Defeat Micolash, Host of the Nightmare." },
-{ name: "Mergo's Wet Nurse", description: "Defeat Great One: Mergo's Wet Nurse." },
-{ name: "Cleric Beast", description: "Defeat Cleric Beast." },
-{ name: "Blood-starved Beast", description: "Defeat Blood-starved Beast." },
-{ name: "The Witch of Hemwick", description: "Defeat the Witch of Hemwick." },
-{ name: "Darkbeast Paarl", description: "Defeat Darkbeast Paarl." },
-{ name: "Amygdala", description: "Defeat Great One: Amygdala." },
-{ name: "Martyr Logarius", description: "Defeat Martyr Logarius." },
-{ name: "Celestial Emissary", description: "Defeat Great One: Celestial Emissary." },
-{ name: "Ebrietas, Daughter of the Cosmos", description: "Defeat Great One: Ebrietas, Daughter of the Cosmos." },
-{ name: "Blood Gem Contact", description: "Acquire a blood gem that imbues hunter weapons with special strength." },
-{ name: "Rune Contact", description: "Acquire a Caryll Rune that endows hunters with special strength." },
-{ name: "Chalice of Pthumeru", description: "Acquire the Chalice of Pthumeru that seals the catacombs that form a web deep below Yharnam." },
-{ name: "Chalice of Ailing Loran", description: "Acquire the Chalice of Ailing Loran that seals the tragic land lost to the sands." },
-{ name: "Chalice of Isz", description: "Acquire the Great Chalice of Isz that seals the home of the cosmic kin." },
-],
-"god-of-war-2018" : [
-  { name: "Father and Son", description: "Obtain all other trophies" },
-{ name: "The Journey Begins", description: "Defend your home from The Stranger" },
-{ name: "A New Friend", description: "Survive the Witch’s Woods" },
-{ name: "Feels Like Home", description: "Allow the Light Elves to return home" },
-{ name: "Dragon Slayer", description: "Defeat the Dragon of the Mountain" },
-{ name: "Troubling Consequences", description: "Defeat Magni and Modi" },
-{ name: "Hello, Old Friend", description: "Retrieve the Blades of Chaos" },
-{ name: "Promise Fulfilled", description: "Heal Atreus" },
-{ name: "Round 2", description: "Rescue Atreus" },
-{ name: "Past Haunts", description: "Ride the ship out of Helheim" },
-{ name: "Twilight Beckons", description: "Defeat Baldur" },
-{ name: "Last Wish", description: "Spread the ashes" },
-{ name: "Beneath the Surface", description: "Explore all the Lake of Nine has to offer" },
-{ name: "Death Happened Here", description: "Fully explore Veithurgard" },
-{ name: "Trilingual", description: "Learn the languages of Muspelheim and Niflheim" },
-{ name: "Dwarven Ingenuity", description: "Upgrade a piece of armor" },
-{ name: "Nice Moves", description: "Obtain a Runic Attack Gem" },
-{ name: "Iðunn’s Orchard", description: "Fully upgrade your Health" },
-{ name: "Quick Tempered", description: "Fully upgrade your rage" },
-{ name: "Best Dressed", description: "Craft an outfit for Atreus" },
-{ name: "Enchanted", description: "Slot an Enchantment into your armor" },
-{ name: "All Will Fall", description: "Kill 2,000 Enemies" },
-{ name: "Dangerous Skies", description: "Free all of the Dragons" },
-{ name: "Like Oil and Water", description: "Complete all of Brok and Sindri’s Favors" },
-{ name: "Curator", description: "Collect all of the Artifacts" },
-{ name: "Allfather Blinded", description: "Kill all of Odin’s Ravens" },
-{ name: "The Best Moves", description: "Fully upgrade a Runic Attack" },
-{ name: "Worthy", description: "Fully upgrade the Leviathan Axe" },
-{ name: "Why Fight It?", description: "Fully upgrade the Blades of Chaos" },
-{ name: "Path of the Zealot", description: "Obtain Traveler armor set" },
-{ name: "Primordial", description: "Obtain Ancient armor set" },
-{ name: "Unfinished Business", description: "Assist all of the wayward spirits" },
-{ name: "Treasure Hunter", description: "Use treasure maps to find all of the dig spots" },
-{ name: "The Truth", description: "Read all of the Jötnar shrines" },
-{ name: "Fire and Brimstone", description: "Complete all of the Trials of Muspelheim" },
-{ name: "Darkness and Fog", description: "Retrieve all treasure from the Workshop’s center chamber" },
-{ name: "Chooser of the Slain", description: "Defeat the nine Valkyries" },
-]
-};
+import { TROPHIES } from "../data/trophiesData";
 
 function TrophyDetails() {
   const { id } = useParams();
-  const trophies = TROPHIES[id] || [];
+  const dispatch = useDispatch();
+  
+  const gameTrophies = useMemo(() => TROPHIES[id] || [], [id]);
 
-  const [completedTrophies, setCompletedTrophies] = useState(
-    Array(trophies.length).fill(false)
-  );
+  const completedStatus = useSelector((state) => state.trophies.completedTrophies[id] || {});
 
-  const toggleCompleted = (index) => {
-    const newState = [...completedTrophies];
-    newState[index] = !newState[index];
-    setCompletedTrophies(newState);
+  const displayTrophies = useMemo(() => {
+    const mapped = gameTrophies.map((trophy, index) => {
+      const status = completedStatus[trophy.name];
+      return {
+        ...trophy,
+        isCompleted: status?.isCompleted || false,
+        originalIndex: status?.originalIndex ?? index,
+      };
+    });
+
+    mapped.sort((a, b) => {
+      if (a.isCompleted !== b.isCompleted) {
+        return a.isCompleted - b.isCompleted;
+      }
+      return a.originalIndex - b.originalIndex;
+    });
+    
+    return mapped;
+  }, [gameTrophies, completedStatus]);
+
+  const toggleCompleted = (trophyName, originalIndex) => {
+    dispatch(toggleTrophyCompletion({ 
+      gameId: id, 
+      trophyName: trophyName,
+      originalIndex: originalIndex
+    }));
   };
+
+  const areAllCompleted = useMemo(() => {
+    if (gameTrophies.length === 0) return false;
+    return gameTrophies.length === Object.values(completedStatus).filter(t => t.isCompleted).length;
+  }, [completedStatus, gameTrophies]);
+
+  const handleToggleAll = (event) => {
+    if (event.target.checked) {
+      dispatch(markAllTrophies(id));
+    } else {
+      dispatch(unmarkAllTrophies(id));
+    }
+  };  
 
   return (
     <div className="container mt-5 pt-5">
-      <h1 className="section-title text-center mb-2">
-        {id.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
-      </h1>
+      <div className="d-flex justify-content-center align-items-center mb-2">
+        <h1 className="section-title text-center mb-0 me-3">
+          {id.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
+        </h1>
+        
+        {gameTrophies.length > 0 && ( 
+          <div className="form-check mark-all-checkbox" title={areAllCompleted ? "Desmarcar Todos" : "Marcar Todos"}>
+            <input 
+              className="form-check-input" 
+              type="checkbox" 
+              id="markAllSwitch"
+              checked={areAllCompleted}
+              onChange={handleToggleAll} 
+            />
+            <label className="form-check-label" htmlFor="markAllSwitch">
+            </label>
+          </div>
+        )}
+
+      </div> 
       <div className="section-line mb-4"></div>
 
       <div className="row">
-        {trophies.map((trophy, index) => (
-          <div key={index} className="col-12 mb-3 d-flex align-items-center">
-            <div className={`card p-3 shadow-sm ${completedTrophies[index] ? "completed-rose" : ""}`}>
+        {displayTrophies.map((trophy, index) => (
+          <div key={trophy.name} className="col-12 mb-3">
+            <div className={`card shadow-sm ${trophy.isCompleted ? "completed-rose" : ""}`}>
+              
               <div className="trophy-info">
                 <p className="trophy-name mb-1">{trophy.name}</p>
                 <p className="trophy-desc mb-0">{trophy.description}</p>
               </div>
+
+              <button
+                className={`trophy-btn ${trophy.isCompleted ? "completed" : ""}`}
+                onClick={() => toggleCompleted(trophy.name, trophy.originalIndex)}
+              >
+                <i className={`bi ${trophy.isCompleted ? "bi-check-circle-fill" : "bi-check-circle"}`}></i>
+              </button>
             </div>
-            <button
-              className="btn btn-sm btn-outline-light trophy-btn"
-              onClick={() => toggleCompleted(index)}
-            >
-              {completedTrophies[index] ? "Desmarcar" : "Concluído"}
-            </button>
           </div>
         ))}
       </div>

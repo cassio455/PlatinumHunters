@@ -15,15 +15,14 @@
   border-radius: 10px;
   background-color: #1a1a1a;
   color: #fff;
-  transition: transform 0.2s, box-shadow 0.2s;
-
-  height: 120px;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease;
   width: 100%;
-
+  min-height: 100px;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
-  padding: 0 1rem;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
 }
 
 .card:hover {
@@ -32,7 +31,16 @@
 }
 
 .completed-rose {
-  background-color: #dc3545;
+  background-color: #3a2a2d;
+  border: 1px solid #dc3545;
+}
+
+.completed-rose .trophy-name {
+  color: #aaa;
+}
+
+.completed-rose .trophy-desc {
+  color: #777;
 }
 
 .trophy-info {
@@ -43,17 +51,96 @@
 .trophy-name {
   font-weight: bold;
   font-size: 1rem;
+  color: #fff;
+  transition: color 0.3s ease;
 }
 
 .trophy-desc {
   font-size: 0.85rem;
   color: #ccc;
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .trophy-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.75rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-left: 1rem;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.trophy-btn:hover {
+  color: #dc3545;
+  transform: scale(1.1);
+}
+
+.trophy-btn.completed {
+  color: #dc3545;
+}
+
+.trophy-btn.completed:hover {
+  color: #ff4c5e;
+}
+
+.mark-all-checkbox {
+  position: relative;
+  display: inline-block; 
+  width: 22px;
+  height: 22px;
+  padding-left: 0; 
+  vertical-align: middle;
+}
+
+.mark-all-checkbox .form-check-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
   height: 100%;
+  width: 100%;
+  margin: 0; 
+  z-index: 1;
+}
+
+.mark-all-checkbox .form-check-label {
+  position: absolute; 
+  top: 0;
+  left: 0;
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  background-color: #333;
+  border: 2px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  font-size: 0; 
+  color: transparent;
+}
+
+.mark-all-checkbox .form-check-input:hover + .form-check-label,
+.mark-all-checkbox .form-check-input:focus + .form-check-label {
+  border-color: #dc3545;
+}
+
+.mark-all-checkbox .form-check-input:checked + .form-check-label {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.mark-all-checkbox .form-check-input:checked + .form-check-label::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 3px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
 }
