@@ -10,22 +10,32 @@ function ReviewCard({ reviewer, game, image, rating, text, likes }) {
 
   return (
     <div className="card review-card h-100 p-3">
-      <div className="d-flex align-items-center mb-2">
-        <img src={image} alt={game} className="review-img me-2" />
-        <p className="mb-0"><strong>{reviewer}</strong> publicou uma review em <p><strong>{game}</strong></p></p>
-      </div>
+      <div className="row g-0">
+        
+        <div className="col-auto">
+          <img src={image} alt={game} className="review-img me-3" />
+        </div>
+        
+        <div className="col d-flex flex-column">
+          
+          <p className="mb-1 review-info-line"> 
+            <strong>{reviewer}</strong> publicou uma review em <strong>{game}</strong>
+          </p>
+          
+          <div className="mb-2 review-stars">
+            {stars}
+          </div>
+          
+          <p className="review-text mb-2">{text}</p>
+          
+          <div className="d-flex align-items-center mt-auto review-likes">
+            <i className="bi bi-heart-fill text-danger me-1 ms-5 ps-5"></i>
+            <span className= "ms-3">{likes}</span>
+          </div>
 
-      <div className="mb-2">
-        {stars}
-      </div>
-
-      <p className="review-text">{text}</p>
-
-      <div className="d-flex align-items-center mt-2">
-        <i className="bi bi-heart-fill text-danger me-1"></i>
-        <span>{likes}</span>
-      </div>
-    </div>
+        </div> 
+      </div> 
+    </div> 
   );
 }
 
