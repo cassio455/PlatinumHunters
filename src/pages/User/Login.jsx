@@ -4,6 +4,7 @@ import { InputGroup, Form, Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { loginSuccess } from '../../app/slices/authSlice';
+import { setCurrentUser } from '../../app/slices/shopSlice'; 
 import { MOCK_USER } from './userMock';
 import { Link } from 'react-router-dom';
 import './auth.css';
@@ -13,6 +14,7 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  
   // fixing redirect loop
   useEffect(() => {
     if (isAuthenticated) {
@@ -24,6 +26,9 @@ const Login = () => {
     if (data.email === MOCK_USER.email && data.password === MOCK_USER.password) {
       localStorage.setItem('token', MOCK_USER.token);
       dispatch(loginSuccess({ token: MOCK_USER.token, user: MOCK_USER }));
+      const userId = MOCK_USER.id || MOCK_USER.email;
+      dispatch(setCurrentUser(userId)); 
+
       navigate('/biblioteca', { replace: true });
     } else {
       setError('password', { type: 'manual', message: 'Credenciais inválidas.' });

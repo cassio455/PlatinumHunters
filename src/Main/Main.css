@@ -27,6 +27,24 @@
   gap: 20px;
 }
 
+@media (max-width: 992px) {
+  .games-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas para tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .games-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas para celulares grandes */
+  }
+}
+
+@media (max-width: 576px) {
+  .games-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas para celulares pequenos */
+  }
+}
+
 .game-card {
   position: relative;
   width: 100%;

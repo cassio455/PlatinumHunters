@@ -3,6 +3,8 @@ export const MOCK_USER = {
   email: 'admin123@gmail.com',
   password: '12345678',
   token: 'TESTETESTE',
+  platinums: 15,
+  totalTrophies: 3000,
   platinumGames: [
     { name: 'God of War', date: '2023-01-15' },
     { name: 'Horizon Zero Dawn', date: '2023-02-10' },

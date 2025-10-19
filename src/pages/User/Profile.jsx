@@ -1,16 +1,19 @@
 import { Image, Button, Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../app/slices/authSlice';
+import { clearCurrentUser } from '../../app/slices/shopSlice'; 
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { ChevronRight, ChevronLeft, Search } from 'lucide-react';
 import { MOCK_USER } from './userMock';
+
 const Profile = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const name = useSelector((state) => state.auth.user?.name);
 
     const handleLogout = () => {
+        dispatch(clearCurrentUser());
         dispatch(logout());
         localStorage.removeItem('token');
         navigate('/user/login');

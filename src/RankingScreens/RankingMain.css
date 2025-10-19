@@ -18,7 +18,6 @@
 
 .floating-shop:hover {
   transform: scale(1.1);
-  color: #fff;
 }
 
 .title-text {
@@ -27,79 +26,132 @@
   font-weight: bold;
 }
 
-.podium {
+.user-stats {
+  display: flex;
+  justify-content: flex-end;
   gap: 20px;
-  margin-top: 40px;
 }
 
-.podium-spot {
+.stat-item {
+  font-size: 0.9rem;
+  color: #ccc;
+  display: inline-block;
+  align-items: center;
+}
+
+.ranking-header .user-stats .stat-item,
+.ranking-row .user-stats .stat-item {
+  width: 80px;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.ranking-row .user-stats .stat-item,
+.ranking-row .trophies {
+  width: auto !important;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-size: 1.1rem;
+  margin-top: 0;
+  min-width: 80px;
+}
+
+.ranking-row .trophies {
+  color: #fa5f69;
+  flex-basis: 35%;
   justify-content: flex-end;
-  background: #333;
-  border-radius: 10px 10px 0 0;
-  width: 120px;
-  position: relative;
-  color: white;
-  padding-bottom: 10px;
 }
 
-.podium-spot.first {
-  height: 200px;
-  width: 200px;
-  background: linear-gradient(#fa5f69, rgba(0,0,0,0.1));
-  border-radius: 10px 10px 0 0;
+.ranking-row .user-stats {
+  flex-basis: auto;
+  gap: 20px;
 }
 
-.podium-spot.second {
-  height: 160px;
-  width: 200px;
-  background: linear-gradient(#593a72, rgba(0,0,0,0.2));
-  border-radius: 10px 10px 0 0;
+.ranking-row .user-stats .stat-item::after,
+.ranking-row .trophies::after {
+  content: '';
+  font-size: 0.7rem;
+  color: #aaa;
+  text-transform: uppercase;
+  margin-top: 3px;
+  font-weight: bold;
 }
 
-.podium-spot.third {
-  height: 140px;
-  width: 200px;
-  background: linear-gradient(#4a5074, rgba(0,0,0,0.2));
-  border-radius: 10px 10px 0 0;
+.ranking-row .user-stats .stat-item:nth-child(1)::after {
+  content: 'Platinas';
 }
 
-.avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 3px solid white;
-  margin-bottom: 10px;
-  position: absolute;
-  top: -50px;
+.ranking-row .user-stats .stat-item:nth-child(2)::after {
+  content: 'Troféus';
+}
+
+.ranking-row .trophies::after {
+  content: 'Pontos';
+}
+
+.ranking-header .trophies,
+.ranking-row .trophies {
+  width: 100px;
+  text-align: right;
+}
+
+.stat-item .bi-trophy-fill {
+  color: #a9a9a9;
+}
+
+.stat-item .bi-collection-fill {
+  color: #cd7f32;
+}
+
+.ranking-header {
+  padding: 10px 20px;
+  margin-bottom: 5px;
+  border-bottom: 2px solid #555;
+  color: #aaa;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-transform: uppercase;
 }
 
 .username {
-  margin-top: 40px;
+  margin-top: 0;
   font-weight: bold;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.avatar {
+  border-radius: 50%;
+  margin-bottom: 15px;
 }
 
 .ranking-list {
   margin-top: 20px;
-  padding: 0 40px; 
-  width: 70vw; 
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 .ranking-row {
   background: #222;
-  padding: 10px 20px;
+  padding: 15px 20px;
   margin-bottom: 10px;
   border-radius: 8px;
   color: white;
   font-weight: 500;
   transition: background 0.3s;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
   width: 100%;
+}
+
+.ranking-row > .d-flex + .d-flex {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #444;
+  justify-content: space-around;
 }
 
 .ranking-row:hover {
@@ -120,13 +172,8 @@
   border: 2px solid white;
 }
 
-.trophies {
-  font-size: 1.1rem;
-  margin-top: 5px;
-}
-
 .game-search-bar {
-  width: 75%
+  width: 75%;
 }
 
 ul.nav.nav-tabs .nav-link,
@@ -141,7 +188,6 @@ button.nav-link:hover,
 button.nav-link:focus-visible {
   outline: none !important;
   box-shadow: none !important;
-  -webkit-box-shadow: none !important;
   border: none !important;
 }
 
@@ -152,7 +198,45 @@ ul.nav.nav-tabs .nav-link.active:focus {
   color: #ff4d8d !important;
   border: none !important;
 }
+
 ul.nav.nav-tabs .nav-link:hover {
   background-color: transparent !important;
   color: #ff4d8d !important;
+}
+
+@media (min-width: 768px) {
+  .ranking-row {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 20px;
+  }
+
+  .ranking-row > .d-flex + .d-flex {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    justify-content: flex-end;
+  }
+
+  .user-stats {
+    margin-right: 30px;
+    flex-grow: 0;
+  }
+
+  .ranking-row .user-stats .stat-item,
+  .ranking-row .trophies {
+    text-align: right;
+    flex-direction: row;
+    font-size: 0.9rem;
+    flex-basis: auto;
+  }
+
+  .ranking-row .trophies {
+    font-size: 1.1rem;
+  }
+
+  .ranking-row .user-stats .stat-item::after,
+  .ranking-row .trophies::after {
+    display: none;
+  }
 }

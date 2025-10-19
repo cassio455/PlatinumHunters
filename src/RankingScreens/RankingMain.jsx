@@ -1,49 +1,87 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useSelector } from "react-redux";
+import { weeklyRanking, monthlyRanking, allTimeRanking } from "../sample" 
 import "./RankingMain.css";
 
 function RankingMain() {
-  const weekly = [
-    { id: 1, name: "Alice", points: 1500, avatar: "https://i.pravatar.cc/100?img=20" },
-    { id: 2, name: "Maria", points: 1400, avatar: "https://i.pravatar.cc/100?img=16" },
-    { id: 3, name: "Charlie", points: 1300, avatar: "https://i.pravatar.cc/100?img=3" },
-    { id: 4, name: "David", points: 1200, avatar: "https://i.pravatar.cc/100?img=4" },
-    { id: 5, name: "Eve", points: 1100, avatar: "https://i.pravatar.cc/100?img=5" },
-  ];
-
-  const monthly = [
-    { id: 1, name: "Hank", points: 2500, avatar: "https://i.pravatar.cc/100?img=8" },
-    { id: 2, name: "Ivy", points: 2400, avatar: "https://i.pravatar.cc/100?img=9" },
-    { id: 3, name: "Jack", points: 2300, avatar: "https://i.pravatar.cc/100?img=17" },
-    { id: 4, name: "Kate", points: 2200, avatar: "https://i.pravatar.cc/100?img=19" },
-    { id: 5, name: "Leo", points: 2100, avatar: "https://i.pravatar.cc/100?img=12" },
-  ];
-
-  const allTime = [
-    { id: 1, name: "Mia", points: 3500, avatar: "https://i.pravatar.cc/100?img=21" },
-    { id: 2, name: "Nina", points: 3400, avatar: "https://i.pravatar.cc/100?img=22" },
-    { id: 3, name: "Oscar", points: 3300, avatar: "https://i.pravatar.cc/100?img=15" },
-    { id: 4, name: "Alice", points: 3200, avatar: "https://i.pravatar.cc/100?img=20" },
-    { id: 5, name: "Maria", points: 3100, avatar: "https://i.pravatar.cc/100?img=16" },
-  ];
-
-  const [currentData, setCurrentData] = useState(weekly);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { rankingPoints: currentUserPoints, equippedTitle, permanentUsers } = useSelector((state) => state.shop); 
   const [activeTab, setActiveTab] = useState("week");
+
+  const getPointsField = (tab) => {
+    if (tab === "week") return "weeklyPoints";
+    if (tab === "month") return "monthlyPoints";
+    return "allTimePoints";
+  };
+
+  const getRankingWithUser = (baseRanking) => {
+    const pointsField = getPointsField(activeTab);
+
+    let enrichedRanking = baseRanking.map(u => {
+      const permanentData = Object.values(permanentUsers || {}).find(p => p.name === u.name);
+      if (permanentData) {
+        return { ...u, equippedTitle: permanentData.equippedTitle };
+      }
+      return u;
+    });
+    
+    if (currentUserPoints === 0 || !isAuthenticated) {
+      return enrichedRanking;
+    }
+
+    const currentUser = {
+      id: 'current',
+      name: (typeof user === 'object' && user !== null) ? user.name : user || 'Você',
+      [pointsField]: currentUserPoints, 
+      avatar: user?.avatar || "https://i.pravatar.cc/100?img=3",
+      isCurrentUser: isAuthenticated,
+      equippedTitle: equippedTitle,
+      platinums: user?.platinums || 0,
+      totalTrophies: user?.totalTrophies || 0,
+    };
+
+    const sortRanking = (ranking) => ranking.sort((a, b) => b[pointsField] - a[pointsField]);
+    
+    const userExists = enrichedRanking.some(u => u.name === currentUser.name && u.id !== 'current');
+    
+    if (userExists) {
+      const updatedRanking = enrichedRanking.map(u => 
+        u.name === currentUser.name 
+          ? { ...u, [pointsField]: currentUserPoints, isCurrentUser: isAuthenticated, equippedTitle: currentUser.equippedTitle }
+          : u
+      );
+      return sortRanking(updatedRanking);
+    }
+
+    const newRanking = [...enrichedRanking, currentUser];
+    return sortRanking(newRanking);
+  };
+
+  const getCurrentData = useMemo(() => {
+    let baseData;
+    if (activeTab === "week") baseData = weeklyRanking;
+    else if (activeTab === "month") baseData = monthlyRanking;
+    else baseData = allTimeRanking;
+    return getRankingWithUser(baseData); 
+  }, [activeTab, isAuthenticated, currentUserPoints, user, equippedTitle, permanentUsers]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    if (tab === "week") setCurrentData(weekly);
-    if (tab === "month") setCurrentData(monthly);
-    if (tab === "all") setCurrentData(allTime);
   };
 
-  const top3 = currentData.slice(0, 3);
-  const others = currentData.slice(3);
+  const others = getCurrentData;
+
+  const getPointsTitle = () => {
+    if (activeTab === "week") return "Pontos (Semana)";
+    if (activeTab === "month") return "Pontos (Mês)";
+    return "Pontos (Total)";
+  };
 
   return (
-    <div className="container mt-5 pt-5 text-center">
+    <div className="container mt-3 pt-5 text-center">
       <div className="d-flex justify-content-center align-items-center mb-4">
-        <h1 className="title-text me-2">Ranking</h1>
+        <h2 className="title-text me-2">Ranking</h2>
         <Link to="/challenge" className="btn btn-sm">
           <i className="bi bi-arrow-repeat text-danger"></i>
         </Link>
@@ -71,38 +109,70 @@ function RankingMain() {
         </li>
       </ul>
       
-      <div className="podium d-flex justify-content-center align-items-end pt-5">
-        <div className="podium-spot second">
-          <img src={top3[1]?.avatar} alt={top3[1]?.name} className="avatar" />
-          <p className="username">{top3[1]?.name}</p>
-          <p className="trophies">🏆 {top3[1]?.points}</p>
-        </div>
-
-        <div className="podium-spot first">
-          <img src={top3[0]?.avatar} alt={top3[0]?.name} className="avatar" />
-          <p className="username">{top3[0]?.name}</p>
-          <p className="trophies">🏆 {top3[0]?.points}</p>
-        </div>
-
-        <div className="podium-spot third">
-          <img src={top3[2]?.avatar} alt={top3[2]?.name} className="avatar" />
-          <p className="username">{top3[2]?.name}</p>
-          <p className="trophies">🏆 {top3[2]?.points}</p>
-        </div>
-      </div>
-
-        <div className="ranking-list container mt-5 pt-5 text-start">
-          {others.map((user, index) => (
-            <div key={user.id} className="ranking-row d-flex align-items-center justify-content-between">
-              <div className="d-flex align-items-center">
-                <span className="rank-number">{index + 4}</span>
-                <img src={user.avatar} alt={user.name} className="avatar-small ms-3" />
-                <span className="username ms-3">{user.name}</span>
-              </div>
-              <div className="trophies">🏆 {user.points}</div>
+      <div className="ranking-list container pt-3 text-start">
+        <div className="ranking-header d-none d-md-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center">
+            <span className="ms-3" style={{width: '200px'}}>Usuário</span>
+          </div>
+          <div className="d-flex align-items-center">
+            <div className="user-stats text-end">
+              <span className="stat-item">Platinas</span>
+              <span className="stat-item">Troféus</span>
             </div>
-          ))}
+            <div className="trophies text-end">{getPointsTitle()}</div> 
+          </div>
         </div>
+        
+        {others.map((userItem, index) => {
+          const pointsField = getPointsField(activeTab);
+          const pointsToDisplay = userItem[pointsField] || 0;
+
+          return (
+            <div 
+              key={userItem.id} 
+              className="ranking-row"
+              style={userItem.isCurrentUser ? { 
+                border: '2px solid #fa5f69',
+                background: 'rgba(250, 95, 105, 0.1)'
+              } : {}}
+            >
+              <div className="d-flex align-items-center">
+                <span className="rank-number">{index + 1}</span>
+                <img src={userItem.avatar} alt={userItem.name} className="avatar-small ms-3" />
+                <div className="ms-3">
+                  <div className="d-flex align-items-center">
+                    <span className="username" style={{fontSize: '1rem', marginTop: 0}}>
+                      {userItem.name}
+                    </span>
+                    {userItem.isCurrentUser && (
+                      <span style={{ color: '#fa5f69', marginLeft: '8px', fontSize: '0.9rem' }}>
+                        (Você) ⭐
+                      </span>
+                    )}
+                  </div>
+                  {userItem.equippedTitle && (
+                    <div style={{ fontSize: '0.75rem', color: '#ccc' }}>
+                      {userItem.equippedTitle}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="d-flex">
+                <div className="user-stats">
+                  <span className="stat-item" title="Platinas">
+                    {userItem.platinums || 0}
+                  </span>
+                  <span className="stat-item" title="Total de Troféus">
+                    {userItem.totalTrophies || 0}
+                  </span>
+                  <span className="trophies text-end">{pointsToDisplay}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

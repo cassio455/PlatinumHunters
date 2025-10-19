@@ -1,4 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './app/store';
 import Main from "./Main/Main";
 import AuthSync from "./app/AuthSync";
 import Ranking from "./RankingScreens/RankingMain"
@@ -21,34 +24,38 @@ import Shop from "./RankingScreens/Shop";
 
 function App() {
   return (
-    <Router>
-      <AuthSync />
-      <Navbar />
-        <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/main" element={<Main />} />
-          <Route path="/trophy" element={<Trophy />} />
-          <Route path="/trophy/:id" element={<TrophyDetails />} />
-          <Route path="/trophy-recommended" element={<TrophyRecommended />} />
-           <Route path="/trophy-conquistados" element={<TrophyConquistados />} />
-          <Route path="/biblioteca" element={
-            <ProtectedRoute>
-              <Biblioteca />
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Router>
+          <AuthSync />
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Main />} />
+            <Route path="/main" element={<Main />} />
+            <Route path="/trophy" element={<Trophy />} />
+            <Route path="/trophy/:id" element={<TrophyDetails />} />
+            <Route path="/trophy-recommended" element={<TrophyRecommended />} />
+            <Route path="/trophy-conquistados" element={<TrophyConquistados />} />
+            <Route path="/biblioteca" element={
+              <ProtectedRoute>
+                <Biblioteca />
               </ProtectedRoute>} />
-          <Route path="/biblioteca/detalhes/:id" element={<Detalhes />} />
-          <Route path="/ranking" element={<Ranking />} />
-          <Route path="/jogos" element={<Jogos />} />
-          <Route path="/challenge" element={<Challenge />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/user/login" element={<Login />} />
-          <Route path="/user/signup" element={<SignUp />} />
-          <Route path="/user/profile" element={
-            <ProtectedRoute>
-              <Profile />
+            <Route path="/biblioteca/detalhes/:id" element={<Detalhes />} />
+            <Route path="/ranking" element={<Ranking />} />
+            <Route path="/jogos" element={<Jogos />} />
+            <Route path="/challenge" element={<Challenge />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/user/login" element={<Login />} />
+            <Route path="/user/signup" element={<SignUp />} />
+            <Route path="/user/profile" element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>} />
-        </Routes>
-      <Footer />
-    </Router>
+          </Routes>
+          <Footer />
+        </Router>
+      </PersistGate>
+    </Provider>
   );
 }
 
