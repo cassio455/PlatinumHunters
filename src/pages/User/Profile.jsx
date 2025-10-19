@@ -19,7 +19,6 @@ const Profile = () => {
         navigate('/user/login');
     };
 
-    // Usar dados mockados do userMock.js
     const platinumGames = MOCK_USER.platinumGames || [];
     const [page, setPage] = useState(0);
     const pageSize = 10;

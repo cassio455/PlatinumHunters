@@ -11,7 +11,7 @@ import "./App.css"
 import Trophy from "./TrophyScreens/TrophyMain"
 import TrophyRecommended from "./TrophyScreens/TrophyRecommended";
 import TrophyDetails from "./TrophyScreens/TrophyDetails";
-import TrophyConquistados from "./TrophyScreens/TrophyConquistados";
+import AddTrophyGames from "./TrophyScreens/AddTrophyGames";
 import Biblioteca from "./pages/Biblioteca";
 import Detalhes from "./pages/Biblioteca/detalhes";
 import Login from "./pages/User/Login";

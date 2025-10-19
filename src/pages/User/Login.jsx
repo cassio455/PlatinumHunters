@@ -15,7 +15,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   
-  // fixing redirect loop
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/biblioteca', { replace: true });

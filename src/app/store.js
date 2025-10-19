@@ -1,9 +1,29 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import userReducer from './slices/userSlice'
-import authReducer from './slices/authSlice'
+import userReducer from './slices/userSlice';
+import authReducer from './slices/authSlice';
+import trophyReducer from './slices/trophySlice';
 import shopReducer from './slices/shopSlice'
+
+const authPersistConfig = {
+  key: 'auth',
+  storage,
+  whitelist: ['userData', 'currentUserId', 'permanentUsers'],
+};
+
+const userPersistConfig = {
+  key: 'user',
+  storage,
+  whitelist: ['userData', 'currentUserId', 'permanentUsers'],
+};
+
+const trophyPersistConfig = {
+  key: 'trophies',
+  storage,
+  whitelist: ['userData', 'currentUserId'],
+};
+
 
 const persistConfig = {
   key: 'shop',
@@ -11,25 +31,17 @@ const persistConfig = {
   whitelist: ['userData', 'currentUserId', 'permanentUsers'],
 };
 
-const authPersistConfig = {
-  key: 'auth',
-  storage,
-};
-
-const userPersistConfig = {
-  key: 'user',
-  storage,
-};
-
-const persistedAuthReducer = persistReducer(persistConfig, authReducer);
-const persistedUserReducer = persistReducer(persistConfig, userReducer);
+const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
+const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
+const persistedTrophyReducer = persistReducer(trophyPersistConfig, trophyReducer);
 const persistedShopReducer = persistReducer(persistConfig, shopReducer);
 
 export const store = configureStore({
   reducer: {
-    auth: persistedAuthReducer,
-    user: persistedUserReducer,
-    shop: persistedShopReducer,
+      user: userReducer,
+      auth: authReducer,
+      trophies: persistedTrophyReducer,
+      shop: persistedShopReducer,
   },
     middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
