@@ -42,7 +42,7 @@ function TrophyRecommended() {
     <div className="container mt-5 pt-5">
       <div className="section-header mb-4 d-flex justify-content-center align-items-center">
         <h1 className="section-title mb-2">Platinas Recomendadas</h1>
-        <Link to="/trophy-conquistados" className="swap-button ms-3">
+        <Link to="/trophy" className="swap-button ms-3">
           <i className="bi bi-arrow-repeat text-danger"></i>
         </Link>
       </div>
@@ -54,10 +54,10 @@ function TrophyRecommended() {
           <div className="row">
             {cat.games.map((game) => (
               <div className="col-6 col-md-4 col-lg-2 mb-4" key={game.id}>
-                <Link to={`/trophy/${game.id}`} className="game-card">
-                  <div className="game-image-container">
+                <Link to={`/trophy/${game.id}`} className="recommended-card">
+
                     <img src={game.image} alt={game.id} className="card-img" />
-                  </div>
+
                 </Link>
               </div>
             ))}
