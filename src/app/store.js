@@ -5,15 +5,9 @@ import authReducer from './slices/authSlice';
 import trophyReducer from './slices/trophySlice';
 import shopReducer from './slices/shopSlice'
 import libraryReducer from './slices/librarySlice';
-
+import genrePlatformReducer from './slices/genrePlatformSlice'
 const authPersistConfig = {
   key: 'auth',
-  storage,
-  whitelist: ['userData', 'currentUserId', 'permanentUsers'],
-};
-
-const userPersistConfig = {
-  key: 'user',
   storage,
   whitelist: ['userData', 'currentUserId', 'permanentUsers'],
 };
@@ -30,6 +24,11 @@ const libraryPersistConfig = {
   whitelist: ['library', 'stats', 'currentUserId'],
 };
 
+const genrePlatformPersistConfig = {
+  key: 'genrePlatform',
+  storage,
+  whitelist: ['genres', 'platforms'],
+};
 
 const persistConfig = {
   key: 'shop',
@@ -41,11 +40,13 @@ const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 const persistedTrophyReducer = persistReducer(trophyPersistConfig, trophyReducer);
 const persistedShopReducer = persistReducer(persistConfig, shopReducer);
 const persistedLibraryReducer = persistReducer(libraryPersistConfig, libraryReducer);
+const persistedGenrePlatformReducer = persistReducer(genrePlatformPersistConfig, genrePlatformReducer);
 
 export const store = configureStore({
   reducer: {
       auth: persistedAuthReducer,
       library: persistedLibraryReducer,
+    genrePlatform: persistedGenrePlatformReducer,
       trophies: persistedTrophyReducer,
       shop: persistedShopReducer,
   },

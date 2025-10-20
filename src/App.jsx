@@ -36,11 +36,11 @@ function App() {
             <Route path="/trophy/:id" element={<TrophyDetails />} />
             <Route path="/trophy-recommended" element={<TrophyRecommended />} />
             <Route path="/add-trophy-games" element={<AddTrophyGames />} />
-            <Route path="/biblioteca" element={
+            <Route path="/biblioteca/user/:userId" element={
               <ProtectedRoute>
                 <Biblioteca />
               </ProtectedRoute>} />
-            <Route path="/biblioteca/detalhes/:id" element={<Detalhes />} />
+            <Route path="/biblioteca/user/:userId/detalhes/:id" element={<Detalhes />} />
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/jogos" element={<Jogos />} />
             <Route path="/challenge" element={<Challenge />} />
@@ -51,7 +51,7 @@ function App() {
               <ProtectedRoute>
                 <Profile />
               </ProtectedRoute>} />
-            <Route path="/biblioteca/adicionar" element={
+            <Route path="/biblioteca/user/:userId/adicionar" element={
               <ProtectedRoute>
                 <AdicionarJogo />
               </ProtectedRoute>} />
