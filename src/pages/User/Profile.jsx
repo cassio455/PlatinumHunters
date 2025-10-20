@@ -4,7 +4,7 @@ import { logout } from '../../app/slices/authSlice';
 import { clearCurrentUser } from '../../app/slices/shopSlice';
 import { fetchUserLibrary } from '../../app/thunks/libraryThunks';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import LibraryStatus from '../../components/LibraryStatus';
 import { Trophy, Gamepad2 } from 'lucide-react';
 
@@ -96,12 +96,15 @@ const Profile = () => {
 
                             <div className="d-flex gap-2 justify-content-center">
                                 <Button variant="primary" onClick={() => navigate(`/biblioteca/user/${(library[0]?.userId) ?? 1}`)}>Ir à Biblioteca</Button>
+                                <Button variant="outline-primary" onClick={() => navigate('/shop')}>Títulos</Button>
                                 <Button variant="secondary" onClick={handleLogout}>Sair</Button>
                             </div>
                         </Card.Body>
                     </Card>
                 </Col>
             </Row>
+
+            {/* End of profile summary */}
         </Container>
     );
 };
