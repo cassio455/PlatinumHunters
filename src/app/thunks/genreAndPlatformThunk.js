@@ -36,15 +36,17 @@ export const fetchPlatforms = () => async (dispatch) =>{
         const response = await fetch(`${API_URL}/platforms`);
         const data = await response.json();
 
-        const platforms = data.map((platform) =>{
-            
-        })
-    
-     }
-     catch(error){
+        const platforms = data.map((platform) => ({
+            id: platform.id,
+            name: platform.name,
+        }));
+
+        dispatch(setPlatforms(platforms));
+    } catch(error) {
         console.error('Erro ao buscar plataformas:', error);
-     }
-     finally{
-         dispatch(setLoading(false));
-     }
+        dispatch(setError(error.message));
+    }
+    finally{
+        dispatch(setLoading(false));
+    }
 }

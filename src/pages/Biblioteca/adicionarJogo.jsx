@@ -15,7 +15,7 @@ const AdicionarJogo = () => {
   const loading = useSelector((state) => state.library.loading);
   const library = useSelector((state) => state.library.library);
   const error = useSelector((state) => state.library.error);
-  const availableGenres = useSelector((state) => state.genres.genres || []);
+  const availableGenres = useSelector((state) => state.genrePlatform?.genres || []);
 
   // const availablePlatforms = useSelector((state) => state.platforms.platforms || []);
 
@@ -73,8 +73,7 @@ const AdicionarJogo = () => {
     setGenreInput('');
     setValue('platform', '');
 
-    const { userId } = useParams();
-    const targetUser = userId ?? user?.id ?? 1;
+    const targetUser = routeUserId ?? user?.id ?? 1;
     navigate(`/biblioteca/user/${targetUser}/detalhes/${payload.id}`);
   }
 
