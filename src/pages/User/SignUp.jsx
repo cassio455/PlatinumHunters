@@ -17,11 +17,11 @@ const SignUp = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/biblioteca', { replace: true });
+      const user = JSON.parse(localStorage.getItem('user') || 'null') || null;
+      navigate(user ? `/biblioteca/user/${user.id}` : '/biblioteca/user/1', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
-  // simulacao
   const onSubmit = (data) => {
     if (data.email === MOCK_USER.email) {
       setError('email', { type: 'manual', message: 'Email já cadastrado.' });
@@ -29,9 +29,10 @@ const SignUp = () => {
     }
     localStorage.setItem('token', MOCK_USER.token);
     dispatch(loginSuccess({ token: MOCK_USER.token, user: MOCK_USER }));
+    localStorage.setItem('user', JSON.stringify(MOCK_USER));
     setSuccess('Cadastro realizado com sucesso! Redirecionando...');
     setTimeout(() => {
-      navigate('/main', { replace: true });
+      navigate(`/biblioteca/user/${MOCK_USER.id}`, { replace: true });
     }, 1500);
     reset();
   };

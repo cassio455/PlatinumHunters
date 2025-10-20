@@ -1,26 +1,55 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import { Card, InputGroup, Form } from 'react-bootstrap';
-import { sampleGames } from '../../sample';
+import { Card, InputGroup, Form, Button } from 'react-bootstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUserLibrary } from '../../app/thunks/libraryThunks';
+import LibraryStatus from '../../components/LibraryStatus';
 import './index.css';
 
 const Biblioteca = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredGames = sampleGames.filter(game =>
-    game.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const dispatch = useDispatch();
+  const library = useSelector((state) => state.library.library);
+  const loading = useSelector((state) => state.library.loading);
+  const error = useSelector((state) => state.library.error);
+
+  const { userId: routeUserId } = useParams();
+
+  useEffect(() => {
+    const idToFetch = routeUserId ? Number(routeUserId) : 1;
+    dispatch(fetchUserLibrary(idToFetch));
+  }, [dispatch, routeUserId]);
+
+  const filteredGames = library.filter(game => {
+    const matchesSearch = game.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
+  if (loading || error) {
+    const idToFetch = routeUserId ? Number(routeUserId) : 1;
+    return (
+      <LibraryStatus
+        loading={loading}
+        loadingMessage="Carregando biblioteca..."
+        error={!!error}
+        errorMessage={error}
+        onRetry={() => dispatch(fetchUserLibrary(idToFetch))}
+        errorTitle="Erro ao carregar biblioteca"
+      />
+    );
+  }
 
   return (
     <div className="main-page container mt-5 pt-5">
       <div className="section-header mb-4">
-        <h1 className="section-title text-center mb-2">Minha Biblioteca</h1>
-        <div className="section-line"></div>
-        <p className="page-subtitle">Gerencie seus jogos e acompanhe seu progresso</p>
-        <div className="row justify-content-center mt-4">
-          <div className="col-12 col-md-6">
+        <h1 className="title-text mb-2">Minha Biblioteca</h1>
+        <div className="section-line mb-3"></div>
+        <p className="page-subtitle mb-4">Gerencie seus jogos e acompanhe seu progresso</p>
+        <div className="search-bar-biblioteca gap-3">
+          <div style={{ width: '100%', maxWidth: 400 }}>
             <InputGroup>
               <InputGroup.Text className="bg-dark border-secondary" style={{ borderRight: 0 }}>
                 <Search size={18} className="text-secondary" />
@@ -36,6 +65,11 @@ const Biblioteca = () => {
               />
             </InputGroup>
           </div>
+          <div className="d-flex justify-content-end">
+            <Button as={Link} to={routeUserId ? `/biblioteca/user/${routeUserId}/adicionar` : '/biblioteca/user/1/adicionar'} variant="outline-light" className="add-game-btn">
+              Adicionar novo jogo
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -44,48 +78,24 @@ const Biblioteca = () => {
           <div className="col-12 text-center text-muted">Nenhum jogo encontrado.</div>
         )}
         {filteredGames.map((game) => (
-          <div className="col-12 col-md-6 col-lg-4 mb-4" key={game.id}>
-            <Card className="game-card border-light bg-dark text-white">
-              <div className="game-image-container">
-                <Link to={`/biblioteca/detalhes/${game.id}`}>
-                  <Card.Img src={game.img} alt={game.name} />
-                </Link>
-                <div className="overlay">
-                  <h5 className="game-title">{game.name}</h5>
+          <div className="col-6 col-md-4 col-lg-3 mb-4" key={game.id}>
+            <Link to={`/biblioteca/user/${routeUserId ?? 1}/detalhes/${game.id}`} style={{ textDecoration: 'none' }}>
+              <Card className="game-card-biblioteca bg-dark text-white position-relative">
+                <Card.Img src={game.img} alt={game.name} className="game-card-img-biblioteca" />
+                <div className="overlay-biblioteca">
+                  <h5 className="game-title-biblioteca">{game.name}</h5>
+                  <div className="mt-1">
+                    <small className="text-muted">{game.progresso}</small>
+                  </div>
                 </div>
-              </div>
-              <Card.Body>
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="game-info-label" style={{ color: '#FF6E77', fontWeight: 'bold' }}>Status:</span>
-                  <span className="fw-bold text-white">{game.status || '-'}</span>
-                </div>
-                <div className="d-flex justify-content-between mb-2">
-                  <span className="game-info-label" style={{ color: '#FF6E77', fontWeight: 'bold' }}>Progresso:</span>
-                  <span className="fw-bold text-white">{game.progresso || '-'}</span>
-                </div>
-                <div className="d-flex justify-content-center">
-                  <Link to={`/biblioteca/detalhes/${game.id}`} className="btn btn-outline-light btn-sm">
-                    Detalhes
-                  </Link>
-                </div>
-              </Card.Body>
-            </Card>
+              </Card>
+            </Link>
           </div>
         ))}
       </div>
-
-      <div className="filters-section mt-5">
-        <h5 className="filters-title mb-3">Filtros</h5>
-        <div className="d-flex flex-wrap gap-2 justify-content-center">
-          <button className="btn btn-outline-light filter-btn">Jogando</button>
-          <button className="btn btn-outline-light filter-btn">Platinado</button>
-          <button className="btn btn-outline-light filter-btn">Abandonado</button>
-          <button className="btn btn-outline-light filter-btn">PSN</button>
-          <button className="btn btn-outline-light filter-btn">Steam</button>
-        </div>
-      </div>
-    </div>
+    </div >
   );
 };
+
 
 export default Biblioteca;
