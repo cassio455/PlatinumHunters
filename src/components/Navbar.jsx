@@ -5,6 +5,7 @@ import "./Navbar.css"
 
 function Navbar() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
   const handleUserIconClick = () => {
     if (isAuthenticated) {
@@ -13,11 +14,11 @@ function Navbar() {
       navigate('/user/login');
     }
   };
-  
+
   return (
     <nav className="navbar navbar-expand-lg fixed-top w-100">
       <div className="container">
-        <NavLink className="navbar-brand mb-0 h1" to="/main" style={{color: "white"}}>
+        <NavLink className="navbar-brand mb-0 h1" to="/main" style={{ color: "white" }}>
           Platinum Hunters
         </NavLink>
 
@@ -27,16 +28,16 @@ function Navbar() {
 
         <div className="collapse navbar-collapse justify-content-between" id="navbarMenu">
 
-        <form className="d-flex mt-2 mt-lg-0 w-100 w-lg-auto">
-          <input className="form-control me-2" type="search" placeholder="Pesquisar" />
-          <button className="btn search-btn" type="submit">
+          <form className="d-flex mt-2 mt-lg-0 w-100 w-lg-auto">
+            <input className="form-control me-2" type="search" placeholder="Pesquisar" />
+            <button className="btn search-btn" type="submit">
               <i className="bi bi-search"></i>
-          </button>
-        </form>
+            </button>
+          </form>
 
           <ul className="navbar-nav mx-auto flex-column flex-lg-row text-center">
             <li className="nav-item mx-2">
-              <NavLink className="nav-link" to="/biblioteca">Biblioteca</NavLink>
+              <NavLink className="nav-link" to={isAuthenticated ? `/biblioteca/user/${user?.id ?? 1}` : '/user/login'}>Biblioteca</NavLink>
             </li>
             <li className="nav-item mx-2">
               <NavLink className="nav-link" to="/jogos">Jogos</NavLink>
@@ -51,8 +52,8 @@ function Navbar() {
               <NavLink className="nav-link" to="/ranking">Ranking</NavLink>
             </li>
             <li className="nav-item mx-2 user-mobile-center">
-              <div className="nav-link user-icon-mobile-center" style={{cursor: 'pointer'}} onClick={handleUserIconClick}>
-                <User size={22} style={{ verticalAlign: 'middle' }}/>
+              <div className="nav-link user-icon-mobile-center" style={{ cursor: 'pointer' }} onClick={handleUserIconClick}>
+                <User size={22} style={{ verticalAlign: 'middle' }} />
               </div>
             </li>
           </ul>
