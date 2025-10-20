@@ -4,11 +4,11 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './app/store';
 import Main from "./Main/Main";
 import AuthSync from "./app/AuthSync";
-import Ranking from "./RankingScreens/RankingMain"
+import Ranking from "./RankingScreens/RankingMain";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import "./App.css"
-import Trophy from "./TrophyScreens/TrophyMain"
+import "./App.css";
+import Trophy from "./TrophyScreens/TrophyMain";
 import TrophyRecommended from "./TrophyScreens/TrophyRecommended";
 import TrophyDetails from "./TrophyScreens/TrophyDetails";
 import AddTrophyGames from "./TrophyScreens/AddTrophyGames";
@@ -21,6 +21,9 @@ import SignUp from "./pages/User/SignUp";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/User/Profile";
 import Shop from "./RankingScreens/Shop";
+
+import CriarGuia from "./pages/Guias/CriarGuia/CriarGuia";
+import ListaGuias from "./pages/Guias/ListaGuias/ListaGuias";
 
 function App() {
   return (
@@ -36,10 +39,14 @@ function App() {
             <Route path="/trophy/:id" element={<TrophyDetails />} />
             <Route path="/trophy-recommended" element={<TrophyRecommended />} />
             <Route path="/add-trophy-games" element={<AddTrophyGames />} />
-            <Route path="/biblioteca" element={
-              <ProtectedRoute>
-                <Biblioteca />
-              </ProtectedRoute>} />
+            <Route
+              path="/biblioteca"
+              element={
+                <ProtectedRoute>
+                  <Biblioteca />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/biblioteca/detalhes/:id" element={<Detalhes />} />
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/jogos" element={<Jogos />} />
@@ -47,10 +54,17 @@ function App() {
             <Route path="/shop" element={<Shop />} />
             <Route path="/user/login" element={<Login />} />
             <Route path="/user/signup" element={<SignUp />} />
-            <Route path="/user/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>} />
+            <Route
+              path="/user/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            {/* Novas rotas de guias */}
+            <Route path="/guias" element={<ListaGuias />} />
+            <Route path="/guias/criar" element={<CriarGuia />} />
           </Routes>
           <Footer />
         </Router>

@@ -45,7 +45,7 @@ function Navbar() {
               <NavLink className="nav-link" to="/trophy">Troféus</NavLink>
             </li>
             <li className="nav-item mx-2">
-              <NavLink className="nav-link" to="/screen4">Guias</NavLink>
+              <NavLink className="nav-link" to="/guias">Guias</NavLink>
             </li>
             <li className="nav-item mx-2">
               <NavLink className="nav-link" to="/ranking">Ranking</NavLink>
