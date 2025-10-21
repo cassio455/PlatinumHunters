@@ -9,14 +9,14 @@
   margin-bottom: 20px;
 }
 
-.section-line {
+.main-page-line {
   height: 2px;
   background-color: #ccc;
   margin-top: 5px;
   width: 100%;
 }
 
-.section-title {
+.main-page-title {
   margin: 0;
   font-weight: bold;
   color: #ccc;
@@ -29,23 +29,23 @@
 
 @media (max-width: 992px) {
   .games-grid {
-    grid-template-columns: repeat(4, 1fr); /* 4 colunas para tablets */
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
 @media (max-width: 768px) {
   .games-grid {
-    grid-template-columns: repeat(3, 1fr); /* 3 colunas para celulares grandes */
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width: 576px) {
   .games-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas para celulares pequenos */
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.game-card {
+.main-page-game-card {
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;   
@@ -55,7 +55,7 @@
   transition: transform 0.2s ease;
 }
 
-.game-card img {
+.main-page-game-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -64,11 +64,11 @@
   transition: transform 0.3s ease;
 }
 
-.game-card:hover {
+.main-page-game-card:hover {
   transform: scale(1.05);
 }
 
-.overlay {
+.main-page-overlay {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
@@ -79,17 +79,16 @@
   transition: opacity 0.3s ease;
 }
 
-.overlay h5 {
-  color: #fff;
+.main-page-overlay h5 {
   font-size: 1.1rem;
   text-align: center;
   padding: 10px;
 }
 
-.game-card:hover img {
+.main-page-game-card:hover img {
   transform: scale(1.1);
 }
 
-.game-card:hover .overlay {
+.main-page-game-card:hover .main-page-overlay {
   opacity: 1;
 }

@@ -53,14 +53,14 @@ function Main() {
       </h1>
 
       <div className="trending-header">
-        <p className="section-title text-start mb-2">Jogos Populares Recentemente</p>
-        <div className="section-line"></div>
+        <p className="main-page-title text-start mb-2">Jogos Populares Recentemente</p>
+        <div className="main-page-line"></div>
 
         <div className="games-grid mt-4">
           {games.map((game) => (
-            <div className="game-card" key={game.id}>
+            <div className="main-page-game-card" key={game.id}>
               <img src={game.image} alt={game.title} />
-              <div className="overlay">
+              <div className="main-page-overlay">
                 <h5 className="game-title">{game.title}</h5>
               </div>
             </div>
@@ -68,8 +68,8 @@ function Main() {
         </div>
 
         <div className="reviews-header mt-5">
-          <p className="section-title text-start mb-2">Reviews Populares Recentemente</p>
-          <div className="section-line"></div>
+          <p className="main-page-title text-start mb-2">Reviews Populares Recentemente</p>
+          <div className="main-page-line"></div>
 
           <div className="row mt-4">
             {reviews.map((rev) => (

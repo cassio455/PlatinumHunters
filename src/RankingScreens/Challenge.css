@@ -107,7 +107,6 @@
   }
 }
 
-/* Desktop styles */
 @media (min-width: 768px) {
   .ranking-row .user-stats .stat-item::after {
     display: none;
@@ -116,4 +115,13 @@
   .ranking-row .user-stats .stat-item {
     font-size: 0.9rem;
   }
+}
+
+.challenge-divider-line {
+  height: 1px;
+  width: 100%;
+  max-width: 100%;
+  background-color: #aaa;
+  margin: 1rem 0 1.5rem 0;
+  border-radius: 0;
 }

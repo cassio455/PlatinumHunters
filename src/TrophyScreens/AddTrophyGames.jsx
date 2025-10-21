@@ -8,9 +8,7 @@ import './AddTrophyGames.css';
 function AddTrophyGames() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const [searchTerm, setSearchTerm] = useState('');
-
   const trackedGameIds = useSelector((state) => state.trophies.trackedGameIds || []);
 
   const allAvailableGames = Object.keys(TROPHIES)
@@ -40,7 +38,7 @@ function AddTrophyGames() {
   return (
     <div className="container mt-5 pt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="section-title mb-0">Adicionar/Remover Jogos</h1>
+        <h1 className="add-games-title mb-0">Adicionar/Remover Jogos</h1>
         <button className="btn btn-outline-secondary" onClick={() => navigate('/trophy')}>
            Voltar para Meus Troféus
         </button>
@@ -56,7 +54,7 @@ function AddTrophyGames() {
         />
       </div>
 
-      <div className="section-line mb-4"></div>
+      <div className="add-games-line mb-4"></div>
 
       <div className="row">
         {filteredGames.map((game) => { 

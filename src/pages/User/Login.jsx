@@ -1,23 +1,22 @@
-import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { InputGroup, Form, Button, Card } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { InputGroup, Form, Button, Card, Alert } from 'react-bootstrap';
+import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { loginSuccess } from '../../app/slices/authSlice';
-import { setCurrentUser } from '../../app/slices/shopSlice';
+import { loginSuccess, loginFailure } from '../../app/slices/authSlice'; // Assumindo loginFailure
 import { MOCK_USER } from './userMock';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import './auth.css';
 
 const Login = () => {
-  const { register, handleSubmit, formState: { errors }, setError } = useForm();
+  const { register, handleSubmit, formState: { errors }, setError, reset } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loginError, setLoginError] = useState("");
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
   useEffect(() => {
     if (isAuthenticated) {
-      const user = JSON.parse(localStorage.getItem('user') || 'null') || null;
-      navigate(user ? `/biblioteca/user/${user.id}` : '/biblioteca/user/1', { replace: true });
+      navigate('/', { replace: true }); 
     }
   }, [isAuthenticated, navigate]);
 
@@ -25,20 +24,24 @@ const Login = () => {
     if (data.email === MOCK_USER.email && data.password === MOCK_USER.password) {
       localStorage.setItem('token', MOCK_USER.token);
       dispatch(loginSuccess({ token: MOCK_USER.token, user: MOCK_USER }));
-      // persist user to localStorage for navbar/redirects
       localStorage.setItem('user', JSON.stringify(MOCK_USER));
-      navigate(`/biblioteca/user/${MOCK_USER.id}`, { replace: true });
+      setLoginError("");
+      navigate('/', { replace: true });
     } else {
-      setError('password', { type: 'manual', message: 'Credenciais inválidas.' });
+      setLoginError('Email ou senha inválidos.');
+      dispatch(loginFailure('Email ou senha inválidos.'));
+      setError('email', { type: 'manual', message: ' ' });
+      setError('password', { type: 'manual', message: ' ' });
     }
   };
 
   return (
-    <Card className="d-flex align-items-center justify-content-center mx-auto" style={{ minHeight: '80vh', maxWidth: '450px', width: '100%', marginTop: '5vh' }}>
+    <Card className="d-flex align-items-center justify-content-center mx-auto bg-dark-custom" style={{ minHeight: '80vh', maxWidth: '450px', width: '100%', marginTop: '5vh' }}>
       <Card.Body className="p-4 w-100">
         <h2 className="mb-4 text-center">Login</h2>
+        {loginError && <Alert variant="danger">{loginError}</Alert>}
         <Form onSubmit={handleSubmit(onSubmit)}>
-          <Form.Group className="mb-3" controlId="formEmail">
+          <Form.Group className="mb-3" controlId="formEmailLogin">
             <Form.Label>Email</Form.Label>
             <InputGroup>
               <Form.Control
@@ -46,14 +49,14 @@ const Login = () => {
                 placeholder="Digite seu email"
                 className="bg-dark text-white border-secondary custom-placeholder"
                 {...register('email', { required: 'Email obrigatório' })}
-                isInvalid={!!errors.email}
+                isInvalid={!!errors.email || !!loginError}
               />
             </InputGroup>
             <Form.Control.Feedback type="invalid">
               {errors.email?.message}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group className="mb-3" controlId="formPassword">
+          <Form.Group className="mb-3" controlId="formPasswordLogin">
             <Form.Label>Senha</Form.Label>
             <InputGroup>
               <Form.Control
@@ -61,7 +64,7 @@ const Login = () => {
                 placeholder="Digite sua senha"
                 className="bg-dark text-white border-secondary custom-placeholder"
                 {...register('password', { required: 'Senha obrigatória' })}
-                isInvalid={!!errors.password}
+                isInvalid={!!errors.password || !!loginError}
               />
             </InputGroup>
             <Form.Control.Feedback type="invalid">
@@ -72,10 +75,9 @@ const Login = () => {
             Entrar
           </Button>
         </Form>
-        <Link to="/user/signup" className="d-block mt-3 text-center">Não possui conta? Crie uma</Link>
+        <Link to="/user/signup" className="d-block mt-3 text-center">Não tem conta? Registre-se</Link>
       </Card.Body>
     </Card>
   );
 };
-
 export default Login;

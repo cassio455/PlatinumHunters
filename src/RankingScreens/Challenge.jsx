@@ -104,7 +104,7 @@ function Challenge() {
         )}
       </div>
 
-      <div className="section-line"></div>
+      <div className="challenge-divider-line"></div>
 
       <Link to="/shop" className="floating-shop" aria-label="Abrir Loja">
         <i className="bi bi-shop"></i>

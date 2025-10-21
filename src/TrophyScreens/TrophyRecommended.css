@@ -16,7 +16,7 @@
   transform: scale(1.05);
 }
 
-.recommended-card .card-img {
+.recommended-card .trophy-rec-card-img {
   width: 100%;
   height: auto;
   object-fit: cover;
@@ -25,18 +25,46 @@
   border-radius: 12px;
 }
 
-.recommended-card:hover .card-img {
+.recommended-card:hover .trophy-rec-card-img {
   filter: brightness(0.6);
 }
 
-.section-header {
+.trophy-rec-header {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.swap-button i {
-  font-size: 1.5rem;
+.trophy-rec-header h1 {
+  margin-bottom: 0;
+  margin-right: 0.5rem; 
+}
+
+.trophy-rec-swap-button {
+  background: none;
+  border: none;
+  font-size: 1.6rem; 
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex; 
+  align-items: center;
+  justify-content: center;
+  color: #dc3545; 
+  text-decoration: none; 
+  transition: color 0.2s ease, transform 0.2s ease;
+  line-height: 1; 
+  vertical-align: middle; 
+}
+
+.trophy-rec-swap-button:hover {
+  color: #ff6b81; 
+  transform: scale(1.1); 
+}
+
+.trophy-rec-swap-button i {
+  color: inherit; 
+  display: block;
+  font-size: 1.5rem; 
 }
 
 .recommended-subtitle {
@@ -50,7 +78,7 @@
   margin-top: 2rem;
 }
 
-.section-line {
+.trophy-recommended-line {
   height: 2px;
   width: 100%;
   background-color: #ffffff;

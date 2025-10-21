@@ -3,13 +3,13 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice';
 import trophyReducer from './slices/trophySlice';
-import shopReducer from './slices/shopSlice'
+import shopReducer from './slices/shopSlice';
 import libraryReducer from './slices/librarySlice';
-import genrePlatformReducer from './slices/genrePlatformSlice'
+import genrePlatformReducer from './slices/genrePlatformSlice';
+
 const authPersistConfig = {
   key: 'auth',
   storage,
-  whitelist: ['userData', 'currentUserId', 'permanentUsers'],
 };
 
 const trophyPersistConfig = {
@@ -30,7 +30,7 @@ const genrePlatformPersistConfig = {
   whitelist: ['genres', 'platforms'],
 };
 
-const persistConfig = {
+const shopPersistConfig = {
   key: 'shop',
   storage,
   whitelist: ['userData', 'currentUserId', 'permanentUsers'],
@@ -38,19 +38,19 @@ const persistConfig = {
 
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 const persistedTrophyReducer = persistReducer(trophyPersistConfig, trophyReducer);
-const persistedShopReducer = persistReducer(persistConfig, shopReducer);
+const persistedShopReducer = persistReducer(shopPersistConfig, shopReducer); 
 const persistedLibraryReducer = persistReducer(libraryPersistConfig, libraryReducer);
 const persistedGenrePlatformReducer = persistReducer(genrePlatformPersistConfig, genrePlatformReducer);
 
 export const store = configureStore({
   reducer: {
-      auth: persistedAuthReducer,
-      library: persistedLibraryReducer,
+    auth: persistedAuthReducer,
+    library: persistedLibraryReducer,
     genrePlatform: persistedGenrePlatformReducer,
-      trophies: persistedTrophyReducer,
-      shop: persistedShopReducer,
+    trophies: persistedTrophyReducer,
+    shop: persistedShopReducer,
   },
-    middleware: (getDefaultMiddleware) =>
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
@@ -59,4 +59,3 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
-export default store;
