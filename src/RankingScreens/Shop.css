@@ -39,6 +39,15 @@
   margin-bottom: 30px;
 }
 
+.shop-divider-line {
+  height: 2px;
+  width: 100%; 
+  background-color: #ffffff;
+  margin-top: 5px; 
+  margin-bottom: 30px; 
+  border-radius: 0;
+}
+
 .titles-grid {
   display: flex;
   flex-wrap: wrap;

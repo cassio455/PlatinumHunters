@@ -2,8 +2,8 @@ import { useParams } from "react-router-dom";
 import { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTrophyCompletion, markAllTrophies, unmarkAllTrophies } from "../app/slices/trophySlice";
-import "./TrophyDetails.css";
 import { TROPHIES } from "../data/trophiesData";
+import "./TrophyDetails.css";
 
 function TrophyDetails() {
   const { id } = useParams();
@@ -57,7 +57,7 @@ function TrophyDetails() {
   return (
     <div className="container mt-5 pt-5">
       <div className="d-flex justify-content-center align-items-center mb-2">
-        <h1 className="section-title text-center mb-0 me-3">
+        <h1 className="trophy-details-title text-center mb-0 me-3">
           {id.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
         </h1>
         
@@ -76,12 +76,12 @@ function TrophyDetails() {
         )}
 
       </div> 
-      <div className="section-line mb-4"></div>
+      <div className="trophy-details-line mb-4"></div>
 
       <div className="row">
         {displayTrophies.map((trophy, index) => (
           <div key={trophy.name} className="col-12 mb-3">
-            <div className={`card shadow-sm ${trophy.isCompleted ? "completed-rose" : ""}`}>
+            <div className={`trophy-details-card shadow-sm ${trophy.isCompleted ? "completed-rose" : ""}`}>
               
               <div className="trophy-info">
                 <p className="trophy-name mb-1">{trophy.name}</p>

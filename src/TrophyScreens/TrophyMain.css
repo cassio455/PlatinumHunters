@@ -16,7 +16,7 @@
   transform: scale(1.05);
 }
 
-.trophy-card .card-img {
+.trophy-card .trophy-main-card-img {
   width: 100%;
   height: auto;
   object-fit: cover;
@@ -25,7 +25,7 @@
   border-radius: 12px 12px 0 0;
 }
 
-.trophy-card:hover .card-img {
+.trophy-card:hover .trophy-main-card-img {
   filter: brightness(0.6);
 }
 
@@ -74,13 +74,12 @@
   opacity: 1;
 }
 
-.card-img-overlay {
+.trophy-main-card-img-overlay {
   background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0));
   border-radius: 12px;
 }
 
-.icon-button {
-  background: none;
+.trophy-main-icon-button {
   border: none;
   font-size: 1.6rem;
   cursor: pointer;
@@ -93,23 +92,23 @@
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.icon-button:hover {
+.trophy-main-icon-button:hover {
   color: #ff6b81;
   transform: scale(1.1);
 }
 
-.icon-button i {
+.trophy-main-icon-button i {
   color: inherit;
 }
 
-.section-header {
+.trophy-main-header {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 1.5rem;
 }
 
-.section-title {
+.trophy-main-title {
   color: #e0e0e0;
   font-family: 'Arial', sans-serif;
   font-size: 2.5rem;
@@ -118,12 +117,12 @@
   margin-bottom: 0;
 }
 
-.section-line {
-  width: 80px;
-  height: 3px;
-  background-color: #dc3545;
-  margin: 0 auto 2rem auto;
-  border-radius: 5px;
+.trophy-main-line {
+  height: 2px;
+  width: 100%;
+  background-color: #ffffff;
+  margin: 0 auto 2rem auto; 
+  border-radius: 0;
 }
 
 .platinum-overlay {
@@ -131,7 +130,6 @@
   top: 50%; 
   left: 50%; 
   transform: translate(-50%, -50%) scale(0.5) rotate(-15deg);
-  
   z-index: 10; 
   color: #dc3545;
   font-size: 4rem;
