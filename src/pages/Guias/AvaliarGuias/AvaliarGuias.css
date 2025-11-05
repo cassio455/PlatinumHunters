@@ -1,0 +1,108 @@
+.comentarios-lista {
+  padding-left: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.comentario-item {
+  background: #212529;
+  color: #fff;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  padding: 16px;
+  border: 1px solid #343a40;
+  word-break: break-word;
+  transition: box-shadow 0.2s;
+}
+
+.comentario-reply {
+  margin-bottom: 13px;
+  border-left: 3px solid #444;
+  padding-left: 18px;
+}
+
+.comentario-item:hover {
+  box-shadow: 0 0 8px #1112;
+}
+
+.comentario-btn {
+  border-radius: 7px !important;
+  font-size: 15px;
+  border: 1px solid #343a40 !important;
+  background: #212529 !important;
+  color: #fff !important;
+  transition: background 0.2s;
+}
+
+.comentario-btn.liked {
+  background: #e74c3c !important;
+  color: #fff !important;
+}
+
+.btn-adicionar-dark {
+  background: #181827 !important;
+  color: #fff !important;
+  border: 1px solid #eee !important;
+}
+
+.comentario-form {
+  background: #181818 !important;
+  color: #fff !important;
+  border: 1px solid #eee !important;
+  resize: vertical;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.comentario-form::placeholder {
+  color: #bbb !important;
+  opacity: 1;
+}
+
+/* Modal Header/Body/Footer */
+.comentarios-modal-header,
+.comentarios-modal-footer,
+.comentarios-modal-body {
+  background: #181827 !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+/* Modal custom dark background and border */
+.comentarios-modal-dark .modal-content {
+  background: #181827 !important;
+  color: #fff !important;
+  border: 1px solid #f8f9fa !important; /* border-light */
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .comentario-item {
+    font-size: 14px;
+    padding: 10px;
+  }
+  .comentario-reply {
+    padding-left: 10px;
+  }
+}
+
+.comentarios-modal-header {
+  background: #181827 !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 20px 24px 8px 24px !important;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.comentarios-modal-header .btn-link {
+  color: #fff !important;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.comentarios-modal-dark .modal-content {
+  background: #181827 !important;
+  color: #fff !important;
+  border: 1px solid #f8f9fa !important;
+}
+
