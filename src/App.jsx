@@ -24,7 +24,6 @@ import Shop from "./RankingScreens/Shop";
 import CriarGuia from "./pages/Guias/CriarGuia/CriarGuia";
 import ListaGuias from "./pages/Guias/ListaGuias/ListaGuias";
 import AdicionarJogo from "./pages/Biblioteca/adicionarJogo";
-import ListaGuias from "./pages/Guias/ListaGuias/ListaGuias";
 
 function App() {
   return (
