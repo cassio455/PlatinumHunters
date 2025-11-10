@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Card, Button, Row, Col, Container, Form } from 'react-bootstrap'
 import { guias } from './../guias.js'
 import './ListaGuias.css'
+import AvaliarGuias from '../AvaliarGuias/AvaliarGuias'
+import CriarGuias from '../CriarGuias/CriarGuias'
 
 export default function ListaGuias() {
   const [filtro, setFiltro] = useState('populares')
@@ -18,8 +20,15 @@ export default function ListaGuias() {
 
   return (
     <Container className="lista-guias-page">
-      <h1 className="section-title">Guias da Comunidade</h1>
-        <div className="section-line mb-4"></div>
+      <div className="d-flex align-items-center justify-content-between mb-2">
+        <div>
+          <h1 className="section-title">Guias da Comunidade</h1>
+          <div className="section-line"></div>
+        </div>
+        <div>
+          <CriarGuias buttonLabel="Crie seu próprio Guia!" buttonClassName="header-criar-btn" buttonVariant="outline-light" buttonSize="sm" />
+        </div>
+      </div>
 
       <div className="filtros-section d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
         <Form.Control
@@ -43,7 +52,7 @@ export default function ListaGuias() {
       <Row xs={1} md={2} lg={3} className="g-4">
         {guiasFiltrados.map(guia => (
           <Col key={guia.id}>
-            <Card className="guia-card h-100">
+            <Card className="guia-card h-100 bg-dark text-light border-light">
               <Card.Body className="d-flex flex-column justify-content-between">
                 <div>
                   <Card.Title className="guia-title">{guia.title}</Card.Title>
@@ -58,7 +67,11 @@ export default function ListaGuias() {
                   <Button variant="outline-light" size="sm">
                     Ver detalhes
                   </Button>
-                  <span className="guia-likes">❤️ {guia.likes}</span>
+                  <AvaliarGuias
+                    guiaId={guia.id}
+                    initialLikes={guia.likes}
+                    initialComments={guia.comentarios?.length || 0}
+                  />
                 </div>
               </Card.Body>
             </Card>

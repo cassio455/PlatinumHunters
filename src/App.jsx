@@ -24,6 +24,7 @@ import Shop from "./RankingScreens/Shop";
 import CriarGuia from "./pages/Guias/CriarGuia/CriarGuia";
 import ListaGuias from "./pages/Guias/ListaGuias/ListaGuias";
 import AdicionarJogo from "./pages/Biblioteca/adicionarJogo";
+import ListaGuias from "./pages/Guias/ListaGuias/ListaGuias";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
                 <Biblioteca />
               </ProtectedRoute>} />
             <Route path="/biblioteca/user/:userId/detalhes/:id" element={<Detalhes />} />
+            <Route path="/guias" element={<ListaGuias />} />
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/jogos" element={<Jogos />} />
             <Route path="/challenge" element={<Challenge />} />
