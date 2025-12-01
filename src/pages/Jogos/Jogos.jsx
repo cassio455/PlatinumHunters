@@ -1,130 +1,129 @@
-import React, { useState, useEffect, useCallback } from 'react'; // Importar o useCallback
-import { Search, X, PlusCircle, CheckCircle, Play } from 'lucide-react';
-import { Card, InputGroup, Form, Button, Spinner } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Search, X, PlusCircle, CheckCircle } from 'lucide-react';
+import { Card, InputGroup, Form, Button, Spinner, Pagination } from 'react-bootstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { addToLibrary } from '../../app/slices/librarySlice';
+import { fetchGames } from '../../app/thunks/gamesThunks';
+import { MOCK_USER } from '../User/userMock';
+import { useNavigate } from 'react-router-dom';
+
 import './Jogos.css';
 
-import { sampleGames } from '../../sample';
-
-// Função debounce para evitar múltiplos pedidos à API
-function debounce(func, delay) {
-  let timeout;
-  return function(...args) {
-    const context = this;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), delay);
-  };
-}
+const ITEMS_PER_PAGE = 28;
 
 const Jogos = () => {
-  const [gamesList, setGamesList] = useState([]);
-  const [mostPlayedGames, setMostPlayedGames] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  // -- SELETORES DO REDUX --
+  const library = useSelector((state) => state.library.library);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const user = useSelector((state) => state.auth.user);
+  
+  const { items: allGames, loading } = useSelector((state) => state.games);
+
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGame, setSelectedGame] = useState(null);
-  const [gameDetails, setGameDetails] = useState(null);
-  const [detailsLoading, setDetailsLoading] = useState(false);
-
-  // Função para buscar a lista inicial de jogos populares
-  const fetchPopularGames = async () => {
-    setLoading(true);
-    try {
-      const apiKey = import.meta.env.VITE_RAWG_API_KEY;
-      const currentYear = new Date().getFullYear();
-      const response = await fetch(`https://api.rawg.io/api/games?key=${apiKey}&ordering=-rating&dates=${currentYear}-01-01,${currentYear}-12-31&page_size=40`);
-      const data = await response.json();
-
-      const formattedGames = data.results.map(game => ({
-        id: game.id,
-        name: game.name,
-        image: game.background_image,
-        gameplayVideo: game.clip?.clip,
-      }));
-      
-      setGamesList(formattedGames);
-      setMostPlayedGames(formattedGames.slice(0, 5));
-    } catch (error) {
-      console.error("Erro ao buscar jogos populares:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [currentPage, setCurrentPage] = useState(1);
   
-  // Efeito inicial para carregar os jogos populares
-  useEffect(() => {
-    fetchPopularGames();
-  }, []);
+  const scrollRef = useRef(null); 
 
-  // Função para pesquisar jogos na API
-  const searchGames = async (query) => {
-    if (query.trim() === '') {
-      fetchPopularGames(); // Se a pesquisa estiver vazia, volta a carregar os jogos populares
-      return;
+
+  useEffect(() => {
+    if (allGames.length === 0) {
+      dispatch(fetchGames());
     }
-    setLoading(true);
-    try {
-      const apiKey = import.meta.env.VITE_RAWG_API_KEY;
-      const response = await fetch(`https://api.rawg.io/api/games?key=${apiKey}&search=${encodeURIComponent(query)}&page_size=40`);
-      const data = await response.json();
-      const formattedGames = data.results.map(game => ({
-        id: game.id,
-        name: game.name,
-        image: game.background_image,
-        gameplayVideo: game.clip?.clip,
-      }));
-      setGamesList(formattedGames);
-    } catch (error) {
-      console.error("Erro ao pesquisar jogos:", error);
-    } finally {
-      setLoading(false);
+  }, [dispatch, allGames.length]);
+
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+  
+  const scrollHorizontally = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 300; 
+      if (direction === 'left') {
+        scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      } else {
+        scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      }
     }
   };
 
-  // Criamos uma versão "debounced" da nossa função de pesquisa
-  const debouncedSearch = useCallback(debounce(searchGames, 500), []);
+  const filteredGames = allGames.filter(game => {
+      return game.nome?.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
-  // Handler para quando o texto na barra de pesquisa muda
+
+  const indexOfLastGame = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstGame = indexOfLastGame - ITEMS_PER_PAGE;
+  
+  const currentGames = filteredGames.slice(indexOfFirstGame, indexOfLastGame);
+  
+  const totalPages = Math.ceil(filteredGames.length / ITEMS_PER_PAGE);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 400, behavior: 'smooth' });
+  };
+
+
+  const featuredGames = useMemo(() => {
+    if (allGames.length === 0) return [];
+    const shuffled = [...allGames].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 7);
+  }, [allGames]);
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    debouncedSearch(e.target.value);
   };
-  
-  // O resto das funções continua igual...
-  const fetchGameDetails = async (gameId) => {
-    setDetailsLoading(true);
-    try {
-      const apiKey = import.meta.env.VITE_RAWG_API_KEY;
-      const response = await fetch(`https://api.rawg.io/api/games/${gameId}?key=${apiKey}`);
-      const data = await response.json();
-      setGameDetails({ description: data.description_raw });
-    } catch (error) {
-      console.error("Erro ao buscar detalhes do jogo:", error);
-      setGameDetails({ description: "Não foi possível carregar a descrição." });
-    } finally {
-      setDetailsLoading(false);
+    
+  const isGameInLibrary = useCallback((gameId) => {
+    return library.some(libGame => String(libGame.gameId) === String(gameId));
+  }, [library]);
+
+  const handleAddGame = (game) => {
+    if (!isAuthenticated) {
+        alert("Você precisa estar logado para adicionar jogos à biblioteca!");
+        navigate('/user/login');
+        return;
     }
+    const userId = user?.id ?? MOCK_USER.id;
+    const newGameEntry = {
+        id: Date.now(), 
+        userId: userId,
+        gameId: game.id, 
+        name: game.nome,
+        img: game.backgroundimage,
+        status: 'desejo',
+        progress: 0,
+        playTime: game.playtime, 
+        rating: game.rating,
+        dateAdded: new Date().toISOString(),
+        platforms: game.plataformas || [], 
+        genres: game.genres || [],
+    };
+    dispatch(addToLibrary(newGameEntry));
+    setSelectedGame(null);
+    alert(`${game.nome} adicionado à sua biblioteca!`);
   };
 
   const handleGameClick = (game) => {
     setSelectedGame(game);
-    setGameDetails(null);
-    fetchGameDetails(game.id);
   };
 
-  const isGameInLibrary = (gameId) => {
-    return sampleGames.some(libGame => String(libGame.id) === String(gameId));
-  };
-
-  const handleAddGame = (game) => {
-    console.log(`Adicionando ${game.name} à biblioteca!`);
-    setSelectedGame(null);
-  };
+  const modalDescription = selectedGame ? 
+    `Ano de Lançamento: ${selectedGame.ano_de_lancamento}\nPlataformas: ${selectedGame.plataformas?.join(', ') || 'N/A'}\nGêneros: ${selectedGame.genres?.map(g => g.name || g).join(', ') || 'N/A'}\nRating: ${selectedGame.rating}/5.0` 
+    : '';
 
   return (
     <div className="main-page container mt-5 pt-5">
       <div className="section-header mb-4">
         <h1 className="section-title text-center mb-2">Lista de Jogos</h1>
         <div className="section-line"></div>
-        <p className="page-subtitle">Explore os jogos mais populares e bem avaliados do ano</p>
+        <p className="page-subtitle">Explore os jogos do nosso catálogo local</p>
       </div>
 
       <div className="row justify-content-center mb-4">
@@ -135,82 +134,116 @@ const Jogos = () => {
               </InputGroup.Text>
               <Form.Control
                 className="bg-dark text-white border-secondary"
-                placeholder="Pesquisar em mais de 500.000 jogos..."
+                placeholder="Pesquisar jogos no nosso catálogo local..."
                 value={searchTerm}
-                onChange={handleSearchChange} // Usamos o novo handler
+                onChange={handleSearchChange} 
               />
             </InputGroup>
           </div>
       </div>
 
-      {loading ? (
+      {loading && allGames.length === 0 ? (
         <div className="text-center my-5">
           <Spinner animation="border" variant="light" style={{ width: '3rem', height: '3rem' }} />
           <p className="mt-3">A carregar...</p>
         </div>
       ) : (
         <>
-          {searchTerm.length === 0 && (
+          {searchTerm.length === 0 && currentPage === 1 && featuredGames.length > 0 && (
             <div className="most-played-section mb-5">
-              <h3 className="most-played-title">Mais Populares do Ano</h3>
-              <div className="most-played-container">
-                {mostPlayedGames.map((game) => (
-                  <div className="most-played-card" key={`mp-${game.id}`} onClick={() => handleGameClick(game)}>
-                    <img src={game.image} alt={game.name} className="most-played-img" />
-                    <div className="most-played-overlay">
-                      <span className="most-played-name">{game.name}</span>
+              <h3 className="most-played-title">Conheça novos jogos</h3>
+              <div className="scroll-container-wrapper">
+                <button className="scroll-arrow left" onClick={() => scrollHorizontally('left')}>&lt;</button>
+                <button className="scroll-arrow right" onClick={() => scrollHorizontally('right')}>&gt;</button>
+                <div className="most-played-container" ref={scrollRef}>
+                  {featuredGames.map((game) => (
+                    <div className="most-played-card" key={`mp-${game.id}`} onClick={() => handleGameClick(game)}>
+                      <img src={game.backgroundimage} alt={game.nome} className="most-played-img" />
+                      <div className="most-played-overlay">
+                        <span className="most-played-name">{game.nome}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </div> 
+            </div>
+          )}
+          
+          {currentGames.length === 0 && searchTerm.length > 0 && (
+            <div className="text-center my-5">
+                <p>Nenhum jogo encontrado no catálogo local para "{searchTerm}".</p>
             </div>
           )}
 
           <div className="row mt-4">
-            {gamesList.map((game) => ( // Alterado para gamesList em vez de filteredGames
+            {currentGames.map((game) => (
               <div className="col-6 col-md-4 col-lg-3 mb-4" key={game.id} onClick={() => handleGameClick(game)}>
                 <Card className="game-card-jogos bg-dark text-white">
-                  <Card.Img src={game.image} alt={game.name} className="game-card-img" />
+                  <Card.Img src={game.backgroundimage} alt={game.nome} className="game-card-img" />
                   <div className="overlay-jogos">
-                    <h5 className="game-title-jogos">{game.name}</h5>
+                    <h5 className="game-title-jogos">{game.nome}</h5>
                   </div>
                 </Card>
               </div>
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <div className="d-flex justify-content-center mt-4 mb-5">
+              <Pagination>
+                <Pagination.First onClick={() => paginate(1)} disabled={currentPage === 1} />
+                <Pagination.Prev onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} />
+                
+                {[...Array(totalPages)].map((_, index) => {
+                   const pageNum = index + 1;
+                   return (
+                     <Pagination.Item 
+                        key={pageNum} 
+                        active={pageNum === currentPage}
+                        onClick={() => paginate(pageNum)}
+                     >
+                       {pageNum}
+                     </Pagination.Item>
+                   );
+                })}
+
+                <Pagination.Next onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} />
+                <Pagination.Last onClick={() => paginate(totalPages)} disabled={currentPage === totalPages} />
+              </Pagination>
+            </div>
+          )}
         </>
       )}
 
       {selectedGame && (
-         // O seu painel de detalhes continua aqui, sem alterações...
          <div className="details-modal-overlay" onClick={() => setSelectedGame(null)}>
            <div className="details-modal-body" onClick={(e) => e.stopPropagation()}>
              <div className="modal-video-container">
-               {selectedGame.gameplayVideo ? (
-                 <video key={selectedGame.id} src={selectedGame.gameplayVideo} autoPlay loop muted className="modal-video-header" />
-               ) : (
-                 <img src={selectedGame.image} alt={selectedGame.name} className="modal-video-header" />
-               )}
+               <img src={selectedGame.backgroundimage} alt={selectedGame.nome} className="modal-video-header" />
                <div className="modal-video-overlay">
-                 <h2 className="modal-title">{selectedGame.name}</h2>
+                 <h2 className="modal-title">{selectedGame.nome}</h2>
                </div>
                <Button variant="dark" className="modal-close-btn" onClick={() => setSelectedGame(null)}>
                  <X size={24} />
                </Button>
              </div>
              <div className="modal-content-area">
-               {detailsLoading ? (
-                 <div className="text-center my-3"><Spinner animation="border" variant="light" size="sm" /></div>
-               ) : (
-                 <p className="modal-description">{gameDetails?.description}</p>
-               )}
-               <div className="library-status-card mt-3">
+                 <h3 style={{fontSize: '1.2rem', color: '#ff6e77', marginBottom: '15px'}}>Detalhes do Catálogo:</h3>
+                 <p className="modal-description" style={{ whiteSpace: 'pre-wrap' }}>{modalDescription}</p>
+                 <div className="library-status-card mt-3">
                  {isGameInLibrary(selectedGame.id) ? (
                    <div className="d-flex align-items-center text-success"><CheckCircle size={20} className="me-2" /><span>Este jogo já está na sua biblioteca.</span></div>
                  ) : (
                    <div className="d-flex flex-column align-items-center">
                      <p>Gostaria de adicionar este jogo à sua biblioteca?</p>
-                     <Button variant="outline-light" onClick={() => handleAddGame(selectedGame)}><PlusCircle size={18} className="me-2" />Adicionar à Biblioteca</Button>
+                     <Button 
+                        variant="outline-light" 
+                        onClick={() => handleAddGame(selectedGame)}
+                        disabled={!isAuthenticated}
+                      >
+                        {isAuthenticated ? <><PlusCircle size={18} className="me-2" />Adicionar à Biblioteca</> : '🔒 Faça login para adicionar'} 
+                      </Button>
+                      {!isAuthenticated && <small className="text-danger mt-2">Você precisa estar logado.</small>}
                    </div>
                  )}
                </div>

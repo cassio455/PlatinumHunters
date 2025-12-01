@@ -6,6 +6,7 @@ import trophyReducer from './slices/trophySlice';
 import shopReducer from './slices/shopSlice';
 import libraryReducer from './slices/librarySlice';
 import genrePlatformReducer from './slices/genrePlatformSlice';
+import gamesReducer from './slices/gamesSlice';
 
 const authPersistConfig = {
   key: 'auth',
@@ -36,11 +37,19 @@ const shopPersistConfig = {
   whitelist: ['userData', 'currentUserId', 'permanentUsers'],
 };
 
+
+const gamesPersistConfig = {
+  key: 'games',
+  storage,
+  whitelist: ['items'], 
+};
+
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 const persistedTrophyReducer = persistReducer(trophyPersistConfig, trophyReducer);
 const persistedShopReducer = persistReducer(shopPersistConfig, shopReducer); 
 const persistedLibraryReducer = persistReducer(libraryPersistConfig, libraryReducer);
 const persistedGenrePlatformReducer = persistReducer(genrePlatformPersistConfig, genrePlatformReducer);
+const persistedGamesReducer = persistReducer(gamesPersistConfig, gamesReducer); 
 
 export const store = configureStore({
   reducer: {
@@ -49,6 +58,7 @@ export const store = configureStore({
     genrePlatform: persistedGenrePlatformReducer,
     trophies: persistedTrophyReducer,
     shop: persistedShopReducer,
+    games: persistedGamesReducer, 
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
