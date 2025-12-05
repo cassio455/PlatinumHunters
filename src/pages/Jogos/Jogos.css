@@ -46,13 +46,19 @@
     margin-top: 10px;
 }
 
-/* --- Estilos para a secção "Mais Populares" --- */
+
 .most-played-title {
   font-size: 1.5rem;
   font-weight: bold;
   color: #eee;
   margin-bottom: 1.2rem;
   text-align: left;
+}
+
+.scroll-container-wrapper {
+  position: relative; 
+  margin: 0 -15px; 
+  padding: 0 15px;
 }
 
 .most-played-container {
@@ -101,7 +107,6 @@
   font-size: 0.9rem;
 }
 
-/* --- Estilos para o Painel de Detalhes Estilo Netflix --- */
 .details-modal-overlay {
   position: fixed;
   inset: 0;
@@ -135,7 +140,7 @@
 .modal-video-container {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* Proporção 16:9 para o vídeo */
+  padding-top: 56.25%;
 }
 
 .modal-video-header {
@@ -195,7 +200,39 @@
   line-height: 1.6;
 }
 
-/* --- Media Query para Responsividade em Ecrãs Pequenos --- */
+.scroll-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.2s, opacity 0.2s;
+  opacity: 0.8;
+}
+
+.scroll-arrow:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+  opacity: 1;
+}
+
+.scroll-arrow.left {
+  left: 30px; 
+}
+
+.scroll-arrow.right {
+  right: 30px; 
+}
+
 @media (max-width: 768px) {
   .modal-title {
     font-size: 1.8rem;
@@ -214,4 +251,69 @@
   .modal-description {
     font-size: 0.9rem;
   }
+}
+
+
+@media (max-width: 576px) {
+  .scroll-arrow {
+    display: none;
+  }
+}
+
+
+
+.pagination {
+  gap: 8px;
+  align-items: center;
+}
+
+
+.page-item .page-link {
+  background-color: #181818 !important;
+  border: 1px solid #333 !important;
+  color: #ccc !important;
+  border-radius: 8px !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+
+.page-item .page-link:focus {
+  box-shadow: none !important; 
+}
+
+
+.page-item .page-link:hover {
+  background-color: #252525 !important;
+  color: #ff6e77 !important; 
+  border-color: #ff6e77 !important;
+  transform: translateY(-2px); 
+}
+
+
+.page-item.active .page-link {
+  background-color: #ff6e77 !important;
+  border-color: #ff6e77 !important;
+  color: #fff !important;
+  box-shadow: 0 0 15px rgba(255, 110, 119, 0.4) !important; 
+  z-index: 1;
+}
+
+
+.page-item.disabled .page-link {
+  background-color: #0f0f0f !important;
+  border-color: #222 !important;
+  color: #444 !important;
+  cursor: not-allowed !important;
+  transform: none;
+  opacity: 0.5;
+}
+
+
+.page-item:first-child .page-link,
+.page-item:last-child .page-link {
+  border-radius: 8px !important;
+  font-size: 1.1rem;
+  line-height: 1;
 }
