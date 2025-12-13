@@ -1,24 +1,11 @@
 import { authStart, loginSuccess, signupSuccess, loginFailure } from '../slices/authSlice';
-
-const API_URL = 'http://localhost:3000';
+import { authApi } from '../../services/api';
 
 export const loginUser = (credentials) => async (dispatch) => {
   try {
     dispatch(authStart());
     
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || 'Erro ao fazer login');
-    }
+    const result = await authApi.login(credentials);
 
     const userData = {
       id: result.data.id,
@@ -28,11 +15,11 @@ export const loginUser = (credentials) => async (dispatch) => {
       createdAt: result.data.createdAt,
     };
 
-    localStorage.setItem('token', result.token);
+    localStorage.setItem('token', result.data.token);
     localStorage.setItem('user', JSON.stringify(userData));
 
     dispatch(loginSuccess({ 
-      token: result.token, 
+      token: result.data.token, 
       user: userData 
     }));
 
@@ -47,19 +34,7 @@ export const signupUser = (userData) => async (dispatch) => {
   try {
     dispatch(authStart());
     
-    const response = await fetch(`${API_URL}/auth/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || 'Erro ao criar conta');
-    }
+    const result = await authApi.register(userData);
 
     const newUser = {
       id: result.data.id,
@@ -69,11 +44,12 @@ export const signupUser = (userData) => async (dispatch) => {
       createdAt: result.data.createdAt,
     };
 
+    localStorage.setItem('token', result.data.token);
     localStorage.setItem('user', JSON.stringify(newUser));
 
     dispatch(signupSuccess({ 
       user: newUser,
-      token: null
+      token: result.data.token
     }));
 
     return { success: true, user: newUser };

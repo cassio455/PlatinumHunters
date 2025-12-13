@@ -3,31 +3,24 @@ import {
   setLoading,
   setError,
 } from '../slices/gamesSlice';
+import { gamesApi } from '../../services/api';
 
-const API_URL = 'http://localhost:3000';
-
-export const fetchGames = () => async (dispatch) => {
+export const fetchGames = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading(true));
 
-    const response = await fetch(`${API_URL}/games`);
-
-    if (!response.ok) {
-      const text = await response.text().catch(() => null);
-      throw new Error(text || response.statusText || `HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (Array.isArray(data)) {
-      dispatch(setGames(data));
+    // Usa o gamesApi que já trata o formato da resposta
+    const games = await gamesApi.getAllGames({}, getState);
+    
+    if (Array.isArray(games)) {
+      dispatch(setGames(games));
     } else {
-      console.warn('Formato inesperado recebido da API de jogos:', data);
+      console.warn('Formato inesperado recebido da API de jogos:', games);
       dispatch(setGames([]));
     }
 
   } catch (error) {
-    console.error('Erro ao buscar jogos locais:', error);
+    console.error('Erro ao buscar jogos:', error);
     dispatch(setError(error.message || 'Erro desconhecido ao carregar jogos.'));
   } finally {
     dispatch(setLoading(false));

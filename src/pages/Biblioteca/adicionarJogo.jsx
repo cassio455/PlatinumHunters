@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserLibrary } from '../../app/thunks/libraryThunks';
+import { fetchUserLibrary, addGameToLibrary } from '../../app/thunks/libraryThunks';
 import { fetchGenres } from '../../app/thunks/genreAndPlatformThunk';
-import { addToLibrary } from '../../app/slices/librarySlice';
-import { InputGroup, Form, Button, Card, Badge, ListGroup } from 'react-bootstrap';
+import { InputGroup, Form, Button, Card, Badge, ListGroup, Alert } from 'react-bootstrap';
 import LibraryStatus from '../../components/LibraryStatus';
 import './adicionarJogo.css';
 
@@ -48,33 +47,42 @@ const AdicionarJogo = () => {
     setSelectedGenres(prev => prev.filter(g => g.id !== id));
   }
 
-  const onSubmit = (data) => {
+  const [submitError, setSubmitError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const onSubmit = async (data) => {
+    setSubmitError(null);
+    setSubmitting(true);
+
     const platforms = (data.platform || '').split(',').map(p => p.trim()).filter(Boolean);
     const genresForSave = selectedGenres.map(g => ({ id: g.id, name: g.name }));
-    const payload = {
-      id: Date.now(),
-      userId: user?.id ?? 1,
-      gameId: Date.now(),
-      name: data.game,
-      img: null,
-      status: 'owned',
-      progress: 0,
-      playTime: 0,
-      rating: null,
-      dateAdded: new Date().toISOString(),
-      platforms,
+
+    // Create a temporary game object for enrichment
+    const gameData = {
+      nome: data.game,
+      backgroundimage: null,
+      playtime: 0,
       genres: genresForSave,
     };
 
-    payload.userId = user?.id ?? payload.userId;
-    dispatch(addToLibrary(payload));
-    reset();
-    setSelectedGenres([]);
-    setGenreInput('');
-    setValue('platform', '');
+    // Use a temporary gameId (in production, you'd select from existing games or create new one)
+    const tempGameId = String(Date.now());
 
-    const targetUser = routeUserId ?? user?.id ?? 1;
-    navigate(`/biblioteca/user/${targetUser}/detalhes/${payload.id}`);
+    const result = await dispatch(addGameToLibrary(tempGameId, 'owned', gameData));
+
+    setSubmitting(false);
+
+    if (result.success) {
+      reset();
+      setSelectedGenres([]);
+      setGenreInput('');
+      setValue('platform', '');
+
+      const targetUser = routeUserId ?? user?.id ?? 1;
+      navigate(`/biblioteca/user/${targetUser}/detalhes/${result.data.id}`);
+    } else {
+      setSubmitError(result.error || 'Erro ao adicionar jogo à biblioteca');
+    }
   }
 
   if (loading || error) {
@@ -94,6 +102,11 @@ const AdicionarJogo = () => {
     <Card className="d-flex align-items-center justify-content-center mx-auto" style={{ minHeight: '80vh', maxWidth: '450px', width: '100%', marginTop: '5vh' }}>
       <Card.Body className="p-4 w-100">
         <h2 className="mb-4 text-center">Adicionar jogo a biblioteca</h2>
+        {submitError && (
+          <Alert variant="danger" dismissible onClose={() => setSubmitError(null)}>
+            {submitError}
+          </Alert>
+        )}
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className="mb-3" controlId="formGameName">
             <Form.Label>Nome do Jogo</Form.Label>
@@ -161,9 +174,11 @@ const AdicionarJogo = () => {
           </Form.Group>
           <div className="d-flex flex-column flex-md-row gap-2">
             <Link to={routeUserId ? `/biblioteca/user/${routeUserId}` : `/biblioteca/user/${user?.id ?? 1}`} className="w-100">
-              <Button variant="outline-light" className='w-100 mb-0'>Voltar à Biblioteca</Button>
+              <Button variant="outline-light" className='w-100 mb-0' disabled={submitting}>Voltar à Biblioteca</Button>
             </Link>
-            <Button variant="outline-light" type="submit" className='w-100'>Adicionar localmente</Button>
+            <Button variant="outline-light" type="submit" className='w-100' disabled={submitting}>
+              {submitting ? 'Adicionando...' : 'Adicionar à Biblioteca'}
+            </Button>
           </div>
         </Form>
       </Card.Body>

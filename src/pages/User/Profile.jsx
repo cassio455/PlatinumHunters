@@ -19,10 +19,9 @@ const Profile = () => {
     const error = useSelector((state) => state.library?.error || null);
 
     useEffect(() => {
-        if (user?.id) {
-            dispatch(fetchUserLibrary(user.id));
-        }
-    }, [dispatch, user?.id]);
+        // Fetch library without userId - backend uses auth token
+        dispatch(fetchUserLibrary());
+    }, [dispatch]);
 
     const handleLogout = () => {
         dispatch(clearCurrentUser());
@@ -39,7 +38,7 @@ const Profile = () => {
                 loadingMessage="Carregando itens..."
                 error={!!error}
                 errorMessage={error}
-                onRetry={() => user?.id && dispatch(fetchUserLibrary(user.id))}
+                onRetry={() => dispatch(fetchUserLibrary({}, true))}
                 errorTitle="Erro ao carregar jogos"
             />
         );
