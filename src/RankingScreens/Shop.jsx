@@ -67,7 +67,7 @@ function Shop() {
         </p>
       )}
 
-      <div className="section-line"></div>
+      <div className="shop-divider-line"></div>
 
       <Link to="/ranking" className="floating-ranking" aria-label="Abrir Rank">
         <i className="bi bi-arrow-left"></i>

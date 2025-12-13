@@ -1,9 +1,9 @@
-.section-title {
+.trophy-details-title {
   font-weight: bold;
   color: #ccc;
 }
 
-.section-line {
+.trophy-details-line {
   height: 2px;
   background-color: #ccc;
   width: 100%;
@@ -11,7 +11,7 @@
   margin-bottom: 20px;
 }
 
-.card {
+.trophy-details-card {
   border-radius: 10px;
   background-color: #1a1a1a;
   color: #fff;
@@ -25,7 +25,7 @@
   padding: 1rem 1.5rem;
 }
 
-.card:hover {
+.trophy-details-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }

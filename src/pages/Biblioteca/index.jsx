@@ -19,9 +19,9 @@ const Biblioteca = () => {
   const { userId: routeUserId } = useParams();
 
   useEffect(() => {
-    const idToFetch = routeUserId ? Number(routeUserId) : 1;
-    dispatch(fetchUserLibrary(idToFetch));
-  }, [dispatch, routeUserId]);
+    // Fetch library without userId - backend uses auth token
+    dispatch(fetchUserLibrary());
+  }, [dispatch]);
 
   const filteredGames = library.filter(game => {
     const matchesSearch = game.name?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -29,14 +29,13 @@ const Biblioteca = () => {
   });
 
   if (loading || error) {
-    const idToFetch = routeUserId ? Number(routeUserId) : 1;
     return (
       <LibraryStatus
         loading={loading}
         loadingMessage="Carregando biblioteca..."
         error={!!error}
         errorMessage={error}
-        onRetry={() => dispatch(fetchUserLibrary(idToFetch))}
+        onRetry={() => dispatch(fetchUserLibrary({}, true))}
         errorTitle="Erro ao carregar biblioteca"
       />
     );

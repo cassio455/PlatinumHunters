@@ -6,3 +6,65 @@
 .info-text {
   color: #FF6E77;
 }
+
+.card.bg-dark-custom {
+  background-color: #1e1e1e !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #444 !important;
+}
+
+.card.bg-dark-custom .card-body {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+.card.stat-card-dark {
+  background-color: #2a2a2a !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #555 !important;
+}
+
+.card.stat-card-dark .card-body {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+.card.bg-dark-custom h2,
+.card.bg-dark-custom h3,
+.card.bg-dark-custom h4 {
+  color: #ffffff !important;
+}
+
+.card.bg-dark-custom small,
+.card.stat-card-dark small {
+  color: #aaaaaa !important;
+}
+
+.form-control.bg-dark {
+  background-color: #333 !important;
+  color: #fff !important;
+  border-color: #555 !important;
+}
+.form-control.bg-dark::placeholder {
+  color: #888 !important;
+}
+.form-control.bg-dark:focus {
+  background-color: #444 !important;
+  border-color: #FF6E77 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 110, 119, 0.25) !important;
+  color: #fff !important;
+}
+.form-label {
+    color: #ccc;
+}
+
+.card.bg-dark-custom a {
+    color: #FF6E77;
+}
+.card.bg-dark-custom a:hover {
+    color: #ff9aaa;
+}
+
+.profile-container.container {
+  background-color: transparent;
+}
