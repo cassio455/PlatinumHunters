@@ -5,7 +5,7 @@ import {
     setError,
 } from '../slices/genrePlatformSlice';
 
-const API_URL = 'http://localhost:3001';
+const API_URL = 'http://localhost:3000';
 
 export const fetchGenres = () => async (dispatch) =>{
 

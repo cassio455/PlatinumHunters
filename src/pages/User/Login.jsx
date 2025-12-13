@@ -2,34 +2,35 @@ import { useForm } from 'react-hook-form';
 import { InputGroup, Form, Button, Card, Alert } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { loginSuccess, loginFailure } from '../../app/slices/authSlice'; // Assumindo loginFailure
-import { MOCK_USER } from './userMock';
+import { loginUser } from '../../app/thunks/authThunks';
 import { useState, useEffect } from 'react';
 import './auth.css';
 
 const Login = () => {
-  const { register, handleSubmit, formState: { errors }, setError, reset } = useForm();
+  const { register, handleSubmit, formState: { errors }, setError } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loginError, setLoginError] = useState("");
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const { isAuthenticated, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/', { replace: true }); 
+      navigate('/', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
-  const onSubmit = (data) => {
-    if (data.email === MOCK_USER.email && data.password === MOCK_USER.password) {
-      localStorage.setItem('token', MOCK_USER.token);
-      dispatch(loginSuccess({ token: MOCK_USER.token, user: MOCK_USER }));
-      localStorage.setItem('user', JSON.stringify(MOCK_USER));
-      setLoginError("");
+  const onSubmit = async (data) => {
+    setLoginError("");
+
+    const result = await dispatch(loginUser({
+      email: data.email,
+      password: data.password
+    }));
+
+    if (result.success) {
       navigate('/', { replace: true });
     } else {
-      setLoginError('Email ou senha inválidos.');
-      dispatch(loginFailure('Email ou senha inválidos.'));
+      setLoginError(result.error || 'Email ou senha inválidos.');
       setError('email', { type: 'manual', message: ' ' });
       setError('password', { type: 'manual', message: ' ' });
     }
@@ -50,6 +51,7 @@ const Login = () => {
                 className="bg-dark text-white border-secondary custom-placeholder"
                 {...register('email', { required: 'Email obrigatório' })}
                 isInvalid={!!errors.email || !!loginError}
+                disabled={loading}
               />
             </InputGroup>
             <Form.Control.Feedback type="invalid">
@@ -65,14 +67,20 @@ const Login = () => {
                 className="bg-dark text-white border-secondary custom-placeholder"
                 {...register('password', { required: 'Senha obrigatória' })}
                 isInvalid={!!errors.password || !!loginError}
+                disabled={loading}
               />
             </InputGroup>
             <Form.Control.Feedback type="invalid">
               {errors.password?.message}
             </Form.Control.Feedback>
           </Form.Group>
-          <Button variant="outline-light" type="submit" className="w-100">
-            Entrar
+          <Button
+            variant="outline-light"
+            type="submit"
+            className="w-100"
+            disabled={loading}
+          >
+            {loading ? 'Entrando...' : 'Entrar'}
           </Button>
         </Form>
         <Link to="/user/signup" className="d-block mt-3 text-center">Não tem conta? Registre-se</Link>

@@ -12,20 +12,23 @@ import './auth.css';
 const Profile = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const name = useSelector((state) => state.auth.user?.name);
+    const user = useSelector((state) => state.auth.user);
     const stats = useSelector((state) => state.library?.stats || { total: 0, platinado: 0, jogando: 0 });
     const library = useSelector((state) => state.library?.library || []);
     const loading = useSelector((state) => state.library?.loading || false);
     const error = useSelector((state) => state.library?.error || null);
 
     useEffect(() => {
-        dispatch(fetchUserLibrary(1));
-    }, [dispatch]);
+        if (user?.id) {
+            dispatch(fetchUserLibrary(user.id));
+        }
+    }, [dispatch, user?.id]);
 
     const handleLogout = () => {
         dispatch(clearCurrentUser());
         dispatch(logout());
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         navigate('/user/login');
     };
 
@@ -36,7 +39,7 @@ const Profile = () => {
                 loadingMessage="Carregando itens..."
                 error={!!error}
                 errorMessage={error}
-                onRetry={() => dispatch(fetchUserLibrary(1))}
+                onRetry={() => user?.id && dispatch(fetchUserLibrary(user.id))}
                 errorTitle="Erro ao carregar jogos"
             />
         );
@@ -54,13 +57,14 @@ const Profile = () => {
                     <Card className="p-4 w-100 h-100 text-center bg-dark-custom" style={{ maxWidth: 620, minWidth: 320 }}>
                         <Card.Body>
                             <Image
-                                src="https://i.pravatar.cc/100?img=3"
+                                src={user?.profileImageUrl || "https://i.pravatar.cc/100?img=3"}
                                 roundedCircle
                                 className="mb-3"
                                 alt="User Avatar"
                                 style={{ width: 100, height: 100, objectFit: 'cover' }}
                             />
-                            <h3>{name}</h3>
+                            <h3>{user?.username || 'Usuário'}</h3>
+                            <p className="text-muted small">{user?.email}</p>
                             <p className="mb-3 info-text">Suas estatísticas</p>
 
                             <Row className="mb-3 g-3">
@@ -93,7 +97,7 @@ const Profile = () => {
                             </Row>
 
                             <div className="d-flex gap-2 justify-content-center">
-                                <Button variant="primary" onClick={() => navigate(`/biblioteca/user/${(library[0]?.userId) ?? 1}`)}>Ir à Biblioteca</Button>
+                                <Button variant="primary" onClick={() => navigate(`/biblioteca/user/${user?.id || 1}`)}>Ir à Biblioteca</Button>
                                 <Button variant="outline-primary" onClick={() => navigate('/shop')}>Títulos</Button>
                                 <Button variant="secondary" onClick={handleLogout}>Sair</Button>
                             </div>
