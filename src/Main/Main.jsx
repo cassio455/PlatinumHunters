@@ -4,7 +4,6 @@ import "./Main.css"
 
 function Main() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-
   const games = [
     { id: 1, title: "Hollow Knight: Silksong", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3vtl.jpg" },
     { id: 2, title: "Hollow Knight", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co93cr.jpg" },
@@ -43,7 +42,9 @@ function Main() {
       likes: 18
     }
   ];
-  const name = useSelector((state) => state.auth.user?.name) || "visitante";
+
+  const name = useSelector((state) => state.auth.user?.username) || "visitante";
+  
   return (
     <div className="main-page container mt-5 pt-5">
       <h1 className="welcome-text mb-4">
