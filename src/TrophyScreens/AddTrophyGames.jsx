@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { addTrackedGame, removeTrackedGame } from '../app/slices/trophySlice';
+// CORREÇÃO: Usando apenas "../" pois a pasta App está apenas um nível acima
+import { trackGameThunk } from '../app/thunks/trophyThunks';
+// CORREÇÃO: Usando apenas "../" para a pasta Data também
 import { TROPHIES, ALL_GAMES_INFO } from '../data/trophiesData';
 import './AddTrophyGames.css';
 
@@ -9,6 +11,7 @@ function AddTrophyGames() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  
   const trackedGameIds = useSelector((state) => state.trophies.trackedGameIds || []);
 
   const allAvailableGames = Object.keys(TROPHIES)
@@ -23,12 +26,8 @@ function AddTrophyGames() {
     game.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddGame = (gameId) => {
-    dispatch(addTrackedGame(gameId));
-  };
-
-  const handleRemoveGame = (gameId) => {
-    dispatch(removeTrackedGame(gameId));
+  const handleToggleTrack = (gameId, shouldTrack) => {
+    dispatch(trackGameThunk({ gameId, isTracked: shouldTrack }));
   };
 
   const handleSearchChange = (event) => {
@@ -66,7 +65,7 @@ function AddTrophyGames() {
                 <p className="add-game-name-overlay">{game.name}</p>
                 <button
                   className={`btn btn-sm ${isTracked ? 'btn-danger' : 'btn-success'} add-game-button`}
-                  onClick={() => isTracked ? handleRemoveGame(game.id) : handleAddGame(game.id)} 
+                  onClick={() => handleToggleTrack(game.id, !isTracked)} 
                 >
                   {isTracked ? <i className="bi bi-dash-circle"></i> : <i className="bi bi-plus-circle"></i>}
                 </button>

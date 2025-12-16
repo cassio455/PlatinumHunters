@@ -1,12 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { buyTitle, equipTitle } from "../app/slices/shopSlice";
+import { buyTitleAPI, equipTitleAPI } from "../app/thunks/shopThunks"; // Importe os Thunks
 import "./Shop.css";
 
 function Shop() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { coins, ownedTitles, equippedTitle } = useSelector((state) => state.shop);
+  
+  // Agora esses dados vêm sincronizados do Login/API
+  const { coins, ownedTitles, equippedTitle, loading } = useSelector((state) => state.shop);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   const titles = [
@@ -27,30 +29,29 @@ function Shop() {
     { id: 15, name: "🌙 Sentinela Noturno 🌙", cost: 400 },
   ];
 
-  const handleBuyTitle = (title) => {
+  const handleBuyTitle = async (title) => {
     if (!isAuthenticated) {
-      alert("Você precisa estar logado para comprar títulos!");
       navigate('/user/login');
       return;
     }
-
-    if (ownedTitles.includes(title.name)) return;
     if (coins < title.cost) {
-      alert("Você não tem pontos suficientes!");
+      alert("Moedas insuficientes!");
       return;
     }
-    dispatch(buyTitle({ name: title.name, cost: title.cost }));
+
+    // Chama a API
+    const result = await dispatch(buyTitleAPI({ name: title.name, cost: title.cost }));
+    
+    if (buyTitleAPI.fulfilled.match(result)) {
+      alert(`Você comprou: ${title.name}`);
+    } else {
+      alert(result.payload || "Erro na compra");
+    }
   };
 
   const handleEquipTitle = (title) => {
-    if (!isAuthenticated) {
-      alert("Você precisa estar logado para equipar títulos!");
-      navigate('/user/login');
-      return;
-    }
-
-    if (!ownedTitles.includes(title.name)) return;
-    dispatch(equipTitle(title.name));
+    if (!isAuthenticated) return;
+    dispatch(equipTitleAPI(title.name));
   };
 
   return (
@@ -59,7 +60,7 @@ function Shop() {
 
       {isAuthenticated ? (
         <p className="points-display" style={{ color: '#fa5f69', fontSize: '1.2rem', fontWeight: 'bold' }}>
-          {user?.name}, suas moedas: {coins}
+          {user?.username}, suas moedas: {coins} {loading && "(Atualizando...)"}
         </p>
       ) : (
         <p className="points-display" style={{ color: '#ccc' }}>
@@ -93,8 +94,8 @@ function Shop() {
               <button 
                 className="buy-btn" 
                 onClick={() => handleBuyTitle(title)}
-                disabled={!isAuthenticated}
-                style={!isAuthenticated ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                disabled={!isAuthenticated || coins < title.cost}
+                style={!isAuthenticated || coins < title.cost ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
               >
                 {isAuthenticated ? "Comprar" : "🔒 Login necessário"}
               </button>

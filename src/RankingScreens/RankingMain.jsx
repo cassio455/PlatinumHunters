@@ -1,76 +1,35 @@
 import { Link } from "react-router-dom";
-import { useState, useMemo } from "react";
-import { useSelector } from "react-redux";
-import { weeklyRanking, monthlyRanking, allTimeRanking } from "../sample" 
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchRankingList } from "../app/thunks/rankingThunks"; // Importe o Thunk
 import "./RankingMain.css";
 
 function RankingMain() {
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
-  const { rankingPoints: currentUserPoints, equippedTitle, permanentUsers } = useSelector((state) => state.shop); 
-  const [activeTab, setActiveTab] = useState("week");
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  
+  // Pegamos a lista do novo slice de ranking
+  const rankingList = useSelector((state) => state.ranking?.list || []);
+  const { rankingPoints } = useSelector((state) => state.shop);
 
-  const getPointsField = (tab) => {
-    if (tab === "week") return "weeklyPoints";
-    if (tab === "month") return "monthlyPoints";
-    return "allTimePoints";
+  const [activeTab, setActiveTab] = useState("all"); // Padrão 'all' pois o backend retorna o total
+
+  // Ao entrar na tela, busca os dados atualizados do banco
+  useEffect(() => {
+    dispatch(fetchRankingList());
+  }, [dispatch]);
+
+  // Como o backend atual retorna o Ranking Geral (Total), vamos usar a mesma lista
+  // Futuramente você pode criar filtros no backend para semana/mês
+  const getCurrentData = () => {
+    // Adiciona uma flag 'isCurrentUser' para destacar você na lista
+    return rankingList.map(u => ({
+      ...u,
+      isCurrentUser: user && (u.name === user.username || u.name === user.name)
+    }));
   };
 
-  const getRankingWithUser = (baseRanking) => {
-    const pointsField = getPointsField(activeTab);
-
-    let enrichedRanking = baseRanking.map(u => {
-      const permanentData = Object.values(permanentUsers || {}).find(p => p.name === u.name);
-      if (permanentData) {
-        return { ...u, equippedTitle: permanentData.equippedTitle };
-      }
-      return u;
-    });
-    
-    if (currentUserPoints === 0 || !isAuthenticated) {
-      return enrichedRanking;
-    }
-
-    const currentUser = {
-      id: 'current',
-      name: (typeof user === 'object' && user !== null) ? user.name : user || 'Você',
-      [pointsField]: currentUserPoints, 
-      avatar: user?.avatar || "https://i.pravatar.cc/100?img=3",
-      isCurrentUser: isAuthenticated,
-      equippedTitle: equippedTitle,
-      platinums: user?.platinums || 0,
-      totalTrophies: user?.totalTrophies || 0,
-    };
-
-    const sortRanking = (ranking) => ranking.sort((a, b) => b[pointsField] - a[pointsField]);
-    
-    const userExists = enrichedRanking.some(u => u.name === currentUser.name && u.id !== 'current');
-    
-    if (userExists) {
-      const updatedRanking = enrichedRanking.map(u => 
-        u.name === currentUser.name 
-          ? { ...u, [pointsField]: currentUserPoints, isCurrentUser: isAuthenticated, equippedTitle: currentUser.equippedTitle }
-          : u
-      );
-      return sortRanking(updatedRanking);
-    }
-
-    const newRanking = [...enrichedRanking, currentUser];
-    return sortRanking(newRanking);
-  };
-
-  const getCurrentData = useMemo(() => {
-    let baseData;
-    if (activeTab === "week") baseData = weeklyRanking;
-    else if (activeTab === "month") baseData = monthlyRanking;
-    else baseData = allTimeRanking;
-    return getRankingWithUser(baseData); 
-  }, [activeTab, isAuthenticated, currentUserPoints, user, equippedTitle, permanentUsers]);
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
-  const others = getCurrentData;
+  const currentRankingData = getCurrentData();
 
   const getPointsTitle = () => {
     if (activeTab === "week") return "Pontos (Semana)";
@@ -92,19 +51,10 @@ function RankingMain() {
       </Link>
 
       <ul className="nav nav-tabs justify-content-center mb-3">
+        {/* Mantive as abas visuais, mas todas mostram o Ranking Geral por enquanto */}
         <li className="nav-item">
-          <button className={`nav-link ${activeTab === "week" ? "active" : ""}`} onClick={() => handleTabChange("week")}>
-            Desta Semana
-          </button>
-        </li>
-        <li className="nav-item">
-          <button className={`nav-link ${activeTab === "month" ? "active" : ""}`} onClick={() => handleTabChange("month")}>
-            Deste Mês
-          </button>
-        </li>
-        <li className="nav-item">
-          <button className={`nav-link ${activeTab === "all" ? "active" : ""}`} onClick={() => handleTabChange("all")}>
-            De Todos os Tempos
+          <button className={`nav-link ${activeTab === "all" ? "active" : ""}`} onClick={() => setActiveTab("all")}>
+            Global
           </button>
         </li>
       </ul>
@@ -123,13 +73,10 @@ function RankingMain() {
           </div>
         </div>
         
-        {others.map((userItem, index) => {
-          const pointsField = getPointsField(activeTab);
-          const pointsToDisplay = userItem[pointsField] || 0;
-
-          return (
+        {currentRankingData.length > 0 ? (
+          currentRankingData.map((userItem, index) => (
             <div 
-              key={userItem.id} 
+              key={userItem.id || index} 
               className="ranking-row"
               style={userItem.isCurrentUser ? { 
                 border: '2px solid #fa5f69',
@@ -166,12 +113,14 @@ function RankingMain() {
                   <span className="stat-item" title="Total de Troféus">
                     {userItem.totalTrophies || 0}
                   </span>
-                  <span className="trophies text-end">{pointsToDisplay}</span>
+                  <span className="trophies text-end">{userItem.rankingPoints}</span>
                 </div>
               </div>
             </div>
-          );
-        })}
+          ))
+        ) : (
+          <p className="text-center mt-5">Carregando ranking...</p>
+        )}
       </div>
     </div>
   );

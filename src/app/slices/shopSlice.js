@@ -1,133 +1,68 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { logout } from './authSlice';
+import { loginSuccess, logout } from './authSlice'; // Importa ações de Auth
+import { buyTitleAPI, equipTitleAPI } from '../thunks/shopThunks'; // Importa os novos Thunks
+import { completeChallengeAPI } from '../thunks/rankingThunks';
 
 const initialState = {
-  userData: {},
-  rankingPoints: 0,
   coins: 0,
   ownedTitles: [],
   equippedTitle: null,
-  completedChallenges: [],
-  currentUserId: null,
-  permanentUsers: {}
-};
-
-const saveShopDataToUserData = (state) => {
-  if (state.currentUserId) {
-    if (!state.userData[state.currentUserId]) {
-      state.userData[state.currentUserId] = {};
-    }
-    state.userData[state.currentUserId] = {
-      rankingPoints: state.rankingPoints,
-      coins: state.coins,
-      ownedTitles: state.ownedTitles,
-      equippedTitle: state.equippedTitle,
-      completedChallenges: state.completedChallenges,
-    };
-  }
+  loading: false,
+  error: null
 };
 
 const shopSlice = createSlice({
   name: 'shop',
   initialState,
   reducers: {
-    setCurrentUser: (state, action) => {
-      const userId = action.payload;
-      state.currentUserId = userId;
-      
-      const currentUserData = state.userData[userId];
-      if (currentUserData) {
-        state.rankingPoints = currentUserData.rankingPoints || 0;
-        state.coins = currentUserData.coins || 0;
-        state.ownedTitles = currentUserData.ownedTitles || [];
-        state.equippedTitle = currentUserData.equippedTitle || null;
-        state.completedChallenges = currentUserData.completedChallenges || [];
-      } else {
-        state.rankingPoints = 0;
-        state.coins = 0;
-        state.ownedTitles = [];
-        state.equippedTitle = null;
-        state.completedChallenges = [];
-        saveShopDataToUserData(state);
-      }
-    },
-    
-    buyTitle: (state, action) => {
-      if (!state.currentUserId) return;
-      const { name, cost } = action.payload;
-      if (state.ownedTitles.includes(name) || state.coins < cost) return;
-      
-      state.coins -= cost;
-      state.ownedTitles.push(name);
-      saveShopDataToUserData(state);
-    },
-    
-    equipTitle: (state, action) => {
-      if (!state.currentUserId) return;
-      const titleName = action.payload;
-      if (state.ownedTitles.includes(titleName)) {
-        state.equippedTitle = titleName;
-        saveShopDataToUserData(state);
-      }
-    },
-    
-    addPoints: (state, action) => {
-      if (!state.currentUserId) return;
-      state.rankingPoints += action.payload;
-      state.coins += action.payload;
-      saveShopDataToUserData(state);
-    },
-    
-    completeChallenge: (state, action) => {
-      if (!state.currentUserId) return;
-      const { day, points } = action.payload;
-      if (state.completedChallenges.includes(day)) return;
-      
-      state.rankingPoints += points;
-      state.coins += points;
-      state.completedChallenges.push(day);
-      saveShopDataToUserData(state);
-    },
-
-    savePermanentUserData: (state, action) => {
-      const { userId, userData } = action.payload;
-      state.permanentUsers[userId] = userData;
-    },
-
-    clearCurrentUser: (state) => {
-      state.rankingPoints = 0;
-      state.coins = 0;
-      state.ownedTitles = [];
-      state.equippedTitle = null;
-      state.completedChallenges = [];
-      state.currentUserId = null;
-    },
-    
-    resetShop: (state) => {
-      return initialState;
-    },
+    // Removemos os reducers locais antigos (buyTitle, equipTitle)
+    // pois agora usaremos os Thunks assíncronos
   },
   extraReducers: (builder) => {
+    // 1. SINCRONIZA COM O LOGIN
+    // Quando o usuário loga, o Shop pega os dados dele imediatamente
+    builder.addCase(loginSuccess, (state, action) => {
+      const user = action.payload.user;
+      state.coins = user.coins || 0;
+      state.ownedTitles = user.ownedTitles || [];
+      state.equippedTitle = user.equippedTitle || null;
+    });
+
+    // 2. SINCRONIZA COM DESAFIOS
+    builder.addCase(completeChallengeAPI.fulfilled, (state, action) => {
+        if(action.payload.newCoins !== undefined) {
+            state.coins = action.payload.newCoins;
+        }
+    });
+
+    // 3. COMPRA DE TÍTULO (API)
+    builder.addCase(buyTitleAPI.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(buyTitleAPI.fulfilled, (state, action) => {
+      state.loading = false;
+      // Atualiza com os dados reais vindos do banco
+      state.coins = action.payload.coins;
+      state.ownedTitles = action.payload.ownedTitles;
+    })
+    .addCase(buyTitleAPI.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+
+    // 4. EQUIPAR TÍTULO (API)
+    builder.addCase(equipTitleAPI.fulfilled, (state, action) => {
+      state.equippedTitle = action.payload.title;
+    });
+
+    // 5. LOGOUT (Limpa tudo)
     builder.addCase(logout, (state) => {
-      state.rankingPoints = 0;
       state.coins = 0;
       state.ownedTitles = [];
       state.equippedTitle = null;
-      state.completedChallenges = [];
-      state.currentUserId = null;
     });
   },
 });
-
-export const { 
-  setCurrentUser, 
-  saveUserData,
-  buyTitle, 
-  equipTitle, 
-  addPoints, 
-  completeChallenge, 
-  clearCurrentUser, 
-  resetShop 
-} = shopSlice.actions;
 
 export default shopSlice.reducer;

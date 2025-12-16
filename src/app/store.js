@@ -1,49 +1,25 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+
+// Imports dos Slices
 import authReducer from './slices/authSlice';
 import trophyReducer from './slices/trophySlice';
 import shopReducer from './slices/shopSlice';
 import libraryReducer from './slices/librarySlice';
 import genrePlatformReducer from './slices/genrePlatformSlice';
 import gamesReducer from './slices/gamesSlice';
+import rankingReducer from './slices/rankingSlice'; 
 
-const authPersistConfig = {
-  key: 'auth',
-  storage,
-};
+// --- CONFIGURAÇÕES DE PERSISTÊNCIA (Recriadas aqui para corrigir o erro) ---
+const authPersistConfig = { key: 'auth', storage };
+const trophyPersistConfig = { key: 'trophies', storage };
+const shopPersistConfig = { key: 'shop', storage };
+const libraryPersistConfig = { key: 'library', storage };
+const genrePlatformPersistConfig = { key: 'genrePlatform', storage };
+const gamesPersistConfig = { key: 'games', storage };
 
-const trophyPersistConfig = {
-  key: 'trophies',
-  storage,
-  whitelist: ['userData', 'currentUserId'],
-};
-
-const libraryPersistConfig = {
-  key: 'library',
-  storage,
-  whitelist: ['library', 'stats', 'currentUserId'],
-};
-
-const genrePlatformPersistConfig = {
-  key: 'genrePlatform',
-  storage,
-  whitelist: ['genres', 'platforms'],
-};
-
-const shopPersistConfig = {
-  key: 'shop',
-  storage,
-  whitelist: ['userData', 'currentUserId', 'permanentUsers'],
-};
-
-
-const gamesPersistConfig = {
-  key: 'games',
-  storage,
-  whitelist: ['items'], 
-};
-
+// --- CRIAÇÃO DOS REDUCERS PERSISTIDOS ---
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 const persistedTrophyReducer = persistReducer(trophyPersistConfig, trophyReducer);
 const persistedShopReducer = persistReducer(shopPersistConfig, shopReducer); 
@@ -59,6 +35,7 @@ export const store = configureStore({
     trophies: persistedTrophyReducer,
     shop: persistedShopReducer,
     games: persistedGamesReducer, 
+    ranking: rankingReducer, // O ranking fica normal (sem persist) para atualizar sempre
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

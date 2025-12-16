@@ -1,31 +1,22 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginSuccess, logout } from './slices/authSlice';
-import { MOCK_USER } from '../pages/User/userMock';
-import { setCurrentTrophyUser, clearCurrentTrophyUser } from './slices/trophySlice';
-import { setCurrentUser, clearCurrentUser } from './slices/shopSlice';
+// Importamos a ação de limpar e a ação de buscar do backend
+import { clearTrophies, fetchUserProgress } from './slices/trophySlice';
 
 const AuthSync = () => {
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const userId = MOCK_USER.id || MOCK_USER.email;
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  
+  // Usa o ID do usuário real logado
+  const userId = user?.id || user?._id;
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token === MOCK_USER.token) {
-      dispatch(loginSuccess({ token, user: MOCK_USER }));
+    if (isAuthenticated && userId) {
+      // SUCESSO: Se logou, chama o Backend para buscar os troféus desse usuário
+      dispatch(fetchUserProgress());
     } else {
-      dispatch(logout());
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(setCurrentUser(userId));
-      dispatch(setCurrentTrophyUser(userId));
-    } else {
-      dispatch(clearCurrentUser());
-      dispatch(clearCurrentTrophyUser());
+      // LOGOUT: Se saiu, limpa a memória do Redux
+      dispatch(clearTrophies());
     }
   }, [isAuthenticated, userId, dispatch]);
 

@@ -1,87 +1,39 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { completeChallenge } from "../app/slices/shopSlice";
-import { monthlyChallenges} from "../sample"
+import { completeChallengeAPI } from "../app/thunks/rankingThunks"; 
+import { monthlyChallenges } from "../sample"; 
 import "./Challenge.css";
 
 function Challenge() {
   const dispatch = useDispatch();
-  const { rankingPoints, completedChallenges, equippedTitle, permanentUsers } = useSelector((state) => state.shop);
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  
+  // Como atualizamos o authSlice, esses dados mudam sozinhos na tela!
+  const rankingPoints = user?.rankingPoints || 0;
+  const completedChallengesIDs = user?.completedChallenges || [];
 
   const [selectedDay, setSelectedDay] = useState(new Date().getDate()); 
   const today = new Date().getDate();
   const selectedChallenge = monthlyChallenges.find(ch => ch.day === selectedDay);
-  const isChallengeCompleted = isAuthenticated && completedChallenges.includes(selectedDay);
+  
+  const isChallengeCompleted = isAuthenticated && completedChallengesIDs.includes(selectedDay);
 
-  const handleCompleteChallenge = () => {
-    dispatch(completeChallenge({ 
-      day: selectedDay, 
-      points: selectedChallenge.points 
-    }));
+  const handleCompleteChallenge = async () => {
+    if (!isAuthenticated) return;
 
-    const currentUserData = {
-      id: user?.id || `user_${Date.now()}`,
-      name: (typeof user === 'object' && user !== null) ? user.name : user,
-      avatar: user?.avatar || "https://i.pravatar.cc/100?img=3",
-      platinums: user?.platinums || 0,
-      totalTrophies: user?.totalTrophies || 0,
-      equippedTitle: equippedTitle,
-      allTimePoints: rankingPoints + selectedChallenge.points,
-    };
-
-    const userExists = selectedChallenge.completedBy?.some(
-      u => u.name === currentUserData.name
-    );
-
-    if (!userExists) {
-      if (!selectedChallenge.completedBy) {
-        selectedChallenge.completedBy = [];
-      }
-      selectedChallenge.completedBy.push(currentUserData);
+    // Apenas despacha. O authSlice vai pegar o resultado e atualizar a tela.
+    try {
+        await dispatch(completeChallengeAPI({ 
+            day: selectedDay, 
+            points: selectedChallenge.points 
+        })).unwrap();
+        // Se quiser, pode colocar um toast/alerta aqui: "Desafio completado!"
+    } catch (error) {
+        console.error("Falha ao completar:", error);
+        alert("Erro ao completar desafio. Tente novamente.");
     }
   };
-
-  const getUsersWhoCompleted = () => {
-    const baseUsers = selectedChallenge?.completedBy || [];
-    const permanentUsers = useSelector((state) => state.shop.permanentUsers);
-    
-    if (isChallengeCompleted && user) {
-      const currentUser = {
-        id: user?.id || 'current',
-        name: (typeof user === 'object' && user !== null) ? user.name : user,
-        avatar: user?.avatar || "https://i.pravatar.cc/100?img=3",
-        platinums: user?.platinums || 0,
-        totalTrophies: user?.totalTrophies || 0,
-        equippedTitle: equippedTitle,
-        isCurrentUser: true,
-        allTimePoints: rankingPoints,
-      };
-
-      const userIndex = baseUsers.findIndex(u => u.name === currentUser.name);
-      
-      if (userIndex !== -1) {
-        return baseUsers.map((u, idx) => 
-          idx === userIndex 
-            ? { ...u, ...currentUser, isCurrentUser: true }
-            : u
-        );
-      }
-      
-      return [currentUser, ...baseUsers];
-    }
-    
-    return baseUsers.map(u => {
-      const permanentData = Object.values(permanentUsers).find(p => p.name === u.name);
-      if (permanentData) {
-        return { ...u, equippedTitle: permanentData.equippedTitle };
-      }
-      return u;
-    });
-  };
-
-  const completedByUsers = getUsersWhoCompleted();
 
   return (
     <div className="container mt-3 pt-5 text-center">
@@ -95,7 +47,7 @@ function Challenge() {
       <div className="mb-3">
         {isAuthenticated ? (
           <span style={{ color: '#fa5f69', fontSize: '1.2rem', fontWeight: 'bold' }}>
-            {user?.name}, seus pontos: {rankingPoints}
+            {user?.username}, seus pontos: {rankingPoints}
           </span>
         ) : (
           <span style={{ color: '#ccc', fontSize: '1.2rem' }}>
@@ -113,7 +65,9 @@ function Challenge() {
       <div className="calendar mb-4">
         {monthlyChallenges.map((challenge) => {
           const isFuture = challenge.day > today;
-          const isCompleted = isAuthenticated && completedChallenges.includes(challenge.day);
+          // Verifica se ESSE dia específico está na lista do usuário
+          const isDone = isAuthenticated && completedChallengesIDs.includes(challenge.day);
+          
           return (
             <div
               key={challenge.day}
@@ -123,13 +77,13 @@ function Challenge() {
               onClick={() => {
                 if (!isFuture) setSelectedDay(challenge.day);
               }}
-            style={isCompleted ? { 
+              style={isDone ? { 
                 background: '#4CAF50', 
                 color: 'white',
                 fontWeight: 'bold' 
               } : {}}
             >
-              {isCompleted ? '✓' : challenge.day}
+              {isDone ? '✓' : challenge.day}
             </div>
           );
         })}
@@ -163,76 +117,6 @@ function Challenge() {
         </p>
       )}
     </div>
-
-    <div className="ranking-list container text-start">
-      <div className="ranking-header d-none d-md-flex align-items-center justify-content-between mb-3">
-        <div className="d-flex align-items-center">
-          <span className="ms-3" style={{width: '200px'}}>Usuário</span>
-        </div>
-        <div className="d-flex align-items-center">
-          <div className="user-stats text-end">
-            <span className="stat-item">Platinas</span>
-            <span className="stat-item">Troféus</span>
-          </div>
-            <div className="trophies text-end ps-3">Pontos</div>
-        </div>
-      </div>
-      
-      <div className="section-line d-md-none"></div>
-      
-      {completedByUsers.length > 0 ? (
-        completedByUsers.map((userItem, index) => (
-          <div 
-            key={userItem.id} 
-            className="ranking-row"
-            style={userItem.isCurrentUser ? { 
-              border: '2px solid #fa5f69',
-              background: 'rgba(250, 95, 105, 0.1)'
-            } : {}}
-          >
-            <div className="d-flex align-items-center">
-              <span className="rank-number">{index + 1}</span>
-              <img src={userItem.avatar} alt={userItem.name} className="avatar-small ms-3" />
-              <div className="ms-3">
-                <div className="d-flex align-items-center">
-                  <span className="username" style={{fontSize: '1rem', marginTop: 0}}>
-                    {userItem.name}
-                  </span>
-                  {userItem.isCurrentUser && (
-                    <span style={{ color: '#fa5f69', marginLeft: '8px', fontSize: '0.9rem' }}>
-                      (Você) ⭐
-                    </span>
-                  )}
-                </div>
-                {userItem.equippedTitle && (
-                  <div style={{ fontSize: '0.75rem', color: '#ccc' }}>
-                    {userItem.equippedTitle}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="d-flex">
-              <div className="user-stats">
-                <span className="stat-item" title="Platinas">
-                  {userItem.platinums || 0}
-                </span>
-                <span className="stat-item" title="Total de Troféus">
-                  {userItem.totalTrophies || 0}
-                </span>
-                <span className="trophies text-end ps-3">
-                  {userItem.allTimePoints || 0}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))
-      ) : (
-        <p style={{ color: '#ccc', textAlign: 'center' }}>
-          Ninguém completou este desafio ainda. Seja o primeiro!
-        </p>
-      )}
-      </div>
     </div>
   );
 }
