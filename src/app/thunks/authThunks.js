@@ -1,5 +1,3 @@
-// src/app/thunks/authThunks.js
-
 import {
   loginSuccess,
   loginFailure,
@@ -7,7 +5,6 @@ import {
 
 const API_URL = 'http://localhost:3000';
 
-// --- FUNÇÃO DE LOGIN (NOVA) ---
 export const loginUser = (credentials) => async (dispatch) => {
   try {
     const response = await fetch(`${API_URL}/users/login`, {
@@ -20,7 +17,6 @@ export const loginUser = (credentials) => async (dispatch) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      // Tenta ler JSON de erro, senão usa o texto puro
       try {
           const jsonError = JSON.parse(errorText);
           throw new Error(jsonError.message || 'Erro ao fazer login');
@@ -30,23 +26,18 @@ export const loginUser = (credentials) => async (dispatch) => {
     }
 
     const result = await response.json();
-    
-    // CORREÇÃO CRÍTICA AQUI:
-    // O backend retorna tudo junto em result.data: { token, id, username, email... }
-    // Precisamos separar o token do resto dos dados do usuário.
     const { token, ...userData } = result.data; 
 
     const userPayload = {
         token: token,
-        user: userData // Aqui vai ter id, username, coins, etc.
+        user: userData 
     };
 
-    // Salva no LocalStorage
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
 
     dispatch(loginSuccess(userPayload));
-    return true; // Sucesso
+    return true; 
 
   } catch (error) {
     console.error('Erro no login:', error);
@@ -55,7 +46,6 @@ export const loginUser = (credentials) => async (dispatch) => {
   }
 };
 
-// --- FUNÇÃO DE REGISTRO (JÁ EXISTENTE - MANTIDA IGUAL) ---
 export const registerUser = (userData) => async (dispatch) => {
   try {
     const response = await fetch(`${API_URL}/users/register`, {
@@ -65,9 +55,6 @@ export const registerUser = (userData) => async (dispatch) => {
       },
       body: JSON.stringify(userData),
     });
-
-    // ... (Mantenha o resto da sua função registerUser igual estava antes) ...
-    // Se quiser, pode copiar o código do arquivo anterior, mas o foco é adicionar o loginUser acima.
     
     const contentType = response.headers.get("content-type");
     if (!response.ok) {

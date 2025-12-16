@@ -1,28 +1,21 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchRankingList } from "../app/thunks/rankingThunks"; // Importe o Thunk
+import { fetchRankingList } from "../app/thunks/rankingThunks"; 
 import "./RankingMain.css";
 
 function RankingMain() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  
-  // Pegamos a lista do novo slice de ranking
   const rankingList = useSelector((state) => state.ranking?.list || []);
   const { rankingPoints } = useSelector((state) => state.shop);
+  const [activeTab, setActiveTab] = useState("all"); 
 
-  const [activeTab, setActiveTab] = useState("all"); // Padrão 'all' pois o backend retorna o total
-
-  // Ao entrar na tela, busca os dados atualizados do banco
   useEffect(() => {
     dispatch(fetchRankingList());
   }, [dispatch]);
 
-  // Como o backend atual retorna o Ranking Geral (Total), vamos usar a mesma lista
-  // Futuramente você pode criar filtros no backend para semana/mês
   const getCurrentData = () => {
-    // Adiciona uma flag 'isCurrentUser' para destacar você na lista
     return rankingList.map(u => ({
       ...u,
       isCurrentUser: user && (u.name === user.username || u.name === user.name)

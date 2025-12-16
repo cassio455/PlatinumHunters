@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { completeChallengeAPI } from '../thunks/rankingThunks'; 
+import * as rankingThunks from '../thunks/rankingThunks'; 
 
 const initialState = {
   isAuthenticated: false,
@@ -16,10 +16,8 @@ export const authSlice = createSlice({
       state.isAuthenticated = true;
       state.token = action.payload.token;
       
-      // Garantia de integridade dos dados ao logar
       state.user = {
         ...action.payload.user,
-        // Se vier undefined, forçamos um array/valor padrão para não quebrar a tela
         completedChallenges: action.payload.user.completedChallenges || [],
         coins: action.payload.user.coins || 0,
         rankingPoints: action.payload.user.rankingPoints || 0,
@@ -43,7 +41,7 @@ export const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(completeChallengeAPI.fulfilled, (state, action) => {
+    builder.addCase(rankingThunks.completeChallengeAPI.fulfilled, (state, action) => {
       if (state.user) {
         state.user.rankingPoints = action.payload.newPoints; 
         state.user.completedChallenges = action.payload.completedChallenges;
@@ -52,6 +50,12 @@ export const authSlice = createSlice({
              state.user.coins = action.payload.newCoins;
         }
       }
+    });
+    builder.addCase(rankingThunks.deleteChallengeAPI.fulfilled, (state, action) => {
+        if (state.user && state.user.completedChallenges) {
+            const dayDeleted = action.payload;
+            state.user.completedChallenges = state.user.completedChallenges.filter(day => day !== dayDeleted);
+        }
     });
   }
 });

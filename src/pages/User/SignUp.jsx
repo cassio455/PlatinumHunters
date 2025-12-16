@@ -4,32 +4,21 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { registerUser } from '../../app/thunks/authThunks'; 
 import { useState, useEffect } from 'react';
-import { User, Plus } from 'lucide-react'; // Ícones bonitos
+import { User, Plus } from 'lucide-react';
 import './auth.css';
 
-// Lista de avatares pré-definidos (Usei temas de jogos/pixel art)
 const AVATAR_OPTIONS = [
-  "https://i.pravatar.cc/150?img=11", // Homem clássico
-  "https://i.pravatar.cc/150?img=5",  // Mulher sorrindo
-  "https://i.pravatar.cc/150?img=13", // Executivo
-  "https://i.pravatar.cc/150?img=9",  // Mulher cabelo curto
-  "https://i.pravatar.cc/150?img=60", // Estilo mais velho
-  "https://i.pravatar.cc/150?img=3",  // O que você já usava
-  "https://avatar.iran.liara.run/public/boy?username=Ash", // Estilo Cartoon Boy
-  "https://avatar.iran.liara.run/public/girl?username=Misty", // Estilo Cartoon Girl
-  "https://avatar.iran.liara.run/public/job/doctor/male", 
-  "https://avatar.iran.liara.run/public/job/operator/female",
+  "https://i.pravatar.cc/150?img=11",
+  "https://i.pravatar.cc/150?img=13", 
+  "https://i.pravatar.cc/150?img=5",
 ];
 
 const SignUp = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
-  // Estados para o Avatar
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
-  
   const [localError, setLocalError] = useState("");
   const { isAuthenticated, error: reduxError } = useSelector((state) => state.auth);
 
@@ -43,14 +32,13 @@ const SignUp = () => {
   const onSubmit = async (data) => {
     setLocalError("");
     
-    // Se o usuário não escolher avatar, usamos um padrão aleatório ou fixo
     const finalAvatar = selectedAvatar || "https://i.pravatar.cc/150?img=68";
 
     const payload = {
         username: data.name, 
         email: data.email,
         password: data.password,
-        profileImageUrl: finalAvatar // Envia a imagem escolhida para o Backend
+        profileImageUrl: finalAvatar
     };
 
     const success = await dispatch(registerUser(payload));
@@ -63,7 +51,6 @@ const SignUp = () => {
           <h2 className="mb-2 text-center text-white">Criar Conta</h2>
           <p className="text-center text-secondary mb-4">Junte-se aos caçadores de troféus</p>
           
-          {/* --- SELETOR DE AVATAR --- */}
           <div className="d-flex justify-content-center mb-4">
             <div 
               className="position-relative cursor-pointer" 
@@ -89,7 +76,6 @@ const SignUp = () => {
                 )}
               </div>
               
-              {/* Círculo com + */}
               <div 
                 className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
                 style={{
@@ -105,7 +91,6 @@ const SignUp = () => {
               </div>
             </div>
           </div>
-          {/* ------------------------- */}
 
           {(reduxError || localError) && <Alert variant="danger">{reduxError || localError}</Alert>}
 
@@ -171,7 +156,6 @@ const SignUp = () => {
         </Card.Body>
       </Card>
 
-      {/* --- MODAL DE SELEÇÃO DE AVATAR --- */}
       <Modal 
         show={showAvatarModal} 
         onHide={() => setShowAvatarModal(false)} 

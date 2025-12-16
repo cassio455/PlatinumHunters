@@ -4,8 +4,6 @@ import "./Main.css"
 
 function Main() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-
-  // --- DADOS ESTÁTICOS (MANTIDOS IGUAIS) ---
   const games = [
     { id: 1, title: "Hollow Knight: Silksong", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3vtl.jpg" },
     { id: 2, title: "Hollow Knight", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co93cr.jpg" },
@@ -45,9 +43,6 @@ function Main() {
     }
   ];
 
-  // --- CORREÇÃO AQUI ---
-  // Antes estava: state.auth.user?.name
-  // Mudamos para: state.auth.user?.username
   const name = useSelector((state) => state.auth.user?.username) || "visitante";
   
   return (

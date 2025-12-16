@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { InputGroup, Form, Button, Card, Alert } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { loginUser } from '../../app/thunks/authThunks'; // Importa a nova função
+import { loginUser } from '../../app/thunks/authThunks';
 import { useState, useEffect } from 'react';
 import './auth.css';
 
@@ -10,8 +10,6 @@ const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
-  // Pega erro global do Redux ou local
   const { isAuthenticated, error: reduxError } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -21,13 +19,10 @@ const Login = () => {
   }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data) => {
-    // Chama o thunk passando email e senha
     const success = await dispatch(loginUser({
       email: data.email,
       password: data.password
     }));
-    
-    // O redirecionamento acontece no useEffect quando isAuthenticated virar true
   };
 
   return (
@@ -35,7 +30,6 @@ const Login = () => {
       <Card.Body className="p-4 w-100">
         <h2 className="mb-4 text-center">Login</h2>
         
-        {/* Mostra erro se houver */}
         {reduxError && <Alert variant="danger">{reduxError}</Alert>}
 
         <Form onSubmit={handleSubmit(onSubmit)}>

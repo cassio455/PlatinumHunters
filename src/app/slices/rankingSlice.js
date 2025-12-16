@@ -1,10 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-// MUDANÇA: Apenas importa fetchRankingList (única que existe no Thunks que você mandou)
-import { fetchRankingList } from '../thunks/rankingThunks'; 
+import * as rankingThunks from '../thunks/rankingThunks'; 
 
 const initialState = {
-  list: [], // Lista do ranking de usuários
-  challenges: [], // Deixamos vazio por enquanto
+  list: [], 
+  challenges: [],
   loading: false,
   error: null,
 };
@@ -14,22 +13,37 @@ const rankingSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // --- USUÁRIOS RANKING ---
-    builder.addCase(fetchRankingList.pending, (state) => {
+    builder.addCase(rankingThunks.fetchRankingList.pending, (state) => {
       state.loading = true;
     });
-    builder.addCase(fetchRankingList.fulfilled, (state, action) => {
+    builder.addCase(rankingThunks.fetchRankingList.fulfilled, (state, action) => {
       state.loading = false;
       state.list = action.payload;
-      state.error = null;
     });
-    builder.addCase(fetchRankingList.rejected, (state, action) => {
+    builder.addCase(rankingThunks.fetchRankingList.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
     });
 
-    // MUDANÇA: Removemos todas as referências a fetchChallengesList, saveChallengeAPI, deleteChallengeAPI
-    // pois elas quebram o código neste momento.
+    builder.addCase(rankingThunks.fetchChallengesList.fulfilled, (state, action) => {
+        state.challenges = action.payload;
+    });
+
+    builder.addCase(rankingThunks.saveChallengeAPI.fulfilled, (state, action) => {
+        const saved = action.payload;
+        const index = state.challenges.findIndex(c => c.day === saved.day);
+        
+        if (index !== -1) {
+            state.challenges[index] = saved;
+        } else {
+            state.challenges.push(saved);
+        }
+    });
+
+    builder.addCase(rankingThunks.deleteChallengeAPI.fulfilled, (state, action) => {
+        const dayToDelete = action.payload;
+        state.challenges = state.challenges.filter(c => c.day !== dayToDelete);
+    });
   },
 });
 

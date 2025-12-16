@@ -11,15 +11,12 @@ import genrePlatformReducer from './slices/genrePlatformSlice';
 import gamesReducer from './slices/gamesSlice';
 import rankingReducer from './slices/rankingSlice'; 
 
-// --- CONFIGURAÇÕES DE PERSISTÊNCIA (Recriadas aqui para corrigir o erro) ---
 const authPersistConfig = { key: 'auth', storage };
 const trophyPersistConfig = { key: 'trophies', storage };
 const shopPersistConfig = { key: 'shop', storage };
 const libraryPersistConfig = { key: 'library', storage };
 const genrePlatformPersistConfig = { key: 'genrePlatform', storage };
 const gamesPersistConfig = { key: 'games', storage };
-
-// --- CRIAÇÃO DOS REDUCERS PERSISTIDOS ---
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 const persistedTrophyReducer = persistReducer(trophyPersistConfig, trophyReducer);
 const persistedShopReducer = persistReducer(shopPersistConfig, shopReducer); 
@@ -35,7 +32,7 @@ export const store = configureStore({
     trophies: persistedTrophyReducer,
     shop: persistedShopReducer,
     games: persistedGamesReducer, 
-    ranking: rankingReducer, // O ranking fica normal (sem persist) para atualizar sempre
+    ranking: rankingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

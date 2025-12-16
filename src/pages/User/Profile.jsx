@@ -1,7 +1,6 @@
 import { Image, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../app/slices/authSlice';
-// REMOVIDO: import { clearCurrentUser } from '../../app/slices/shopSlice'; (Não é mais necessário)
 import { fetchUserLibrary } from '../../app/thunks/libraryThunks';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -12,17 +11,12 @@ import './auth.css';
 const Profile = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    
     const user = useSelector((state) => state.auth.user);
     const userName = user?.username || 'Usuário'; 
     const userId = user?.id;
-
     const stats = useSelector((state) => state.library?.stats || { total: 0, platinado: 0, jogando: 0 });
     const library = useSelector((state) => state.library?.library || []);
     const loading = useSelector((state) => state.library?.loading || false);
-    
-    // Removida variável 'error' não utilizada para limpar warnings
-    // const error = useSelector((state) => state.library?.error || null);
 
     useEffect(() => {
         if (userId) {
@@ -31,8 +25,6 @@ const Profile = () => {
     }, [dispatch, userId]);
 
     const handleLogout = () => {
-        // REMOVIDO: dispatch(clearCurrentUser()); 
-        // Agora o shopSlice escuta o 'logout' automaticamente e limpa os dados sozinho.
         dispatch(logout());
         
         localStorage.removeItem('token');
