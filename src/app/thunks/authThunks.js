@@ -58,3 +58,6 @@ export const signupUser = (userData) => async (dispatch) => {
     return { success: false, error: error.message };
   }
 };
+
+// Alias para compatibilidade com código da main
+export const registerUser = signupUser;

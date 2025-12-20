@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleTrophyCompletion, markAllTrophies, unmarkAllTrophies } from "../app/slices/trophySlice";
+// Importando ambos os thunks agora
+import { toggleTrophyThunk, toggleAllTrophiesThunk } from "../app/thunks/trophyThunks";
 import { TROPHIES } from "../data/trophiesData";
 import "./TrophyDetails.css";
 
@@ -34,7 +35,7 @@ function TrophyDetails() {
   }, [gameTrophies, completedStatus]);
 
   const toggleCompleted = (trophyName, originalIndex) => {
-    dispatch(toggleTrophyCompletion({ 
+    dispatch(toggleTrophyThunk({ 
       gameId: id, 
       trophyName: trophyName,
       originalIndex: originalIndex
@@ -43,15 +44,24 @@ function TrophyDetails() {
 
   const areAllCompleted = useMemo(() => {
     if (gameTrophies.length === 0) return false;
+    // Compara a quantidade de troféus do jogo com a quantidade marcada como true
     return gameTrophies.length === Object.values(completedStatus).filter(t => t.isCompleted).length;
   }, [completedStatus, gameTrophies]);
 
+  // --- NOVA FUNÇÃO DE MARCAR TODOS ---
   const handleToggleAll = (event) => {
-    if (event.target.checked) {
-      dispatch(markAllTrophies(id));
-    } else {
-      dispatch(unmarkAllTrophies(id));
-    }
+    // Se todos já estão marcados, queremos desmarcar (false). 
+    // Se falta algum, queremos marcar tudo (true).
+    const newState = !areAllCompleted;
+    
+    // Precisamos enviar a lista de nomes para o backend saber quais troféus existem nesse jogo
+    const allTrophyNames = gameTrophies.map(t => t.name);
+
+    dispatch(toggleAllTrophiesThunk({ 
+      gameId: id, 
+      allTrophies: allTrophyNames,
+      markAll: newState
+    }));
   };  
 
   return (

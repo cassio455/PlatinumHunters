@@ -1,7 +1,6 @@
 import { Image, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../app/slices/authSlice';
-import { clearCurrentUser } from '../../app/slices/shopSlice';
 import { fetchUserLibrary } from '../../app/thunks/libraryThunks';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -16,7 +15,7 @@ const Profile = () => {
     const stats = useSelector((state) => state.library?.stats || { total: 0, platinado: 0, jogando: 0 });
     const library = useSelector((state) => state.library?.library || []);
     const loading = useSelector((state) => state.library?.loading || false);
-    const error = useSelector((state) => state.library?.error || null);
+    const error = useSelector((state) => state.library?.error);
 
     useEffect(() => {
         // Fetch library without userId - backend uses auth token
@@ -24,22 +23,22 @@ const Profile = () => {
     }, [dispatch]);
 
     const handleLogout = () => {
-        dispatch(clearCurrentUser());
         dispatch(logout());
+
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         navigate('/user/login');
     };
 
-    if (loading || error) {
+    if (loading) {
         return (
             <LibraryStatus
                 loading={loading}
-                loadingMessage="Carregando itens..."
+                loadingMessage="Carregando perfil..."
                 error={!!error}
                 errorMessage={error}
                 onRetry={() => dispatch(fetchUserLibrary({}, true))}
-                errorTitle="Erro ao carregar jogos"
+                errorTitle="Erro ao carregar perfil"
             />
         );
     }

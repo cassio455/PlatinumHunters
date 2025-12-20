@@ -53,7 +53,9 @@ function Main() {
       likes: 18
     }
   ];
+
   const username = user?.username || "visitante";
+
   return (
     <div className="main-page container mt-5 pt-5">
       <h1 className="welcome-text mb-4">

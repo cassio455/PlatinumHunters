@@ -40,7 +40,9 @@ const Login = () => {
     <Card className="d-flex align-items-center justify-content-center mx-auto bg-dark-custom" style={{ minHeight: '80vh', maxWidth: '450px', width: '100%', marginTop: '5vh' }}>
       <Card.Body className="p-4 w-100">
         <h2 className="mb-4 text-center">Login</h2>
+
         {loginError && <Alert variant="danger">{loginError}</Alert>}
+
         <Form onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className="mb-3" controlId="formEmailLogin">
             <Form.Label>Email</Form.Label>
@@ -58,6 +60,7 @@ const Login = () => {
               {errors.email?.message}
             </Form.Control.Feedback>
           </Form.Group>
+
           <Form.Group className="mb-3" controlId="formPasswordLogin">
             <Form.Label>Senha</Form.Label>
             <InputGroup>
