@@ -68,7 +68,7 @@ const AdicionarJogo = () => {
     // Use a temporary gameId (in production, you'd select from existing games or create new one)
     const tempGameId = String(Date.now());
 
-    const result = await dispatch(addGameToLibrary(tempGameId, 'owned', gameData));
+    const result = await dispatch(addGameToLibrary(tempGameId, 'Jogando', gameData));
 
     setSubmitting(false);
 
@@ -99,90 +99,129 @@ const AdicionarJogo = () => {
   }
 
   return (
-    <Card className="d-flex align-items-center justify-content-center mx-auto" style={{ minHeight: '80vh', maxWidth: '450px', width: '100%', marginTop: '5vh' }}>
-      <Card.Body className="p-4 w-100">
-        <h2 className="mb-4 text-center">Adicionar jogo a biblioteca</h2>
-        {submitError && (
-          <Alert variant="danger" dismissible onClose={() => setSubmitError(null)}>
-            {submitError}
-          </Alert>
-        )}
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <Form.Group className="mb-3" controlId="formGameName">
-            <Form.Label>Nome do Jogo</Form.Label>
-            <InputGroup>
-              <Form.Control
-                type="text"
-                placeholder="Digite o nome do jogo"
-                className="bg-dark text-white border-secondary custom-placeholder"
-                {...register('game', { required: 'Nome obrigatório' })}
-                isInvalid={!!errors.game}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.game?.message}
-              </Form.Control.Feedback>
-            </InputGroup>
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formGameGenre">
-            <Form.Label>Gêneros do Jogo</Form.Label>
-            <div className="mb-2">
-              {selectedGenres.map(g => (
-                <Badge key={g.id || g.name} bg="secondary" className="me-1">
-                  {g.name} <span style={{ cursor: 'pointer' }} onClick={() => handleRemoveGenre(g.id)}>×</span>
-                </Badge>
-              ))}
-            </div>
-            <InputGroup>
-              <Form.Control
-                type="text"
-                placeholder="Digite para buscar gêneros"
-                className="bg-dark text-white border-secondary custom-placeholder"
-                value={genreInput}
-                onChange={(e) => setGenreInput(e.target.value)}
-              />
-            </InputGroup>
+    <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh', paddingTop: '100px', paddingBottom: '40px' }}>
+      <Card className="bg-dark-custom shadow-lg" style={{ maxWidth: '500px', width: '100%', border: '1px solid #333', borderRadius: '15px' }}>
+        <Card.Body className="p-4">
+          <h2 className="mb-2 text-center text-white">Adicionar Jogo</h2>
+          <p className="text-center text-secondary mb-4">Adicione um novo jogo à sua biblioteca</p>
 
-            {filteredGenreSuggestions.length > 0 && (
-              <ListGroup className="mt-1 position-relative" style={{ zIndex: 2000 }}>
-                {filteredGenreSuggestions.map(g => (
-                  <ListGroup.Item key={g.id} action onClick={() => handleSelectGenre(g)}>
-                    {g.name}
-                  </ListGroup.Item>
+          {submitError && (
+            <Alert variant="danger" dismissible onClose={() => setSubmitError(null)}>
+              {submitError}
+            </Alert>
+          )}
+
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form.Group className="mb-3" controlId="formGameName">
+              <Form.Label className="text-light">Nome do Jogo</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type="text"
+                  placeholder="Ex: The Last of Us"
+                  className="bg-dark text-white border-secondary custom-placeholder"
+                  {...register('game', { required: 'Nome obrigatório' })}
+                  isInvalid={!!errors.game}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.game?.message}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formGameGenre">
+              <Form.Label className="text-light">Gêneros do Jogo</Form.Label>
+              <div className="mb-2">
+                {selectedGenres.map(g => (
+                  <Badge
+                    key={g.id || g.name}
+                    bg="dark"
+                    className="me-1 mb-1"
+                    style={{
+                      border: '1px solid #fa5f69',
+                      color: '#fa5f69',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {g.name} <span onClick={() => handleRemoveGenre(g.id)}>×</span>
+                  </Badge>
                 ))}
-              </ListGroup>
-            )}
-            <Form.Text className="info-text">Selecione um ou mais gêneros pela lista (filtrada).</Form.Text>
-            <Form.Control type="hidden" {...register('genres', { validate: () => selectedGenres.length > 0 || 'No mínimo um gênero é obrigatório' })} value={selectedGenres.map(g => g.id).join(',')} />
-            <Form.Control.Feedback type="invalid">
-              {errors.genres?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formGamePlatform">
-            <Form.Label>Plataforma do Jogo</Form.Label>
-            <InputGroup>
-              <Form.Control
-                type="text"
-                placeholder="Digite a plataforma do jogo"
-                className="bg-dark text-white border-secondary custom-placeholder"
-                {...register('platform', { required: 'No mínimo uma plataforma é obrigatória' })}
-                isInvalid={!!errors.platform}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.platform?.message}
-              </Form.Control.Feedback>
-            </InputGroup>
-          </Form.Group>
-          <div className="d-flex flex-column flex-md-row gap-2">
-            <Link to={routeUserId ? `/biblioteca/user/${routeUserId}` : `/biblioteca/user/${user?.id ?? 1}`} className="w-100">
-              <Button variant="outline-light" className='w-100 mb-0' disabled={submitting}>Voltar à Biblioteca</Button>
-            </Link>
-            <Button variant="outline-light" type="submit" className='w-100' disabled={submitting}>
-              {submitting ? 'Adicionando...' : 'Adicionar à Biblioteca'}
-            </Button>
-          </div>
-        </Form>
-      </Card.Body>
-    </Card >
+              </div>
+              <InputGroup>
+                <Form.Control
+                  type="text"
+                  placeholder="Digite para buscar gêneros"
+                  className="bg-dark text-white border-secondary custom-placeholder"
+                  value={genreInput}
+                  onChange={(e) => setGenreInput(e.target.value)}
+                />
+              </InputGroup>
+
+              {filteredGenreSuggestions.length > 0 && (
+                <ListGroup className="mt-1" style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                  {filteredGenreSuggestions.map(g => (
+                    <ListGroup.Item
+                      key={g.id}
+                      action
+                      onClick={() => handleSelectGenre(g)}
+                      className="bg-dark text-white border-secondary"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {g.name}
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              )}
+              <Form.Text className="text-secondary">Selecione um ou mais gêneros pela lista.</Form.Text>
+              <Form.Control type="hidden" {...register('genres', { validate: () => selectedGenres.length > 0 || 'No mínimo um gênero é obrigatório' })} value={selectedGenres.map(g => g.id).join(',')} />
+              {errors.genres && (
+                <div className="text-danger small mt-1">{errors.genres?.message}</div>
+              )}
+            </Form.Group>
+
+            <Form.Group className="mb-4" controlId="formGamePlatform">
+              <Form.Label className="text-light">Plataforma do Jogo</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type="text"
+                  placeholder="Ex: PlayStation 5, PC"
+                  className="bg-dark text-white border-secondary custom-placeholder"
+                  {...register('platform', { required: 'No mínimo uma plataforma é obrigatória' })}
+                  isInvalid={!!errors.platform}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.platform?.message}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
+
+            <div className="d-flex gap-2">
+              <Link to={routeUserId ? `/biblioteca/user/${routeUserId}` : `/biblioteca/user/${user?.id ?? 1}`} className="w-100">
+                <Button
+                  variant="outline-secondary"
+                  className='w-100'
+                  disabled={submitting}
+                >
+                  Voltar
+                </Button>
+              </Link>
+              <Button
+                variant="primary"
+                type="submit"
+                className='w-100'
+                disabled={submitting}
+                style={{
+                  backgroundColor: '#fa5f69',
+                  borderColor: '#fa5f69',
+                  boxShadow: '0 4px 15px rgba(250, 95, 105, 0.4)'
+                }}
+              >
+                {submitting ? 'Adicionando...' : 'Adicionar'}
+              </Button>
+            </div>
+          </Form>
+        </Card.Body>
+      </Card>
+    </div>
   );
 
 };

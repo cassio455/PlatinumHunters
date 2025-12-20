@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginSuccess, logout } from './slices/authSlice';
-import { setCurrentTrophyUser, clearCurrentTrophyUser } from './slices/trophySlice';
-import { setCurrentUser, clearCurrentUser } from './slices/shopSlice';
+import { clearTrophies, fetchUserProgress } from './slices/trophySlice';
 
 const AuthSync = () => {
   const dispatch = useDispatch();
@@ -29,11 +28,11 @@ const AuthSync = () => {
 
   useEffect(() => {
     if (isAuthenticated && user?.id) {
-      dispatch(setCurrentUser(user.id));
-      dispatch(setCurrentTrophyUser(user.id));
+      // Busca os dados do usuário quando estiver autenticado
+      dispatch(fetchUserProgress());
     } else {
-      dispatch(clearCurrentUser());
-      dispatch(clearCurrentTrophyUser());
+      // Limpa os dados quando deslogar
+      dispatch(clearTrophies());
     }
   }, [isAuthenticated, user?.id, dispatch]);
 

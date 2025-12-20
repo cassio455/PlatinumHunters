@@ -37,58 +37,68 @@ const Login = () => {
   };
 
   return (
-    <Card className="d-flex align-items-center justify-content-center mx-auto bg-dark-custom" style={{ minHeight: '80vh', maxWidth: '450px', width: '100%', marginTop: '5vh' }}>
-      <Card.Body className="p-4 w-100">
-        <h2 className="mb-4 text-center">Login</h2>
+    <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh', paddingTop: '80px', paddingBottom: '40px' }}>
+      <Card className="bg-dark-custom shadow-lg" style={{ maxWidth: '450px', width: '100%', border: '1px solid #333', borderRadius: '15px' }}>
+        <Card.Body className="p-4">
+          <h2 className="mb-2 text-center text-white">Login</h2>
+          <p className="text-center text-secondary mb-4">Bem-vindo de volta, caçador!</p>
 
-        {loginError && <Alert variant="danger">{loginError}</Alert>}
+          {loginError && <Alert variant="danger">{loginError}</Alert>}
 
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <Form.Group className="mb-3" controlId="formEmailLogin">
-            <Form.Label>Email</Form.Label>
-            <InputGroup>
-              <Form.Control
-                type="email"
-                placeholder="Digite seu email"
-                className="bg-dark text-white border-secondary custom-placeholder"
-                {...register('email', { required: 'Email obrigatório' })}
-                isInvalid={!!errors.email || !!loginError}
-                disabled={loading}
-              />
-            </InputGroup>
-            <Form.Control.Feedback type="invalid">
-              {errors.email?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form.Group className="mb-3" controlId="formEmailLogin">
+              <Form.Label className="text-light">Email</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type="email"
+                  placeholder="seu@email.com"
+                  className="bg-dark text-white border-secondary custom-placeholder"
+                  {...register('email', { required: 'Email obrigatório' })}
+                  isInvalid={!!errors.email || !!loginError}
+                  disabled={loading}
+                />
+              </InputGroup>
+              <Form.Control.Feedback type="invalid">
+                {errors.email?.message}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-          <Form.Group className="mb-3" controlId="formPasswordLogin">
-            <Form.Label>Senha</Form.Label>
-            <InputGroup>
-              <Form.Control
-                type="password"
-                placeholder="Digite sua senha"
-                className="bg-dark text-white border-secondary custom-placeholder"
-                {...register('password', { required: 'Senha obrigatória' })}
-                isInvalid={!!errors.password || !!loginError}
-                disabled={loading}
-              />
-            </InputGroup>
-            <Form.Control.Feedback type="invalid">
-              {errors.password?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Button
-            variant="outline-light"
-            type="submit"
-            className="w-100"
-            disabled={loading}
-          >
-            {loading ? 'Entrando...' : 'Entrar'}
-          </Button>
-        </Form>
-        <Link to="/user/signup" className="d-block mt-3 text-center">Não tem conta? Registre-se</Link>
-      </Card.Body>
-    </Card>
+            <Form.Group className="mb-4" controlId="formPasswordLogin">
+              <Form.Label className="text-light">Senha</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type="password"
+                  placeholder="******"
+                  className="bg-dark text-white border-secondary custom-placeholder"
+                  {...register('password', { required: 'Senha obrigatória' })}
+                  isInvalid={!!errors.password || !!loginError}
+                  disabled={loading}
+                />
+              </InputGroup>
+              <Form.Control.Feedback type="invalid">
+                {errors.password?.message}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Button
+              variant="primary"
+              type="submit"
+              className="w-100 py-2 fw-bold"
+              disabled={loading}
+              style={{
+                backgroundColor: '#fa5f69',
+                borderColor: '#fa5f69',
+                boxShadow: '0 4px 15px rgba(250, 95, 105, 0.4)'
+              }}
+            >
+              {loading ? 'Entrando...' : 'Entrar'}
+            </Button>
+          </Form>
+          <Link to="/user/signup" className="d-block mt-3 text-center text-decoration-none" style={{ color: '#aaa' }}>
+            Não tem conta? <span style={{ color: '#fa5f69' }}>Registre-se</span>
+          </Link>
+        </Card.Body>
+      </Card>
+    </div>
   );
 };
 export default Login;
