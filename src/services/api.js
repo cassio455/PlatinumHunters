@@ -272,6 +272,18 @@ export const authApi = {
       null
     );
   },
+
+  /**
+   * Get authenticated user profile with statistics
+   * GET /users/me
+   */
+  getUserProfile: async (getState) => {
+    return apiRequest(
+      '/users/me',
+      { method: 'GET' },
+      getState
+    );
+  },
 };
 
 export default {

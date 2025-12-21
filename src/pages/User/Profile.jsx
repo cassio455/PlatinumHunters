@@ -1,25 +1,24 @@
 import { Image, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../app/slices/authSlice';
-import { fetchUserLibrary } from '../../app/thunks/libraryThunks';
+import { fetchUserProfile } from '../../app/thunks/authThunks';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import LibraryStatus from '../../components/LibraryStatus';
-import { Trophy, Gamepad2 } from 'lucide-react';
+import { Trophy, Gamepad2, Clock, Star, ListChecks } from 'lucide-react';
 import './auth.css';
 
 const Profile = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const user = useSelector((state) => state.auth.user);
-    const stats = useSelector((state) => state.library?.stats || { total: 0, platinado: 0, jogando: 0 });
-    const library = useSelector((state) => state.library?.library || []);
-    const loading = useSelector((state) => state.library?.loading || false);
-    const error = useSelector((state) => state.library?.error);
+    const statistics = useSelector((state) => state.auth.statistics);
+    const loading = useSelector((state) => state.auth.loading);
+    const error = useSelector((state) => state.auth.error);
 
     useEffect(() => {
-        // Fetch library without userId - backend uses auth token
-        dispatch(fetchUserLibrary());
+        // Fetch user profile with statistics from /users/me
+        dispatch(fetchUserProfile());
     }, [dispatch]);
 
     const handleLogout = () => {
@@ -37,7 +36,7 @@ const Profile = () => {
                 loadingMessage="Carregando perfil..."
                 error={!!error}
                 errorMessage={error}
-                onRetry={() => dispatch(fetchUserLibrary({}, true))}
+                onRetry={() => dispatch(fetchUserProfile())}
                 errorTitle="Erro ao carregar perfil"
             />
         );
@@ -74,30 +73,57 @@ const Profile = () => {
                             <p className="mb-4" style={{ color: '#fa5f69', fontSize: '0.9rem' }}>Suas estatísticas</p>
 
                             <Row className="mb-4 g-3">
-                                <Col>
+                                <Col xs={6} md={4} className="stat-card-animated">
                                     <Card className="text-center stat-card-dark" style={{ border: '1px solid #333', backgroundColor: '#1a1a1a' }}>
                                         <Card.Body className="py-3">
                                             <Trophy size={24} color="#fa5f69" />
-                                            <h4 className="mb-0 mt-2 text-white">{stats.platinado}</h4>
+                                            <h4 className="mb-0 mt-2 text-white">{statistics?.totalPlatinum || 0}</h4>
                                             <small className="text-secondary">Platinados</small>
                                         </Card.Body>
                                     </Card>
                                 </Col>
-                                <Col>
+                                <Col xs={6} md={4} className="stat-card-animated">
                                     <Card className="text-center stat-card-dark" style={{ border: '1px solid #333', backgroundColor: '#1a1a1a' }}>
                                         <Card.Body className="py-3">
                                             <Gamepad2 size={24} color="#fa5f69" />
-                                            <h4 className="mb-0 mt-2 text-white">{stats.jogando}</h4>
+                                            <h4 className="mb-0 mt-2 text-white">{statistics?.totalPlaying || 0}</h4>
                                             <small className="text-secondary">Jogando</small>
                                         </Card.Body>
                                     </Card>
                                 </Col>
-                                <Col>
+                                <Col xs={6} md={4} className="stat-card-animated">
+                                    <Card className="text-center stat-card-dark" style={{ border: '1px solid #333', backgroundColor: '#1a1a1a' }}>
+                                        <Card.Body className="py-3">
+                                            <ListChecks size={24} color="#fa5f69" />
+                                            <h4 className="mb-0 mt-2 text-white">{statistics?.totalCompleted || 0}</h4>
+                                            <small className="text-secondary">Completos</small>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                                <Col xs={6} md={4} className="stat-card-animated">
                                     <Card className="text-center stat-card-dark" style={{ border: '1px solid #333', backgroundColor: '#1a1a1a' }}>
                                         <Card.Body className="py-3">
                                             <Gamepad2 size={24} color="#fa5f69" />
-                                            <h4 className="mb-0 text-white">{stats.total}</h4>
-                                            <small className="text-secondary">Jogos</small>
+                                            <h4 className="mb-0 text-white">{statistics?.totalGamesInLibrary || 0}</h4>
+                                            <small className="text-secondary">Na Biblioteca</small>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                                <Col xs={6} md={4} className="stat-card-animated">
+                                    <Card className="text-center stat-card-dark" style={{ border: '1px solid #333', backgroundColor: '#1a1a1a' }}>
+                                        <Card.Body className="py-3">
+                                            <Clock size={24} color="#fa5f69" />
+                                            <h4 className="mb-0 mt-2 text-white">{statistics?.totalHoursPlayed?.toFixed(1) || 0}h</h4>
+                                            <small className="text-secondary">Jogadas</small>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                                <Col xs={6} md={4} className="stat-card-animated">
+                                    <Card className="text-center stat-card-dark" style={{ border: '1px solid #333', backgroundColor: '#1a1a1a' }}>
+                                        <Card.Body className="py-3">
+                                            <Star size={24} color="#fa5f69" />
+                                            <h4 className="mb-0 mt-2 text-white">{statistics?.averageProgress?.toFixed(1) || 0}%</h4>
+                                            <small className="text-secondary">Progresso Médio</small>
                                         </Card.Body>
                                     </Card>
                                 </Col>
@@ -113,20 +139,19 @@ const Profile = () => {
                                         boxShadow: '0 4px 15px rgba(250, 95, 105, 0.4)'
                                     }}
                                 >
-                                    Ir à Biblioteca
+                                    Biblioteca
                                 </Button>
                                 <Button
-                                    variant="outline-light"
+                                    variant="info"
                                     onClick={() => navigate('/shop')}
-                                    style={{ borderColor: '#fa5f69', color: '#fa5f69' }}
                                 >
                                     Títulos
                                 </Button>
                                 <Button
-                                    variant="outline-secondary"
+                                    variant="outline-danger"
                                     onClick={handleLogout}
                                 >
-                                    Sair
+                                    Logout
                                 </Button>
                             </div>
                         </Card.Body>

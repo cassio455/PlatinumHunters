@@ -5,6 +5,7 @@ const initialState = {
   isAuthenticated: false,
   token: null,
   user: null,
+  statistics: null,
   error: null,
   loading: false,
 };
@@ -51,8 +52,18 @@ export const authSlice = createSlice({
       state.isAuthenticated = false;
       state.token = null;
       state.user = null;
+      state.statistics = null;
       state.error = null;
       state.loading = false;
+    },
+    updateUserProfile: (state, action) => {
+      state.user = {
+        ...state.user,
+        ...action.payload.user,
+      };
+      state.statistics = action.payload.statistics;
+      state.loading = false;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -75,5 +86,5 @@ export const authSlice = createSlice({
   }
 });
 
-export const { authStart, loginSuccess, signupSuccess, loginFailure, logout } = authSlice.actions;
+export const { authStart, loginSuccess, signupSuccess, loginFailure, logout, updateUserProfile } = authSlice.actions;
 export default authSlice.reducer;

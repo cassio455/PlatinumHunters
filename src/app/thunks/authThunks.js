@@ -1,5 +1,23 @@
-import { authStart, loginSuccess, signupSuccess, loginFailure } from '../slices/authSlice';
+import { authStart, loginSuccess, signupSuccess, loginFailure, updateUserProfile } from '../slices/authSlice';
 import { authApi } from '../../services/api';
+
+export const fetchUserProfile = () => async (dispatch, getState) => {
+  try {
+    dispatch(authStart());
+    
+    const result = await authApi.getUserProfile(getState);
+    
+    dispatch(updateUserProfile({
+      user: result.data.user,
+      statistics: result.data.statistics
+    }));
+
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error('Erro ao buscar perfil:', error);
+    return { success: false, error: error.message };
+  }
+};
 
 export const loginUser = (credentials) => async (dispatch) => {
   try {
