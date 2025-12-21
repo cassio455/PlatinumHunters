@@ -25,6 +25,7 @@ function Challenge() {
   const isChallengeCompleted = isAuthenticated && completedChallengesIDs.includes(selectedDay) && !!selectedChallenge;
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({ day: 1, title: '', points: 50 });
+  const isAdmin = isAuthenticated && user?.roles?.includes('ADMIN');
 
   useEffect(() => {
     dispatch(fetchChallengesList());
@@ -122,7 +123,7 @@ function Challenge() {
       </div>
 
     <div className="challenge-card p-4 mb-4 container position-relative">
-      {isAuthenticated && (
+      {isAdmin && (
           <button 
             className="btn btn-sm position-absolute top-0 end-0 m-3 text-white"
             onClick={handleOpenModal}
@@ -175,7 +176,7 @@ function Challenge() {
       ) : (
           <div className="text-secondary py-4">
               <h5>Nenhum desafio para este dia.</h5>
-              {isAuthenticated && <p>Clique em "Criar" no canto superior para adicionar um.</p>}
+              {isAdmin && <p>Clique em "Criar" no canto superior para adicionar um.</p>}
           </div>
       )}
 

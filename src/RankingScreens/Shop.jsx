@@ -11,6 +11,7 @@ function Shop() {
   const navigate = useNavigate();
   const { coins, ownedTitles, equippedTitle, availableTitles, loading } = useSelector((state) => state.shop);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const isAdmin = isAuthenticated && user?.roles?.includes('ADMIN');
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({ id: null, name: '', cost: 100 });
 
@@ -59,7 +60,7 @@ function Shop() {
     <div className="title-shop container mt-3 pt-5">
       <div className="d-flex justify-content-center align-items-center mb-2 position-relative">
           <h2 className="shop-title m-0">Loja de Títulos</h2>
-          {isAuthenticated && (
+          {isAdmin && (
               <button onClick={openCreateModal} className="btn btn-sm btn-outline-light position-absolute end-0" title="Criar Título">
                   <Plus size={20} />
               </button>
@@ -87,7 +88,7 @@ function Shop() {
         
         {availableTitles.map((title) => (
           <div key={title._id || title.id} className="title-card position-relative group-hover">
-            {isAuthenticated && (
+            {isAdmin && (
                 <div className="position-absolute top-0 end-0 p-2" style={{ zIndex: 10 }}>
                     <Pencil 
                         size={16} 
