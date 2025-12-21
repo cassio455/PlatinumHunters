@@ -24,6 +24,18 @@ const createHeaders = (getState, additionalHeaders = {}) => {
 };
 
 /**
+ * Get authentication headers for direct fetch calls
+ * Useful for thunks that don't use apiRequest
+ */
+export const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  };
+};
+
+/**
  * Handle authentication errors globally
  * @param {number} status - HTTP status code
  */
@@ -121,7 +133,7 @@ export const libraryApi = {
    * Add game to library
    * POST /library
    */
-  addToLibrary: async (gameId, status = 'playing', getState) => {
+  addToLibrary: async (gameId, status = 'Jogando', getState) => {
     return apiRequest(
       '/library',
       {
@@ -160,6 +172,28 @@ export const libraryApi = {
   },
 };
 
+/**
+ * Custom Games API Service
+ */
+export const customGamesApi = {
+  /**
+   * Get custom game by ID
+   * GET /library/custom-games (filtered by gameId client-side)
+   */
+  getCustomGameById: async (gameId, getState = null) => {
+    const response = await apiRequest('/library/custom-games', { method: 'GET' }, getState);
+    // API retorna: { message: '...', data: { items: [...] } }
+    const customGames = response.data?.items || [];
+    const customGame = customGames.find(game => game._id === gameId);
+    
+    if (!customGame) {
+      throw new Error('Custom game not found');
+    }
+    
+    return customGame;
+  },
+};
+
 export const gamesApi = {
   /**
    * Get all games with optional pagination
@@ -194,12 +228,14 @@ export const gamesApi = {
    */
   getGenres: async (getState = null) => {
     const response = await apiRequest('/genres', { method: 'GET' }, getState);
-    return response.data || response;
+    // API retorna: { message: '...', data: { items: [...], pagination: {...} } }
+    return response.data?.items || [];
   },
 
   getPlatforms: async (getState = null) => {
     const response = await apiRequest('/platforms', { method: 'GET' }, getState);
-    return response.data || response;
+    // API retorna: { message: '...', data: { items: [...], pagination: {...} } }
+    return response.data?.items || [];
   },
 };
 
@@ -236,6 +272,18 @@ export const authApi = {
       null
     );
   },
+
+  /**
+   * Get authenticated user profile with statistics
+   * GET /users/me
+   */
+  getUserProfile: async (getState) => {
+    return apiRequest(
+      '/users/me',
+      { method: 'GET' },
+      getState
+    );
+  },
 };
 
 export default {
@@ -244,4 +292,5 @@ export default {
   gamesApi,
   authApi,
   API_BASE_URL,
+  getAuthHeaders,
 };

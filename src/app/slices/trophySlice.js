@@ -1,133 +1,128 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { logout } from './authSlice';
+import { 
+    fetchUserProgress, 
+    trackGameThunk, 
+    toggleTrophyThunk,
+    toggleAllTrophiesThunk // <--- NOVO IMPORT
+} from '../thunks/trophyThunks';
 import { TROPHIES } from '../../data/trophiesData';
 
 const initialState = {
-  userData: {},
-  completedTrophies: {},
-  trackedGameIds: [],
-  currentUserId: null,
-};
-
-const saveTrophiesToUserData = (state) => {
-  if (state.currentUserId) {
-    if (!state.userData[state.currentUserId]) {
-      state.userData[state.currentUserId] = {};
-    }
-    state.userData[state.currentUserId].completedTrophies = state.completedTrophies;
-    state.userData[state.currentUserId].trackedGameIds = state.trackedGameIds;
-  }
+  completedTrophies: {}, 
+  trackedGameIds: [],   
+  status: 'idle',       
+  error: null,
 };
 
 export const trophySlice = createSlice({
   name: 'trophies',
   initialState,
   reducers: {
-    setCurrentTrophyUser: (state, action) => {
-      const userId = action.payload;
-      state.currentUserId = userId;
-      
-      const userData = state.userData[userId];
-
-      if (userData) {
-        state.completedTrophies = userData.completedTrophies || {};
-        state.trackedGameIds = userData.trackedGameIds || [];
-      } else {
+    clearTrophies: (state) => {
         state.completedTrophies = {};
         state.trackedGameIds = [];
-        saveTrophiesToUserData(state);
-      }
-    },
-
-    clearCurrentTrophyUser: (state) => {
-      state.completedTrophies = {};
-      state.trackedGameIds = [];
-      state.currentUserId = null;
-    },
-
-    toggleTrophyCompletion: (state, action) => {
-       if (!state.currentUserId) return;
-       const { gameId, trophyName, originalIndex } = action.payload;
-       if (!state.completedTrophies[gameId]) {
-         state.completedTrophies[gameId] = {};
-       }
-       const currentState = state.completedTrophies[gameId][trophyName];
-       state.completedTrophies[gameId][trophyName] = {
-         isCompleted: !currentState?.isCompleted,
-         originalIndex: originalIndex,
-       };
-       saveTrophiesToUserData(state);
-    },
-
-    addTrackedGame: (state, action) => {
-      const gameId = action.payload;
-      if (state.currentUserId && !state.trackedGameIds.includes(gameId)) {
-        state.trackedGameIds.push(gameId);
-        saveTrophiesToUserData(state);
-      }
-    },
-    removeTrackedGame: (state, action) => {
-      const gameIdToRemove = action.payload;
-      if (state.currentUserId) {
-        state.trackedGameIds = state.trackedGameIds.filter(id => id !== gameIdToRemove);
-        saveTrophiesToUserData(state);
-      }
-    },
-
-    markAllTrophies: (state, action) => {
-      const gameId = action.payload;
-      if (!state.currentUserId || !TROPHIES[gameId]) return;
-
-      if (!state.completedTrophies[gameId]) {
-        state.completedTrophies[gameId] = {};
-      }
-
-      TROPHIES[gameId].forEach((trophy, index) => {
-        state.completedTrophies[gameId][trophy.name] = {
-          isCompleted: true,
-          originalIndex: index,
-        };
-      });
-      
-      saveTrophiesToUserData(state);
-    },
-
-    unmarkAllTrophies: (state, action) => {
-      const gameId = action.payload;
-      if (!state.currentUserId || !TROPHIES[gameId]) return;
-
-      if (!state.completedTrophies[gameId]) {
-        state.completedTrophies[gameId] = {};
-      }
-
-      TROPHIES[gameId].forEach((trophy, index) => {
-        state.completedTrophies[gameId][trophy.name] = {
-          isCompleted: false,
-          originalIndex: index,
-        };
-      });
-
-      saveTrophiesToUserData(state);
-    },
+        state.status = 'idle';
+    }
   },
   
   extraReducers: (builder) => {
-    builder.addCase(logout, (state) => {
-      state.completedTrophies = {}; 
-      state.trackedGameIds = []; 
-      state.currentUserId = null;
-    });
+    builder
+      // --- LOGOUT ---
+      .addCase(logout, (state) => {
+        state.completedTrophies = {}; 
+        state.trackedGameIds = []; 
+        state.status = 'idle';
+      })
+
+      // --- FETCH PROGRESS ---
+      .addCase(fetchUserProgress.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchUserProgress.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        const backendData = action.payload; 
+
+        const newCompletedTrophies = {};
+        const newTrackedIds = [];
+
+        Object.keys(backendData).forEach(gameId => {
+            const gameData = backendData[gameId];
+
+            if (gameData.isTracked) {
+                newTrackedIds.push(gameId);
+            }
+
+            if (gameData.completedTrophies && gameData.completedTrophies.length > 0) {
+                newCompletedTrophies[gameId] = {};
+                const gameTrophyList = TROPHIES[gameId] || [];
+
+                gameData.completedTrophies.forEach(trophyName => {
+                    const originalIndex = gameTrophyList.findIndex(t => t.name === trophyName);
+                    newCompletedTrophies[gameId][trophyName] = {
+                        isCompleted: true,
+                        originalIndex: originalIndex !== -1 ? originalIndex : 0
+                    };
+                });
+            }
+        });
+
+        state.completedTrophies = newCompletedTrophies;
+        state.trackedGameIds = newTrackedIds;
+      })
+      .addCase(fetchUserProgress.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // --- TRACK GAME ---
+      .addCase(trackGameThunk.fulfilled, (state, action) => {
+        const { gameId, isTracked } = action.payload;
+        if (isTracked) {
+            if (!state.trackedGameIds.includes(gameId)) state.trackedGameIds.push(gameId);
+        } else {
+            state.trackedGameIds = state.trackedGameIds.filter(id => id !== gameId);
+        }
+      })
+
+      // --- TOGGLE TROPHY (Individual) ---
+      .addCase(toggleTrophyThunk.fulfilled, (state, action) => {
+         const { gameId, trophyName, isCompleted, originalIndex } = action.payload;
+         
+         if (!state.completedTrophies[gameId]) {
+             state.completedTrophies[gameId] = {};
+         }
+
+         state.completedTrophies[gameId][trophyName] = {
+             isCompleted: isCompleted,
+             originalIndex: originalIndex
+         };
+      })
+
+      // --- TOGGLE ALL (NOVO: Marcar/Desmarcar Tudo) ---
+      .addCase(toggleAllTrophiesThunk.fulfilled, (state, action) => {
+        const { gameId, completedTrophies } = action.payload;
+        
+        // Reinicia o objeto desse jogo
+        state.completedTrophies[gameId] = {};
+
+        // Se a lista vier vazia (desmarcou tudo), o objeto fica vazio e pronto.
+        // Se vier cheia, preenchemos tudo como true.
+        if (completedTrophies && completedTrophies.length > 0) {
+            const gameTrophyList = TROPHIES[gameId] || [];
+
+            completedTrophies.forEach(trophyName => {
+                const originalIndex = gameTrophyList.findIndex(t => t.name === trophyName);
+                state.completedTrophies[gameId][trophyName] = {
+                    isCompleted: true,
+                    originalIndex: originalIndex !== -1 ? originalIndex : 0
+                };
+            });
+        }
+      });
   },
 });
 
-export const { 
-  setCurrentTrophyUser, 
-  clearCurrentTrophyUser, 
-  toggleTrophyCompletion,
-  addTrackedGame,
-  removeTrackedGame,
-  markAllTrophies,
-  unmarkAllTrophies
-} = trophySlice.actions;
-
+export const { clearTrophies } = trophySlice.actions;
+export { fetchUserProgress, trackGameThunk, toggleTrophyThunk, toggleAllTrophiesThunk }; 
 export default trophySlice.reducer;

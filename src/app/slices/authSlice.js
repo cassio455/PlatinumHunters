@@ -1,9 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
+import * as rankingThunks from '../thunks/rankingThunks'; 
 
 const initialState = {
   isAuthenticated: false,
   token: null,
   user: null,
+  statistics: null,
   error: null,
   loading: false,
 };
@@ -19,7 +21,16 @@ export const authSlice = createSlice({
     loginSuccess: (state, action) => {
       state.isAuthenticated = true;
       state.token = action.payload.token;
-      state.user = action.payload.user;
+      
+      state.user = {
+        ...action.payload.user,
+        completedChallenges: action.payload.user.completedChallenges || [],
+        coins: action.payload.user.coins || 0,
+        rankingPoints: action.payload.user.rankingPoints || 0,
+        ownedTitles: action.payload.user.ownedTitles || [],
+        equippedTitle: action.payload.user.equippedTitle || null,
+      };
+      
       state.error = null;
       state.loading = false;
     },
@@ -41,11 +52,39 @@ export const authSlice = createSlice({
       state.isAuthenticated = false;
       state.token = null;
       state.user = null;
+      state.statistics = null;
       state.error = null;
       state.loading = false;
     },
+    updateUserProfile: (state, action) => {
+      state.user = {
+        ...state.user,
+        ...action.payload.user,
+      };
+      state.statistics = action.payload.statistics;
+      state.loading = false;
+      state.error = null;
+    },
   },
+  extraReducers: (builder) => {
+    builder.addCase(rankingThunks.completeChallengeAPI.fulfilled, (state, action) => {
+      if (state.user) {
+        state.user.rankingPoints = action.payload.newPoints; 
+        state.user.completedChallenges = action.payload.completedChallenges;
+        
+        if (action.payload.newCoins !== undefined) {
+             state.user.coins = action.payload.newCoins;
+        }
+      }
+    });
+    builder.addCase(rankingThunks.deleteChallengeAPI.fulfilled, (state, action) => {
+        if (state.user && state.user.completedChallenges) {
+            const dayDeleted = action.payload;
+            state.user.completedChallenges = state.user.completedChallenges.filter(day => day !== dayDeleted);
+        }
+    });
+  }
 });
 
-export const { authStart, loginSuccess, signupSuccess, loginFailure, logout } = authSlice.actions;
+export const { authStart, loginSuccess, signupSuccess, loginFailure, logout, updateUserProfile } = authSlice.actions;
 export default authSlice.reducer;

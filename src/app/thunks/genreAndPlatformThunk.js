@@ -11,12 +11,11 @@ export const fetchGenres = () => async (dispatch, getState) =>{
     try{
         dispatch(setLoading(true));
 
-        const data = await gamesApi.getGenres(getState);
+        const items = await gamesApi.getGenres(getState);
         
-        const genres = Array.isArray(data) ? data.map((genre) => ({
-            id: genre.id,
+        const genres = Array.isArray(items) ? items.map((genre) => ({
+            id: genre._id,
             name: genre.name,
-            count: genre.count,
         })) : [];
         
         dispatch(setGenres(genres));
@@ -33,10 +32,10 @@ export const fetchPlatforms = () => async (dispatch, getState) =>{
      try{
         dispatch(setLoading(true));
         
-        const data = await gamesApi.getPlatforms(getState);
+        const items = await gamesApi.getPlatforms(getState);
         
-        const platforms = Array.isArray(data) ? data.map((platform) => ({
-            id: platform.id,
+        const platforms = Array.isArray(items) ? items.map((platform) => ({
+            id: platform._id,
             name: platform.name,
         })) : [];
 

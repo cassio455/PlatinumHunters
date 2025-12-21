@@ -105,7 +105,7 @@ const Jogos = () => {
       genres: game.genres || [],
     };
 
-    const result = await dispatch(addGameToLibrary(String(game._id), 'wishlist', gameData));
+    const result = await dispatch(addGameToLibrary(String(game._id), 'Lista de Desejos', gameData));
 
     setIsAdding(false);
 

@@ -8,7 +8,7 @@ import {
   setPagination,
   setLastFetched,
 } from '../slices/librarySlice';
-import { libraryApi, gamesApi } from '../../services/api';
+import { libraryApi, gamesApi, customGamesApi } from '../../services/api';
 
 // Cache duration: 5 minutes
 const CACHE_DURATION = 5 * 60 * 1000;
@@ -73,11 +73,18 @@ export const fetchUserLibrary = (options = {}, forceRefresh = false) => async (d
     const libraryWithGames = await Promise.all(
       libraryItems.map(async (item) => {
         try {
+          // Tentar buscar como jogo normal primeiro
           const gameData = await gamesApi.getGameById(item.gameId, getState);
           return normalizeLibraryItem(item, gameData);
         } catch (err) {
-          console.warn(`Failed to fetch game ${item.gameId}:`, err.message);
-          return normalizeLibraryItem(item, null);
+          // Se falhar, pode ser um custom game
+          try {
+            const customGameData = await customGamesApi.getCustomGameById(item.gameId, getState);
+            return normalizeLibraryItem(item, customGameData);
+          } catch (customErr) {
+            console.warn(`Failed to fetch game ${item.gameId}:`, err.message);
+            return normalizeLibraryItem(item, null);
+          }
         }
       })
     );
@@ -105,7 +112,7 @@ export const fetchUserLibrary = (options = {}, forceRefresh = false) => async (d
  * Add game to library
  * Uses optimistic update for better UX
  */
-export const addGameToLibrary = (gameId, status = 'playing', gameData = null) => async (dispatch, getState) => {
+export const addGameToLibrary = (gameId, status = 'Jogando', gameData = null) => async (dispatch, getState) => {
   try {
     dispatch(setLoading(true));
 
