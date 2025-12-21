@@ -2,130 +2,253 @@ import {
   setLibrary,
   setLoading,
   setError,
-  updateLibraryGame,
+  updateLibraryGame as updateLibraryGameAction,
+  addToLibrary as addToLibraryAction,
+  removeFromLibrary as removeFromLibraryAction,
+  setPagination,
+  setLastFetched,
 } from '../slices/librarySlice';
+import { libraryApi, gamesApi, customGamesApi } from '../../services/api';
 
-const API_URL = 'http://localhost:3001';
+// Cache duration: 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000;
 
-export const fetchUserLibrary = (userId = 1) => async (dispatch) => {
+/**
+ * Check if library cache is still valid
+ */
+const isCacheValid = (lastFetched) => {
+  if (!lastFetched) return false;
+  return Date.now() - lastFetched < CACHE_DURATION;
+};
+
+/**
+ * Normalize library item from backend to frontend format
+ */
+const normalizeLibraryItem = (item, gameData = null) => {
+  return {
+    id: item._id || item.id,
+    userId: item.userId,
+    gameId: item.gameId,
+    name: gameData?.nome || 'Jogo não encontrado',
+    img: gameData?.backgroundimage || '',
+    status: item.status,
+    progresso: item.progress != null ? `${item.progress}%` : null,
+    progress: item.progress,
+    playTime: gameData?.playtime || 0,
+    rating: item.rating || 0,
+    dateAdded: item.createdAt || item.dateAdded,
+    platforms: item.platforms || [],
+    genres: gameData?.genres || [],
+    platinum: item.platinum || false,
+    hoursPlayed: item.hoursPlayed || 0,
+    updatedAt: item.updatedAt,
+  };
+};
+
+/**
+ * Fetch user library with optional filters and pagination
+ * Implements intelligent caching to avoid unnecessary API calls
+ */
+export const fetchUserLibrary = (options = {}, forceRefresh = false) => async (dispatch, getState) => {
   try {
+    const state = getState();
+    const { lastFetched, library } = state.library;
+
+    // Check cache validity
+    if (!forceRefresh && isCacheValid(lastFetched) && library.length > 0) {
+      console.log('Using cached library data');
+      return;
+    }
+
     dispatch(setLoading(true));
-    const parseMaybeJson = async (response) => {
-      const contentType = response.headers.get('content-type') || '';
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || response.statusText || `HTTP ${response.status}`);
-      }
-      if (contentType.includes('application/json')) {
-        return await response.json();
-      }
-      return null;
-    };
 
-    const libraryResponse = await fetch(`${API_URL}/library?userId=${userId}`);
-    const libraryData = (await parseMaybeJson(libraryResponse)) || [];
+    // Fetch library from backend
+    const response = await libraryApi.getLibrary(options, getState);
     
+    // Extract data from response
+    const libraryItems = response.data?.items || [];
+    const pagination = response.data?.pagination || null;
+
+    // Enrich library items with game data
     const libraryWithGames = await Promise.all(
-      libraryData.map(async (item) => {
+      libraryItems.map(async (item) => {
         try {
-            const gameUrl = `${API_URL}/games/${item.gameId}`;
-            console.debug(`Buscando jogo em: ${gameUrl}`);
-            const gameResponse = await fetch(gameUrl);
-            console.debug(`Resposta jogo ${item.gameId}: status=${gameResponse.status}, content-type=${gameResponse.headers.get('content-type')}`);
-            let gameData = await parseMaybeJson(gameResponse);
-
-            if (!gameData) {
-              console.debug(`Tentando fallback /games?id=${item.gameId}`);
-              const altResp = await fetch(`${API_URL}/games?id=${item.gameId}`);
-              console.debug(`Fallback resposta: status=${altResp.status}, content-type=${altResp.headers.get('content-type')}`);
-              const altData = await parseMaybeJson(altResp);
-              if (Array.isArray(altData) && altData.length > 0) gameData = altData[0];
-            }
-
-          const gameName = gameData?.nome || 'Jogo não encontrado';
-          const gameImg = gameData?.backgroundimage || '';
-          const gamePlaytime = gameData?.playtime || 0;
-
-          return {
-            id: item.id,
-            userId: item.userId,
-            gameId: item.gameId,
-            name: gameName,
-            img: gameImg,
-            status: item.status,
-            progresso: item.progress != null ? `${item.progress}%` : null,
-            progress: item.progress,
-            playTime: gamePlaytime,
-            rating: item.rating,
-            dateAdded: item.dateAdded,
-            platforms: item.platforms,
-            genres: gameData?.genres || [],
-          };
+          // Tentar buscar como jogo normal primeiro
+          const gameData = await gamesApi.getGameById(item.gameId, getState);
+          return normalizeLibraryItem(item, gameData);
         } catch (err) {
-          console.warn(`Falha ao buscar jogo ${item.gameId}:`, err.message || err);
-          return {
-            id: item.id,
-            userId: item.userId,
-            gameId: item.gameId,
-            name: 'Jogo não encontrado',
-            img: '',
-            status: item.status,
-            progresso: item.progress != null ? `${item.progress}%` : null,
-            progress: item.progress,
-            playTime: 0,
-            rating: item.rating,
-            dateAdded: item.dateAdded,
-            platforms: item.platforms,
-            genres: [],
-          };
+          // Se falhar, pode ser um custom game
+          try {
+            const customGameData = await customGamesApi.getCustomGameById(item.gameId, getState);
+            return normalizeLibraryItem(item, customGameData);
+          } catch (customErr) {
+            console.warn(`Failed to fetch game ${item.gameId}:`, err.message);
+            return normalizeLibraryItem(item, null);
+          }
         }
       })
     );
-    
+
     dispatch(setLibrary(libraryWithGames));
+    if (pagination) {
+      dispatch(setPagination(pagination));
+    }
+    dispatch(setLastFetched(Date.now()));
   } catch (error) {
-    console.error('Erro ao buscar biblioteca:', error);
-    dispatch(setError(error.message));
-  }
-  finally {
+    console.error('Error fetching library:', error);
+    dispatch(setError(error.message || 'Erro ao buscar biblioteca'));
+    
+    // Handle authentication errors
+    if (error.status === 401 || error.status === 403) {
+      // Token expired or invalid - user should be redirected to login
+      // This will be handled by the component
+    }
+  } finally {
     dispatch(setLoading(false));
   }
 };
-// Com o Backend tem que remover essa função aqui!
-export const updateGameProgress = (libraryid, progress) => async (dispatch) =>{
-  try{
+
+/**
+ * Add game to library
+ * Uses optimistic update for better UX
+ */
+export const addGameToLibrary = (gameId, status = 'Jogando', gameData = null) => async (dispatch, getState) => {
+  try {
     dispatch(setLoading(true));
-    const response = await fetch(`${API_URL}/library/${libraryid}`,
-    {
-      method: 'PATCH',
-      headers:{
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({progress})
-    });
-    if(!response.ok){
-      const text = await response.text().catch(() => null);
-      throw new Error(text || 'Erro ao atualizar progresso do jogo');
-    }
-    let updated = null;
-    try {
-      updated = await response.json();
-    } catch (e) {
-      updated = null;
+
+    // Optimistic update
+    if (gameData) {
+      const optimisticItem = normalizeLibraryItem(
+        {
+          id: `temp-${Date.now()}`,
+          userId: getState().auth?.user?.id,
+          gameId,
+          status,
+          progress: 0,
+          platinum: false,
+          hoursPlayed: 0,
+          createdAt: new Date().toISOString(),
+        },
+        gameData
+      );
+      dispatch(addToLibraryAction(optimisticItem));
     }
 
-    const newProgress = (updated && typeof updated.progress !== 'undefined') ? updated.progress : progress;
-    dispatch(updateLibraryGame({
-      id: libraryid,
-      progress: newProgress,
-      progresso: newProgress != null ? `${newProgress}%` : null,
-    }));
+    // Call backend API
+    const response = await libraryApi.addToLibrary(gameId, status, getState);
+    
+    // Fetch game details if not provided
+    let enrichedGameData = gameData;
+    if (!enrichedGameData) {
+      try {
+        enrichedGameData = await gamesApi.getGameById(gameId, getState);
+      } catch (err) {
+        console.warn(`Failed to fetch game details for ${gameId}:`, err.message);
+      }
+    }
+
+    // Update with actual data from backend
+    // API retorna: { message: '...', data: {...} }
+    const libraryData = response.data || response;
+    const normalizedItem = normalizeLibraryItem(libraryData, enrichedGameData);
+    dispatch(updateLibraryGameAction(normalizedItem));
+
+    return { success: true, data: normalizedItem };
+  } catch (error) {
+    console.error('Error adding game to library:', error);
+    dispatch(setError(error.message || 'Erro ao adicionar jogo à biblioteca'));
+    
+    // Revert optimistic update on error
+    if (gameData) {
+      await dispatch(fetchUserLibrary({}, true));
+    }
+    
+    return { success: false, error: error.message };
+  } finally {
+    dispatch(setLoading(false));
   }
-  catch(err){
-    console.error("erro ao atualizar progresso:", err);
-    dispatch(setError(err.message || 'Erro ao atualizar progresso'));
+};
+
+/**
+ * Update game progress, status, or other fields in library
+ */
+export const updateLibraryGame = (gameId, updates) => async (dispatch, getState) => {
+  try {
+    dispatch(setLoading(true));
+
+    // Optimistic update
+    const state = getState();
+    const existingItem = state.library.library.find(item => item.gameId === gameId);
+    if (existingItem) {
+      dispatch(updateLibraryGameAction({
+        ...existingItem,
+        ...updates,
+        progresso: updates.progress != null ? `${updates.progress}%` : existingItem.progresso,
+      }));
+    }
+
+    // Call backend API
+    const response = await libraryApi.updateGame(gameId, updates, getState);
+    
+    // Update with actual data from backend
+    if (existingItem) {
+      // API retorna: { message: '...', data: {...} }
+      const updatedData = response.data || response;
+      const normalizedItem = normalizeLibraryItem(updatedData, {
+        nome: existingItem.name,
+        backgroundimage: existingItem.img,
+        playtime: existingItem.playTime,
+        genres: existingItem.genres,
+      });
+      dispatch(updateLibraryGameAction(normalizedItem));
+    }
+
+    return { success: true, data: response.data || response };
+  } catch (error) {
+    console.error('Error updating library game:', error);
+    dispatch(setError(error.message || 'Erro ao atualizar jogo'));
+    
+    // Revert optimistic update on error
+    await dispatch(fetchUserLibrary({}, true));
+    
+    return { success: false, error: error.message };
+  } finally {
+    dispatch(setLoading(false));
   }
-  finally{
+};
+
+/**
+ * Remove game from library
+ * Uses optimistic update for better UX
+ */
+export const removeGameFromLibrary = (gameId) => async (dispatch, getState) => {
+  try {
+    dispatch(setLoading(true));
+
+    // Find the library item
+    const state = getState();
+    const libraryItem = state.library.library.find(item => item.gameId === gameId);
+    
+    if (!libraryItem) {
+      throw new Error('Game not found in library');
+    }
+
+    // Optimistic update
+    dispatch(removeFromLibraryAction(libraryItem.id));
+
+    // Call backend API
+    await libraryApi.removeFromLibrary(gameId, getState);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error removing game from library:', error);
+    dispatch(setError(error.message || 'Erro ao remover jogo da biblioteca'));
+    
+    // Revert optimistic update on error
+    await dispatch(fetchUserLibrary({}, true));
+    
+    return { success: false, error: error.message };
+  } finally {
     dispatch(setLoading(false));
   }
 };

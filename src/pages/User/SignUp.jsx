@@ -2,25 +2,26 @@ import { useForm } from 'react-hook-form';
 import { InputGroup, Form, Button, Card, Alert, Modal, Row, Col, Image } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { registerUser } from '../../app/thunks/authThunks'; 
+import { signupUser } from '../../app/thunks/authThunks';
 import { useState, useEffect } from 'react';
 import { User, Plus } from 'lucide-react';
 import './auth.css';
 
 const AVATAR_OPTIONS = [
   "https://i.pravatar.cc/150?img=11",
-  "https://i.pravatar.cc/150?img=13", 
+  "https://i.pravatar.cc/150?img=13",
   "https://i.pravatar.cc/150?img=5",
 ];
 
 const SignUp = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [success, setSuccess] = useState("");
+  const [signupError, setSignupError] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
-  const [localError, setLocalError] = useState("");
-  const { isAuthenticated, error: reduxError } = useSelector((state) => state.auth);
+  const { isAuthenticated, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -30,18 +31,27 @@ const SignUp = () => {
   }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data) => {
-    setLocalError("");
-    
+    setSuccess("");
+    setSignupError("");
+
     const finalAvatar = selectedAvatar || "https://i.pravatar.cc/150?img=68";
 
-    const payload = {
-        username: data.name, 
-        email: data.email,
-        password: data.password,
-        profileImageUrl: finalAvatar
-    };
+    const result = await dispatch(signupUser({
+      username: data.name,
+      email: data.email,
+      password: data.password,
+      profileImageUrl: finalAvatar
+    }));
 
-    const success = await dispatch(registerUser(payload));
+    if (result.success) {
+      setSuccess('Cadastro realizado com sucesso! Faça login para continuar.');
+      reset();
+      setTimeout(() => {
+        navigate('/user/login', { replace: true });
+      }, 2000);
+    } else {
+      setSignupError(result.error || 'Erro ao criar conta. Tente novamente.');
+    }
   };
 
   return (
@@ -50,21 +60,21 @@ const SignUp = () => {
         <Card.Body className="p-4">
           <h2 className="mb-2 text-center text-white">Criar Conta</h2>
           <p className="text-center text-secondary mb-4">Junte-se aos caçadores de troféus</p>
-          
+
           <div className="d-flex justify-content-center mb-4">
-            <div 
-              className="position-relative cursor-pointer" 
+            <div
+              className="position-relative cursor-pointer"
               onClick={() => setShowAvatarModal(true)}
               style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
               onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
-              <div 
+              <div
                 className="rounded-circle d-flex align-items-center justify-content-center overflow-hidden"
-                style={{ 
-                  width: '100px', 
-                  height: '100px', 
-                  backgroundColor: '#2b2b2b', 
+                style={{
+                  width: '100px',
+                  height: '100px',
+                  backgroundColor: '#2b2b2b',
                   border: '3px solid #fa5f69',
                   boxShadow: '0 0 15px rgba(250, 95, 105, 0.3)'
                 }}
@@ -75,8 +85,8 @@ const SignUp = () => {
                   <User size={40} color="#fa5f69" />
                 )}
               </div>
-              
-              <div 
+
+              <div
                 className="position-absolute rounded-circle d-flex align-items-center justify-content-center"
                 style={{
                   width: '30px',
@@ -92,7 +102,11 @@ const SignUp = () => {
             </div>
           </div>
 
-          {(reduxError || localError) && <Alert variant="danger">{reduxError || localError}</Alert>}
+          {(signupError || success) && (
+            <Alert variant={success ? "success" : "danger"}>
+              {success || signupError}
+            </Alert>
+          )}
 
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Form.Group className="mb-3" controlId="formName">
@@ -137,15 +151,15 @@ const SignUp = () => {
               <Form.Control.Feedback type="invalid">{errors.password?.message}</Form.Control.Feedback>
             </Form.Group>
 
-            <Button 
-                variant="primary" 
-                type="submit" 
-                className="w-100 py-2 fw-bold"
-                style={{ 
-                    backgroundColor: '#fa5f69', 
-                    borderColor: '#fa5f69',
-                    boxShadow: '0 4px 15px rgba(250, 95, 105, 0.4)' 
-                }}
+            <Button
+              variant="primary"
+              type="submit"
+              className="w-100 py-2 fw-bold"
+              style={{
+                backgroundColor: '#fa5f69',
+                borderColor: '#fa5f69',
+                boxShadow: '0 4px 15px rgba(250, 95, 105, 0.4)'
+              }}
             >
               Criar Conta
             </Button>
@@ -156,9 +170,9 @@ const SignUp = () => {
         </Card.Body>
       </Card>
 
-      <Modal 
-        show={showAvatarModal} 
-        onHide={() => setShowAvatarModal(false)} 
+      <Modal
+        show={showAvatarModal}
+        onHide={() => setShowAvatarModal(false)}
         centered
         contentClassName="bg-dark text-white border-secondary"
       >
@@ -169,13 +183,13 @@ const SignUp = () => {
           <Row className="g-3 justify-content-center">
             {AVATAR_OPTIONS.map((url, index) => (
               <Col xs={4} sm={3} key={index} className="d-flex justify-content-center">
-                <Image 
-                  src={url} 
-                  roundedCircle 
+                <Image
+                  src={url}
+                  roundedCircle
                   className="cursor-pointer avatar-option"
-                  style={{ 
-                    width: '70px', 
-                    height: '70px', 
+                  style={{
+                    width: '70px',
+                    height: '70px',
                     objectFit: 'cover',
                     border: selectedAvatar === url ? '3px solid #fa5f69' : '2px solid transparent',
                     cursor: 'pointer',

@@ -1,16 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { getAuthHeaders } from '../../services/api';
 
-// URL base da sua API (ajuste se a porta for diferente de 3000)
-const API_URL = 'http://localhost:3000'; 
-
-// Helper para pegar o token
-const getAuthHeader = () => {
-    const token = localStorage.getItem('token');
-    return { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` 
-    };
-};
+const API_URL = 'http://localhost:3000';
 
 // 1. Buscar progresso (GET /trophies/my-progress)
 export const fetchUserProgress = createAsyncThunk(
@@ -19,7 +10,7 @@ export const fetchUserProgress = createAsyncThunk(
         try {
             const response = await fetch(`${API_URL}/trophies/my-progress`, {
                 method: 'GET',
-                headers: getAuthHeader(),
+                headers: getAuthHeaders(),
             });
 
             if (!response.ok) throw new Error('Falha ao buscar troféus');
@@ -39,7 +30,7 @@ export const trackGameThunk = createAsyncThunk(
         try {
             const response = await fetch(`${API_URL}/trophies/track`, {
                 method: 'POST',
-                headers: getAuthHeader(),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ gameId, isTracked }),
             });
 
@@ -59,7 +50,7 @@ export const toggleTrophyThunk = createAsyncThunk(
         try {
             const response = await fetch(`${API_URL}/trophies/toggle`, {
                 method: 'POST',
-                headers: getAuthHeader(),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ gameId, trophyName }),
             });
 
@@ -86,7 +77,7 @@ export const toggleAllTrophiesThunk = createAsyncThunk(
         try {
             const response = await fetch(`${API_URL}/trophies/toggle-all`, {
                 method: 'POST',
-                headers: getAuthHeader(),
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ gameId, allTrophies, markAll }),
             });
 
