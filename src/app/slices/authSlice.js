@@ -5,13 +5,19 @@ const initialState = {
   isAuthenticated: false,
   token: null,
   user: null,
+  statistics: null,
   error: null,
+  loading: false,
 };
 
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    authStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
     loginSuccess: (state, action) => {
       state.isAuthenticated = true;
       state.token = action.payload.token;
@@ -26,17 +32,37 @@ export const authSlice = createSlice({
       };
       
       state.error = null;
+      state.loading = false;
+    },
+    signupSuccess: (state, action) => {
+      state.isAuthenticated = true;
+      state.user = action.payload.user;
+      state.token = action.payload.token || null;
+      state.error = null;
+      state.loading = false;
     },
     loginFailure: (state, action) => {
       state.isAuthenticated = false;
       state.token = null;
       state.user = null;
       state.error = action.payload;
+      state.loading = false;
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.token = null;
       state.user = null;
+      state.statistics = null;
+      state.error = null;
+      state.loading = false;
+    },
+    updateUserProfile: (state, action) => {
+      state.user = {
+        ...state.user,
+        ...action.payload.user,
+      };
+      state.statistics = action.payload.statistics;
+      state.loading = false;
       state.error = null;
     },
   },
@@ -60,5 +86,5 @@ export const authSlice = createSlice({
   }
 });
 
-export const { loginSuccess, loginFailure, logout } = authSlice.actions;
+export const { authStart, loginSuccess, signupSuccess, loginFailure, logout, updateUserProfile } = authSlice.actions;
 export default authSlice.reducer;

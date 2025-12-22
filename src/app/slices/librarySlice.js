@@ -7,6 +7,13 @@ const initialState = {
     jogando: 0,
     platinado: 0,
   },
+  pagination: {
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 0,
+  },
+  lastFetched: null, // Timestamp for cache invalidation
   loading: false,
   error: null,
 };
@@ -61,6 +68,17 @@ export const librarySlice = createSlice({
       state.stats = calculateStats(state.library);
     },
     
+    setPagination: (state, action) => {
+      state.pagination = {
+        ...state.pagination,
+        ...action.payload,
+      };
+    },
+    
+    setLastFetched: (state, action) => {
+      state.lastFetched = action.payload;
+    },
+    
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
@@ -68,6 +86,10 @@ export const librarySlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
       state.loading = false;
+    },
+    
+    clearError: (state) => {
+      state.error = null;
     },
   },
 });
@@ -77,8 +99,22 @@ export const {
   addToLibrary,
   updateLibraryGame,
   removeFromLibrary,
+  setPagination,
+  setLastFetched,
   setLoading,
   setError,
+  clearError,
 } = librarySlice.actions;
+
+// Selectors
+export const selectLibrary = (state) => state.library.library;
+export const selectLibraryStats = (state) => state.library.stats;
+export const selectLibraryLoading = (state) => state.library.loading;
+export const selectLibraryError = (state) => state.library.error;
+export const selectLibraryPagination = (state) => state.library.pagination;
+export const selectLibraryById = (gameId) => (state) => 
+  state.library.library.find(item => item.gameId === gameId);
+export const selectIsGameInLibrary = (gameId) => (state) =>
+  state.library.library.some(item => item.gameId === gameId);
 
 export default librarySlice.reducer;

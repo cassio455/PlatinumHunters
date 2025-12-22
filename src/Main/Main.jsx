@@ -1,17 +1,28 @@
-import { useSelector } from "react-redux";
+import { useEffect, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import ReviewCard from "../components/ReviewCard";
+import { fetchGames } from "../app/thunks/gamesThunks";
 import "./Main.css"
 
 function Main() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-  const games = [
-    { id: 1, title: "Hollow Knight: Silksong", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3vtl.jpg" },
-    { id: 2, title: "Hollow Knight", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co93cr.jpg" },
-    { id: 3, title: "Clair Obscur: Expedition 33", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9gam.jpg" },
-    { id: 4, title: "Peak", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa1i1.jpg" },
-    { id: 5, title: "Metal Gear Solid Delta: Snake Eater", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coac1n.jpg" },
-    { id: 6, title: "Donkey Kong Bananza", image: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa082.jpg" },
-  ];
+  const { items: allGames } = useSelector((state) => state.games);
+
+  useEffect(() => {
+    if (allGames.length === 0) {
+      dispatch(fetchGames());
+    }
+  }, [dispatch, allGames.length]);
+
+  // Pega 6 jogos aleatórios da API
+  const popularGames = useMemo(() => {
+    if (allGames.length === 0) return [];
+    const shuffled = [...allGames].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 6);
+  }, [allGames]);
 
   const reviews = [
     {
@@ -43,13 +54,13 @@ function Main() {
     }
   ];
 
-  const name = useSelector((state) => state.auth.user?.username) || "visitante";
-  
+  const username = user?.username || "visitante";
+
   return (
     <div className="main-page container mt-5 pt-5">
       <h1 className="welcome-text mb-4">
         {isAuthenticated && user
-          ? `Bem-vindo ${name}! Seus troféus lhe aguardam...`
+          ? `Bem-vindo ${username}! Seus troféus lhe aguardam...`
           : "Bem-vindo! Seus troféus lhe aguardam..."}
       </h1>
 
@@ -58,11 +69,16 @@ function Main() {
         <div className="main-page-line"></div>
 
         <div className="games-grid mt-4">
-          {games.map((game) => (
-            <div className="main-page-game-card" key={game.id}>
-              <img src={game.image} alt={game.title} />
+          {popularGames.map((game) => (
+            <div
+              className="main-page-game-card"
+              key={game._id}
+              onClick={() => navigate('/jogos')}
+              style={{ cursor: 'pointer' }}
+            >
+              <img src={game.backgroundimage} alt={game.nome} />
               <div className="main-page-overlay">
-                <h5 className="game-title">{game.title}</h5>
+                <h5 className="game-title">{game.nome}</h5>
               </div>
             </div>
           ))}

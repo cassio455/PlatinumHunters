@@ -1,85 +1,81 @@
-import {
-  loginSuccess,
-  loginFailure,
-} from '../slices/authSlice';
+import { authStart, loginSuccess, signupSuccess, loginFailure, updateUserProfile } from '../slices/authSlice';
+import { authApi } from '../../services/api';
 
-const API_URL = 'http://localhost:3000';
+export const fetchUserProfile = () => async (dispatch, getState) => {
+  try {
+    dispatch(authStart());
+    
+    const result = await authApi.getUserProfile(getState);
+    
+    dispatch(updateUserProfile({
+      user: result.data.user,
+      statistics: result.data.statistics
+    }));
+
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error('Erro ao buscar perfil:', error);
+    return { success: false, error: error.message };
+  }
+};
 
 export const loginUser = (credentials) => async (dispatch) => {
   try {
-    const response = await fetch(`${API_URL}/users/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    });
+    dispatch(authStart());
+    
+    const result = await authApi.login(credentials);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      try {
-          const jsonError = JSON.parse(errorText);
-          throw new Error(jsonError.message || 'Erro ao fazer login');
-      } catch (e) {
-          throw new Error(errorText || 'Erro ao conectar ao servidor');
-      }
-    }
-
-    const result = await response.json();
-    const { token, ...userData } = result.data; 
-
-    const userPayload = {
-        token: token,
-        user: userData 
+    const userData = {
+      id: result.data.id,
+      username: result.data.username,
+      email: result.data.email,
+      profileImageUrl: result.data.profileImageUrl,
+      createdAt: result.data.createdAt,
     };
 
-    localStorage.setItem('token', token);
+    localStorage.setItem('token', result.data.token);
     localStorage.setItem('user', JSON.stringify(userData));
 
-    dispatch(loginSuccess(userPayload));
-    return true; 
+    dispatch(loginSuccess({ 
+      token: result.data.token, 
+      user: userData 
+    }));
 
+    return { success: true, user: userData };
   } catch (error) {
-    console.error('Erro no login:', error);
     dispatch(loginFailure(error.message));
-    return false;
+    return { success: false, error: error.message };
   }
 };
 
-export const registerUser = (userData) => async (dispatch) => {
+export const signupUser = (userData) => async (dispatch) => {
   try {
-    const response = await fetch(`${API_URL}/users/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
+    dispatch(authStart());
     
-    const contentType = response.headers.get("content-type");
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erro ${response.status}: ${errorText}`);
-    }
-    if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("O servidor não retornou JSON.");
-    }
+    const result = await authApi.register(userData);
 
-    const data = await response.json();
-    const userPayload = {
-        token: data.data.token,
-        user: data.data
+    const newUser = {
+      id: result.data.id,
+      username: result.data.username,
+      email: result.data.email,
+      profileImageUrl: result.data.profileImageUrl,
+      createdAt: result.data.createdAt,
     };
 
-    localStorage.setItem('token', userPayload.token);
-    localStorage.setItem('user', JSON.stringify(userPayload.user));
+    localStorage.setItem('token', result.data.token);
+    localStorage.setItem('user', JSON.stringify(newUser));
 
-    dispatch(loginSuccess(userPayload));
-    return true; 
+    dispatch(signupSuccess({ 
+      user: newUser,
+      token: result.data.token
+    }));
 
+    return { success: true, user: newUser };
   } catch (error) {
-    console.error('Erro no registro:', error);
     dispatch(loginFailure(error.message));
-    return false;
+    return { success: false, error: error.message };
   }
 };
+
+// Alias para compatibilidade com código da main
+export const registerUser = signupUser;

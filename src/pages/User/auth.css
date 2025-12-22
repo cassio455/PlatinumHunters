@@ -45,26 +45,95 @@
   color: #fff !important;
   border-color: #555 !important;
 }
+
 .form-control.bg-dark::placeholder {
   color: #888 !important;
 }
+
 .form-control.bg-dark:focus {
   background-color: #444 !important;
   border-color: #FF6E77 !important;
   box-shadow: 0 0 0 0.2rem rgba(255, 110, 119, 0.25) !important;
   color: #fff !important;
 }
+
 .form-label {
-    color: #ccc;
+  color: #ccc;
 }
 
 .card.bg-dark-custom a {
-    color: #FF6E77;
+  color: #FF6E77;
 }
+
 .card.bg-dark-custom a:hover {
-    color: #ff9aaa;
+  color: #ff9aaa;
 }
 
 .profile-container.container {
   background-color: transparent;
+}
+
+/* Animações */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-card-animated {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Delays escalonados para cada card */
+.stat-card-animated:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.stat-card-animated:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.stat-card-animated:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.stat-card-animated:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.stat-card-animated:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.stat-card-animated:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+/* Hover effect com elevação e brilho */
+.stat-card-dark {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.stat-card-dark:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 25px rgba(250, 95, 105, 0.3) !important;
+  border-color: #fa5f69 !important;
+  background-color: #252525 !important;
+}
+
+.stat-card-dark:hover .card-body svg {
+  filter: drop-shadow(0 0 8px rgba(250, 95, 105, 0.6));
+  transform: scale(1.1);
+}
+
+.stat-card-dark .card-body svg {
+  transition: all 0.3s ease;
 }

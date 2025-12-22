@@ -4,22 +4,20 @@ import {
     setLoading,
     setError,
 } from '../slices/genrePlatformSlice';
+import { gamesApi } from '../../services/api';
 
-const API_URL = 'http://localhost:3001';
-
-export const fetchGenres = () => async (dispatch) =>{
+export const fetchGenres = () => async (dispatch, getState) =>{
 
     try{
         dispatch(setLoading(true));
 
-        const response =  await fetch(`${API_URL}/genres`);
-        const data = await response.json();
-
-        const genres = data.map((genre) => ({
-            id: genre.id,
+        const items = await gamesApi.getGenres(getState);
+        
+        const genres = Array.isArray(items) ? items.map((genre) => ({
+            id: genre._id,
             name: genre.name,
-            count: genre.count,
-        }));
+        })) : [];
+        
         dispatch(setGenres(genres));
     } catch (error) {
         console.error('Erro ao buscar gêneros:', error);
@@ -30,16 +28,16 @@ export const fetchGenres = () => async (dispatch) =>{
     }
 }
 
-export const fetchPlatforms = () => async (dispatch) =>{
+export const fetchPlatforms = () => async (dispatch, getState) =>{
      try{
         dispatch(setLoading(true));
-        const response = await fetch(`${API_URL}/platforms`);
-        const data = await response.json();
-
-        const platforms = data.map((platform) => ({
-            id: platform.id,
+        
+        const items = await gamesApi.getPlatforms(getState);
+        
+        const platforms = Array.isArray(items) ? items.map((platform) => ({
+            id: platform._id,
             name: platform.name,
-        }));
+        })) : [];
 
         dispatch(setPlatforms(platforms));
     } catch(error) {
