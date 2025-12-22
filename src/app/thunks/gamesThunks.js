@@ -9,7 +9,6 @@ export const fetchGames = () => async (dispatch, getState) => {
   try {
     dispatch(setLoading(true));
 
-    // Usa o gamesApi que já trata o formato da resposta
     const games = await gamesApi.getAllGames({}, getState);
     
     if (Array.isArray(games)) {

@@ -1,9 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  items: [],     
-  loading: false, 
-  error: null,   
+  items: [],
+  genresList: [],   
+  platformsList: [],   
+  loading: false,
+  error: null,
 };
 
 export const gamesSlice = createSlice({
@@ -24,6 +26,15 @@ export const gamesSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
+
+
+    setGenres: (state, action) => {
+      state.genresList = action.payload;
+    },
+
+    setPlatforms: (state, action) => {
+      state.platformsList = action.payload;
+    },
   },
 });
 
@@ -31,6 +42,8 @@ export const {
   setGames,
   setLoading,
   setError,
+  setGenres,    
+  setPlatforms, 
 } = gamesSlice.actions;
 
 export default gamesSlice.reducer;
