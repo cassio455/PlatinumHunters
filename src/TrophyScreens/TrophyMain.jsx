@@ -7,8 +7,8 @@ function TrophyMain() {
   const navigate = useNavigate();
 
   const trackedGameIds = useSelector((state) => state.trophies.trackedGameIds || []);
-  
   const completedData = useSelector((state) => state.trophies.completedTrophies);
+  const customCounts = useSelector((state) => state.trophies.customTrophyCounts || {});
 
   const gamesToDisplay = trackedGameIds
     .map(id => {
@@ -18,11 +18,19 @@ function TrophyMain() {
     .filter(game => game !== null); 
 
   const calculateProgress = (gameId) => {
-    const totalTrophies = TROPHIES[gameId]?.length || 0;
+    const staticTotal = TROPHIES[gameId]?.length || 0;
+    const customTotal = customCounts[gameId] || 0;
+    
+    const totalTrophies = staticTotal + customTotal;
+
     const completedForGame = completedData[gameId] || {};
     const completedCount = Object.values(completedForGame).filter(trophy => trophy.isCompleted).length;
+
     if (totalTrophies === 0) return 0;
-    return Math.round((completedCount / totalTrophies) * 100);
+    
+    const percentage = Math.round((completedCount / totalTrophies) * 100);
+    
+    return Math.min(percentage, 100);
   };
 
   const goToAddGames = () => {

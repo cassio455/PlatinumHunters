@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-// CORREÇÃO: Usando apenas "../" pois a pasta App está apenas um nível acima
 import { trackGameThunk } from '../app/thunks/trophyThunks';
-// CORREÇÃO: Usando apenas "../" para a pasta Data também
 import { TROPHIES, ALL_GAMES_INFO } from '../data/trophiesData';
 import './AddTrophyGames.css';
 

@@ -1,9 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-// URL base da sua API (ajuste se a porta for diferente de 3000)
 const API_URL = 'http://localhost:3000'; 
 
-// Helper para pegar o token
 const getAuthHeader = () => {
     const token = localStorage.getItem('token');
     return { 
@@ -12,7 +10,6 @@ const getAuthHeader = () => {
     };
 };
 
-// 1. Buscar progresso (GET /trophies/my-progress)
 export const fetchUserProgress = createAsyncThunk(
     'trophies/fetchUserProgress',
     async (_, { rejectWithValue }) => {
@@ -23,16 +20,13 @@ export const fetchUserProgress = createAsyncThunk(
             });
 
             if (!response.ok) throw new Error('Falha ao buscar troféus');
-            
-            const data = await response.json();
-            return data; // O Backend retorna { "gameId": { isTracked: true, completedTrophies: [] } }
+            return await response.json(); 
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
 
-// 2. Adicionar/Remover jogo da lista (POST /trophies/track)
 export const trackGameThunk = createAsyncThunk(
     'trophies/trackGame',
     async ({ gameId, isTracked }, { rejectWithValue }) => {
@@ -44,15 +38,13 @@ export const trackGameThunk = createAsyncThunk(
             });
 
             if (!response.ok) throw new Error('Erro ao atualizar lista de jogos');
-            
-            return { gameId, isTracked }; // Retorna para atualizar o Redux
+            return { gameId, isTracked }; 
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
 
-// 3. Marcar/Desmarcar Troféu (POST /trophies/toggle)
 export const toggleTrophyThunk = createAsyncThunk(
     'trophies/toggleTrophy',
     async ({ gameId, trophyName, originalIndex }, { rejectWithValue }) => {
@@ -66,7 +58,6 @@ export const toggleTrophyThunk = createAsyncThunk(
             if (!response.ok) throw new Error('Erro ao atualizar troféu');
 
             const data = await response.json();
-            // data.isCompleted vem do backend. Repassamos o originalIndex para manter a UI correta
             return { 
                 gameId, 
                 trophyName, 
@@ -79,7 +70,6 @@ export const toggleTrophyThunk = createAsyncThunk(
     }
 );
 
-// 4. Marcar/Desmarcar TODOS os troféus (POST /trophies/toggle-all)
 export const toggleAllTrophiesThunk = createAsyncThunk(
     'trophies/toggleAll',
     async ({ gameId, allTrophies, markAll }, { rejectWithValue }) => {
@@ -91,15 +81,77 @@ export const toggleAllTrophiesThunk = createAsyncThunk(
             });
 
             if (!response.ok) throw new Error('Erro ao atualizar todos os troféus');
-
             const data = await response.json();
-            
-            // Retornamos os dados para o Redux atualizar a tela
             return { 
                 gameId, 
-                completedTrophies: data.completedTrophies, // Lista atualizada vinda do banco
+                completedTrophies: data.completedTrophies, 
                 markAll 
             };
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const fetchGameTrophiesThunk = createAsyncThunk(
+    'trophies/fetchGameData',
+    async (gameId, { rejectWithValue }) => {
+        try {
+            const response = await fetch(`${API_URL}/trophies/list/${gameId}`, {
+                 headers: getAuthHeader()
+            });
+            if (!response.ok) throw new Error('Erro ao carregar lista de troféus');
+            return await response.json();
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const createTrophyThunk = createAsyncThunk(
+    'trophies/create',
+    async (trophyData, { rejectWithValue }) => {
+        try {
+            const response = await fetch(`${API_URL}/trophies/create`, {
+                method: 'POST',
+                headers: getAuthHeader(),
+                body: JSON.stringify(trophyData),
+            });
+            if (!response.ok) throw new Error('Erro ao criar troféu');
+            return await response.json();
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const deleteTrophyThunk = createAsyncThunk(
+    'trophies/delete',
+    async (trophyId, { rejectWithValue }) => {
+        try {
+            const response = await fetch(`${API_URL}/trophies/delete/${trophyId}`, {
+                method: 'DELETE',
+                headers: getAuthHeader(),
+            });
+            if (!response.ok) throw new Error('Erro ao deletar troféu');
+            return trophyId; 
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const editTrophyThunk = createAsyncThunk(
+    'trophies/edit',
+    async ({ id, data }, { rejectWithValue }) => {
+        try {
+            const response = await fetch(`${API_URL}/trophies/edit/${id}`, {
+                method: 'PUT',
+                headers: getAuthHeader(),
+                body: JSON.stringify(data),
+            });
+            if (!response.ok) throw new Error('Erro ao editar');
+            return await response.json();
         } catch (error) {
             return rejectWithValue(error.message);
         }
