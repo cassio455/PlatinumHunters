@@ -69,7 +69,13 @@ const Profile = () => {
                                 />
                             </div>
                             <h3 className="text-white">{user?.username || 'Usuário'}</h3>
-                            <p className="text-white small mb-1">Seu Título</p>
+                            {user?.equippedTitle ? (
+                                <p className="mb-1" style={{ color: '#ffd700', fontSize: '1rem', fontWeight: '500' }}>
+                                    {user.equippedTitle}
+                                </p>
+                            ) : (
+                                <p className="text-secondary small mb-1">Nenhum título equipado</p>
+                            )}
                             <p className="mb-4" style={{ color: '#fa5f69', fontSize: '0.9rem' }}>Suas estatísticas</p>
 
                             <Row className="mb-4 g-3">
