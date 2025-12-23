@@ -45,9 +45,8 @@ const handleAuthError = (status) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     
-    // Redirect to login page
     if (typeof window !== 'undefined') {
-      window.location.href = '/user/login';
+      window.dispatchEvent(new CustomEvent('auth:logout'));
     }
   }
 };
