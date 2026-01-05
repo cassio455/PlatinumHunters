@@ -1,6 +1,8 @@
 import { Image, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../app/slices/authSlice';
+import { clearLibrary } from '../../app/slices/librarySlice';
+import { clearTrophies } from '../../app/slices/trophySlice';
 import { fetchUserProfile } from '../../app/thunks/authThunks';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -22,6 +24,9 @@ const Profile = () => {
     }, [dispatch]);
 
     const handleLogout = () => {
+        // Limpar todos os dados do Redux antes de fazer logout
+        dispatch(clearLibrary());
+        dispatch(clearTrophies());
         dispatch(logout());
 
         localStorage.removeItem('token');

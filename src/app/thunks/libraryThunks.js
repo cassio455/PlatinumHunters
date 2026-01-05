@@ -52,11 +52,28 @@ const normalizeLibraryItem = (item, gameData = null) => {
 export const fetchUserLibrary = (options = {}, forceRefresh = false) => async (dispatch, getState) => {
   try {
     const state = getState();
-    const { lastFetched, library } = state.library;
+    const { lastFetched, library, cachedUserId, cachedFilters } = state.library;
+    const currentUserId = state.auth?.user?.id || state.auth?.user?._id;
 
-    // Check cache validity
-    if (!forceRefresh && isCacheValid(lastFetched) && library.length > 0) {
-      console.log('Using cached library data');
+    // SEGURANÇA: Se o usuário mudou, limpar cache completamente
+    if (cachedUserId && currentUserId && cachedUserId !== currentUserId) {
+      console.warn('[SECURITY] User changed, clearing library cache');
+      dispatch(setLibrary([]));
+      dispatch(setLastFetched({ timestamp: null, userId: null, filters: null }));
+    }
+
+    // Verificar se os filtros mudaram
+    const filtersChanged = JSON.stringify(cachedFilters) !== JSON.stringify(options);
+    
+    // Se há filtros ou os filtros mudaram, não usar cache
+    const hasFilters = options.status || options.name || options.page || options.limit;
+
+    // Check cache validity - skip cache if:
+    // - forceRefresh is true
+    // - filters are present or changed
+    // - user changed
+    // - cache is invalid or empty
+    if (!forceRefresh && !filtersChanged && !hasFilters && isCacheValid(lastFetched) && library.length > 0 && cachedUserId === currentUserId) {
       return;
     }
 
@@ -93,7 +110,11 @@ export const fetchUserLibrary = (options = {}, forceRefresh = false) => async (d
     if (pagination) {
       dispatch(setPagination(pagination));
     }
-    dispatch(setLastFetched(Date.now()));
+    dispatch(setLastFetched({ 
+      timestamp: Date.now(), 
+      userId: currentUserId,
+      filters: options
+    }));
   } catch (error) {
     console.error('Error fetching library:', error);
     dispatch(setError(error.message || 'Erro ao buscar biblioteca'));

@@ -6,6 +6,7 @@
 	gap: 0.5rem;
 	width: 100%;
 }
+
 .game-card-biblioteca {
 	position: relative;
 	border-radius: 12px;
@@ -19,6 +20,25 @@
 .game-card-biblioteca:hover {
 	transform: scale(1.05);
 	box-shadow: 0 8px 25px rgba(255, 110, 119, 0.2);
+}
+
+/* Badge de Status sobre a imagem */
+.status-badge-overlay {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 10;
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-size: 0.75rem;
+	font-weight: bold;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(4px);
+}
+
+.status-badge-text {
+	color: #fff;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .game-card-img-biblioteca {
@@ -49,9 +69,9 @@
 }
 
 .page-subtitle {
-text-align: center;
-color: #ccc;
-margin: 16px 0 24px 0;
+	text-align: center;
+	color: #ccc;
+	margin: 16px 0 24px 0;
 }
 
 .section-line {
@@ -106,6 +126,22 @@ margin: 16px 0 24px 0;
 
 	.overlay-biblioteca {
 		padding: 10px;
+	}
+
+	.status-badge-overlay {
+		top: 8px;
+		right: 8px;
+		padding: 3px 10px;
+		font-size: 0.65rem;
+	}
+
+	.filters-section {
+		padding: 1.5rem 0;
+	}
+
+	.filter-btn {
+		font-size: 0.85rem;
+		padding: 0.4rem 0.8rem;
 	}
 }
 
