@@ -30,21 +30,24 @@ function RankingMain() {
     return "Pontos (Total)";
   };
 
-  return (
+return (
     <div className="container mt-3 pt-5 text-center">
-      <div className="d-flex justify-content-center align-items-center mb-4">
-        <h2 className="title-text me-2">Ranking</h2>
-        <Link to="/challenge" className="btn btn-sm">
-          <i className="bi bi-arrow-repeat text-danger"></i>
+      
+      {/* --- CABEÇALHO MODIFICADO --- */}
+      <div className="page-header-container">
+        <h2 className="title-text m-0">Ranking</h2>
+        
+        <Link to="/challenge" className="nav-corner-btn">
+          Ir para Desafios <i className="bi bi-arrow-right ms-1"></i>
         </Link>
       </div>
+      {/* ----------------------------- */}
 
       <Link to="/shop" className="floating-shop" aria-label="Abrir Loja">
         <i className="bi bi-shop"></i>
       </Link>
 
       <ul className="nav nav-tabs justify-content-center mb-3">
-        {/* Mantive as abas visuais, mas todas mostram o Ranking Geral por enquanto */}
         <li className="nav-item">
           <button className={`nav-link ${activeTab === "all" ? "active" : ""}`} onClick={() => setActiveTab("all")}>
             Global
@@ -53,6 +56,7 @@ function RankingMain() {
       </ul>
       
       <div className="ranking-list container pt-3 text-start">
+        {/* ... (O resto do código da lista mantém-se IGUAL, não precisa mexer) ... */}
         <div className="ranking-header d-none d-md-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
             <span className="ms-3" style={{width: '200px'}}>Usuário</span>
