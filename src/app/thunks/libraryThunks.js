@@ -10,8 +10,8 @@ import {
 } from '../slices/librarySlice';
 import { libraryApi, gamesApi, customGamesApi } from '../../services/api';
 
-// Cache duration: 5 minutes
-const CACHE_DURATION = 5 * 60 * 1000;
+// Cache duration: 2 minutes
+const CACHE_DURATION = 2 * 60 * 1000;
 
 /**
  * Check if library cache is still valid
@@ -25,23 +25,37 @@ const isCacheValid = (lastFetched) => {
  * Normalize library item from backend to frontend format
  */
 const normalizeLibraryItem = (item, gameData = null) => {
+  // Se o item já tem gameDetails do backend, usa isso
+  const details = item.gameDetails || gameData;
+  
   return {
     id: item._id || item.id,
     userId: item.userId,
     gameId: item.gameId,
-    name: gameData?.nome || 'Jogo não encontrado',
-    img: gameData?.backgroundimage || '',
+    name: details?.nome || 'Jogo não encontrado',
+    img: details?.backgroundimage || '',
     status: item.status,
     progresso: item.progress != null ? `${item.progress}%` : null,
     progress: item.progress,
-    playTime: gameData?.playtime || 0,
+    playTime: details?.playtime || 0,
     rating: item.rating || 0,
     dateAdded: item.createdAt || item.dateAdded,
     platforms: item.platforms || [],
-    genres: gameData?.genres || [],
+    genres: details?.genres || [],
     platinum: item.platinum || false,
     hoursPlayed: item.hoursPlayed || 0,
     updatedAt: item.updatedAt,
+    trophyProgress: item.trophyProgress,
+    gameDetails: item.gameDetails || (gameData ? {
+      nome: gameData.nome,
+      plataformas: gameData.plataformas,
+      genres: gameData.genres,
+      rating: gameData.rating,
+      playtime: gameData.playtime,
+      ratings_count: gameData.ratings_count,
+      backgroundimage: gameData.backgroundimage,
+      ano_de_lancamento: gameData.ano_de_lancamento
+    } : null),
   };
 };
 
@@ -86,11 +100,16 @@ export const fetchUserLibrary = (options = {}, forceRefresh = false) => async (d
     const libraryItems = response.data?.items || [];
     const pagination = response.data?.pagination || null;
 
-    // Enrich library items with game data
+    // Enrich library items - fetch missing gameDetails if needed
     const libraryWithGames = await Promise.all(
       libraryItems.map(async (item) => {
+        // Se já tem gameDetails do backend, usa direto
+        if (item.gameDetails) {
+          return normalizeLibraryItem(item);
+        }
+        
+        // Se não tem gameDetails, tenta buscar (pode ser custom game)
         try {
-          // Tentar buscar como jogo normal primeiro
           const gameData = await gamesApi.getGameById(item.gameId, getState);
           return normalizeLibraryItem(item, gameData);
         } catch (err) {

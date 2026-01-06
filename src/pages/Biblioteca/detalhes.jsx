@@ -145,21 +145,9 @@ const Detalhes = () => {
                                 >
                                     <option value="Lista de Desejos">Lista de Desejos</option>
                                     <option value="Jogando">Jogando</option>
-                                    <option value="Completado">Completado</option>
-                                    <option value="Platinado">Platinado</option>
                                     <option value="Abandonado">Abandonado</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <div className="info-row">
-                            <span className="info-label-new">Progresso:</span>
-                            <span className="info-value-new">
-                                {typeof (game.progresso || game.progress) === 'string' && (game.progresso || game.progress).includes('%')
-                                    ? (game.progresso || game.progress)
-                                    : `${game.progresso || game.progress || 0}%`
-                                }
-                            </span>
                         </div>
 
                         {game.platinum !== undefined && (
@@ -168,13 +156,6 @@ const Detalhes = () => {
                                 <span className="info-value-new">
                                     {game.platinum ? '✓ Conquistado' : '✗ Não conquistado'}
                                 </span>
-                            </div>
-                        )}
-
-                        {game.hoursPlayed !== undefined && (
-                            <div className="info-row">
-                                <span className="info-label-new">Horas Jogadas:</span>
-                                <span className="info-value-new">{game.hoursPlayed}h</span>
                             </div>
                         )}
                     </div>
@@ -224,7 +205,7 @@ const Detalhes = () => {
                     </div>
 
                     {/* Botões de ação */}
-                    <div className="action-buttons mt-4">
+                    <div className="action-buttons mt-4 d-flex flex-column align-items-center">
                         {hasChanges && (
                             <Button
                                 variant="success"
@@ -236,23 +217,24 @@ const Detalhes = () => {
                                 Salvar Alterações
                             </Button>
                         )}
-                        <Button
-                            variant="primary"
-                            onClick={() => navigate(`/trophy/${game.gameId}`)}
-                            className="w-100 mb-3"
-                        >
-                            <Trophy size={18} className="me-2" />
-                            Ver Troféus
-                        </Button>
-                        <Button
-                            variant="danger"
-                            onClick={handleRemoveGame}
-                            disabled={removing}
-                            className="w-100"
-                        >
-                            <Trash2 size={18} className="me-2" />
-                            {removing ? 'Removendo...' : 'Remover da Biblioteca'}
-                        </Button>
+                        <div className="d-flex gap-3 mb-3">
+                            <Button
+                                variant="outline-warning"
+                                onClick={() => navigate('/add-trophy-games')}
+                                className="trophy-icon-btn"
+                                title="Adicionar Troféus"
+                            >
+                                <Trophy size={24} />
+                            </Button>
+                            <Button
+                                variant="danger"
+                                onClick={handleRemoveGame}
+                                disabled={removing}
+                            >
+                                <Trash2 size={18} className="me-2" />
+                                {removing ? 'Removendo...' : 'Remover da Biblioteca'}
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
