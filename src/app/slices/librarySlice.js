@@ -14,6 +14,8 @@ const initialState = {
     totalPages: 0,
   },
   lastFetched: null, // Timestamp for cache invalidation
+  cachedUserId: null, // Track which user's data is cached
+  cachedFilters: null, // Track which filters were applied to cached data
   loading: false,
   error: null,
 };
@@ -76,7 +78,20 @@ export const librarySlice = createSlice({
     },
     
     setLastFetched: (state, action) => {
-      state.lastFetched = action.payload;
+      state.lastFetched = action.payload.timestamp;
+      state.cachedUserId = action.payload.userId;
+      state.cachedFilters = action.payload.filters || null;
+    },
+    
+    clearLibrary: (state) => {
+      state.library = [];
+      state.stats = { total: 0, jogando: 0, platinado: 0 };
+      state.pagination = { page: 1, limit: 20, total: 0, totalPages: 0 };
+      state.lastFetched = null;
+      state.cachedUserId = null;
+      state.cachedFilters = null;
+      state.loading = false;
+      state.error = null;
     },
     
     setLoading: (state, action) => {
@@ -101,6 +116,7 @@ export const {
   removeFromLibrary,
   setPagination,
   setLastFetched,
+  clearLibrary,
   setLoading,
   setError,
   clearError,

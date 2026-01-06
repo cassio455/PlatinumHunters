@@ -116,9 +116,10 @@ export const libraryApi = {
    * Get user's library with optional filters and pagination
    * GET /library
    */
-  getLibrary: async ({ status, page, limit } = {}, getState) => {
+  getLibrary: async ({ status, name, page, limit } = {}, getState) => {
     const queryParams = new URLSearchParams();
     if (status) queryParams.append('status', status);
+    if (name) queryParams.append('name', name);
     if (page) queryParams.append('page', page);
     if (limit) queryParams.append('limit', limit);
     

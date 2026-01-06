@@ -2,7 +2,7 @@ import { React, useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Button, Alert } from 'react-bootstrap';
-import { Trash2, ArrowLeft, Save } from 'lucide-react';
+import { Trash2, ArrowLeft, Save, Trophy } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { updateLibraryGame, removeGameFromLibrary } from '../../app/thunks/libraryThunks';
 
@@ -15,7 +15,6 @@ const Detalhes = () => {
 
     const game = useSelector((state) => state.library.library.find(g => String(g.id) === String(id)));
     const loading = useSelector((state) => state.library.loading);
-    const [progressInput, setProgressInput] = useState(game ? (game.progress ?? 0) : 0);
     const [statusInput, setStatusInput] = useState(game ? (game.status || 'Lista de Desejos') : 'Lista de Desejos');
     const [actionError, setActionError] = useState(null);
     const [actionSuccess, setActionSuccess] = useState(null);
@@ -23,7 +22,6 @@ const Detalhes = () => {
 
     useEffect(() => {
         if (game) {
-            setProgressInput(game.progress ?? 0);
             setStatusInput(game.status || 'Lista de Desejos');
         }
     }, [game]);
@@ -31,10 +29,9 @@ const Detalhes = () => {
     // Detecta se houve alterações
     const hasChanges = useMemo(() => {
         if (!game) return false;
-        const currentProgress = game.progress ?? 0;
         const currentStatus = game.status || 'Lista de Desejos';
-        return Number(progressInput) !== Number(currentProgress) || statusInput !== currentStatus;
-    }, [game, progressInput, statusInput]);
+        return statusInput !== currentStatus;
+    }, [game, statusInput]);
 
     const handleRemoveGame = async () => {
         if (!game) return;
@@ -61,17 +58,6 @@ const Detalhes = () => {
         setActionSuccess(null);
 
         const updates = {};
-
-        // Adiciona progresso se foi alterado
-        const currentProgress = game.progress ?? 0;
-        if (Number(progressInput) !== Number(currentProgress)) {
-            let p = Number(progressInput);
-            if (Number.isNaN(p)) {
-                setActionError('Progresso inválido');
-                return;
-            }
-            updates.progress = Math.max(0, Math.min(100, Math.round(p)));
-        }
 
         // Adiciona status se foi alterado
         const currentStatus = game.status || 'Lista de Desejos';
@@ -168,23 +154,12 @@ const Detalhes = () => {
 
                         <div className="info-row">
                             <span className="info-label-new">Progresso:</span>
-                            <div className="d-flex align-items-center gap-2 flex-wrap">
-                                <span className="info-value-new">
-                                    {typeof (game.progresso || game.progress) === 'string' && (game.progresso || game.progress).includes('%')
-                                        ? (game.progresso || game.progress)
-                                        : `${game.progresso || game.progress || 0}%`
-                                    }
-                                </span>
-                                <input
-                                    type="number"
-                                    min={0}
-                                    max={100}
-                                    value={progressInput}
-                                    onChange={(e) => setProgressInput(e.target.value)}
-                                    className="progress-input"
-                                    aria-label="Progresso do jogo"
-                                />
-                            </div>
+                            <span className="info-value-new">
+                                {typeof (game.progresso || game.progress) === 'string' && (game.progresso || game.progress).includes('%')
+                                    ? (game.progresso || game.progress)
+                                    : `${game.progresso || game.progress || 0}%`
+                                }
+                            </span>
                         </div>
 
                         {game.platinum !== undefined && (
@@ -261,6 +236,14 @@ const Detalhes = () => {
                                 Salvar Alterações
                             </Button>
                         )}
+                        <Button
+                            variant="primary"
+                            onClick={() => navigate(`/trophy/${game.gameId}`)}
+                            className="w-100 mb-3"
+                        >
+                            <Trophy size={18} className="me-2" />
+                            Ver Troféus
+                        </Button>
                         <Button
                             variant="danger"
                             onClick={handleRemoveGame}

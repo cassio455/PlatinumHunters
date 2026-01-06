@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginSuccess, logout } from './slices/authSlice';
 import { clearTrophies, fetchUserProgress } from './slices/trophySlice';
+import { clearLibrary } from './slices/librarySlice';
 import { fetchChallengesList, fetchRankingList } from './thunks/rankingThunks';
 import { useNavigate } from 'react-router-dom';
 
@@ -33,6 +34,8 @@ const AuthSync = () => {
   // Listen for auth logout events (token expiration)
   useEffect(() => {
     const handleAuthLogout = () => {
+      dispatch(clearLibrary());
+      dispatch(clearTrophies());
       dispatch(logout());
       navigate('/user/login', { replace: true });
     };
@@ -49,6 +52,8 @@ const AuthSync = () => {
     const checkToken = () => {
       const token = localStorage.getItem('token');
       if (isAuthenticated && !token) {
+        dispatch(clearLibrary());
+        dispatch(clearTrophies());
         dispatch(logout());
       }
     };

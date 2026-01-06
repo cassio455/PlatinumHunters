@@ -12,7 +12,9 @@ import './index.css';
 
 const Biblioteca = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('all');
 
   const dispatch = useDispatch();
   const library = useSelector((state) => state.library.library);
@@ -33,17 +35,36 @@ const Biblioteca = () => {
   const [submitError, setSubmitError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Debounce search term
   useEffect(() => {
-    // Fetch library without userId - backend uses auth token
-    dispatch(fetchUserLibrary());
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    // Fetch library with filters
+    const filters = {};
+    if (selectedStatus !== 'all') {
+      filters.status = selectedStatus;
+    }
+    if (debouncedSearchTerm.trim()) {
+      filters.name = debouncedSearchTerm;
+    }
+
+    // O thunk agora detecta automaticamente mudanças de filtro
+    dispatch(fetchUserLibrary(filters));
+  }, [dispatch, selectedStatus, debouncedSearchTerm]);
+
+  useEffect(() => {
     dispatch(fetchGenres());
     dispatch(fetchPlatforms());
   }, [dispatch]);
 
-  const filteredGames = library.filter(game => {
-    const matchesSearch = game.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  });
+  // Games já vêm filtrados do backend
+  const filteredGames = library;
 
   const filteredGenreSuggestions = genreInput.trim()
     ? availableGenres
@@ -149,6 +170,18 @@ const Biblioteca = () => {
     );
   }
 
+  // Helper para cores dos badges
+  const getStatusBadgeStyle = (status) => {
+    const styles = {
+      'Jogando': { bg: '#4CAF50', label: 'Jogando' },
+      'Completado': { bg: '#2196F3', label: 'Completado' },
+      'Abandonado': { bg: '#9E9E9E', label: 'Abandonado' },
+      'Lista de Desejos': { bg: '#FF9800', label: 'Desejo' },
+      'Platinado': { bg: '#FFD700', label: 'Platina' }
+    };
+    return styles[status] || { bg: '#666', label: status };
+  };
+
   return (
     <div className="main-page container mt-5 pt-5">
       <div className="section-header mb-4">
@@ -180,6 +213,55 @@ const Biblioteca = () => {
         </div>
       </div>
 
+      {/* Filtros de Status */}
+      <div className="filters-section">
+        <h4 className="filters-title">Filtrar por Status</h4>
+        <div className="d-flex justify-content-center flex-wrap gap-2">
+          <Button
+            variant="outline-light"
+            className={`filter-btn ${selectedStatus === 'all' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('all')}
+          >
+            Todos
+          </Button>
+          <Button
+            variant="outline-light"
+            className={`filter-btn ${selectedStatus === 'Jogando' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('Jogando')}
+          >
+            Jogando
+          </Button>
+          <Button
+            variant="outline-light"
+            className={`filter-btn ${selectedStatus === 'Completado' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('Completado')}
+          >
+            Completado
+          </Button>
+          <Button
+            variant="outline-light"
+            className={`filter-btn ${selectedStatus === 'Abandonado' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('Abandonado')}
+          >
+            Abandonado
+          </Button>
+          <Button
+            variant="outline-light"
+            className={`filter-btn ${selectedStatus === 'Lista de Desejos' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('Lista de Desejos')}
+          >
+            Lista de Desejos
+          </Button>
+          <Button
+            variant="outline-light"
+            className={`filter-btn ${selectedStatus === 'Platinado' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('Platinado')}
+          >
+            Platinado
+          </Button>
+        </div>
+      </div>
+
       <div className="row mt-4">
         {filteredGames.length === 0 && (
           <div className="col-12 text-center text-muted">Nenhum jogo encontrado.</div>
@@ -193,6 +275,14 @@ const Biblioteca = () => {
                   alt={game.name}
                   className="game-card-img-biblioteca"
                 />
+                {/* Badge de Status */}
+                <div className="status-badge-overlay" style={{
+                  backgroundColor: getStatusBadgeStyle(game.status).bg
+                }}>
+                  <span className="status-badge-text">
+                    {getStatusBadgeStyle(game.status).label}
+                  </span>
+                </div>
                 <div className="overlay-biblioteca">
                   <h5 className="game-title-biblioteca">{game.name}</h5>
                   <div className="mt-1">
