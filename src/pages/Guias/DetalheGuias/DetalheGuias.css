@@ -1,0 +1,42 @@
+.detalhe-guia-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  gap: 24px;
+  max-width: 300px;
+}
+
+.curtidas-box,
+.comentarios-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.icone-curtida {
+  font-size: 22px;
+  transition: color 0.2s;
+  color: #bbb;
+}
+
+.icone-curtida.curtido {
+  color: #e74c3c;
+}
+
+.icone-comentario {
+  font-size: 22px;
+  transition: color 0.2s;
+  color: #bbb;
+}
+
+.icone-comentario.comentado {
+  color: #007bff;
+}
+
+.curtidas-numero, .comentarios-numero {
+  font-weight: 500;
+  color: #fff;
+}
