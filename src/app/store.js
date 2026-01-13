@@ -10,6 +10,7 @@ import libraryReducer from './slices/librarySlice';
 import genrePlatformReducer from './slices/genrePlatformSlice';
 import gamesReducer from './slices/gamesSlice';
 import rankingReducer from './slices/rankingSlice'; 
+import guidesReducer from './slices/guidesSlice';
 
 const authPersistConfig = { key: 'auth', storage };
 const trophyPersistConfig = { key: 'trophies', storage };
@@ -33,6 +34,7 @@ export const store = configureStore({
     shop: persistedShopReducer,
     games: persistedGamesReducer, 
     ranking: rankingReducer,
+    guides: guidesReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

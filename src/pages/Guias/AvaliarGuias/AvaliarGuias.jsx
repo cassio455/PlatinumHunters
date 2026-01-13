@@ -1,124 +1,79 @@
-import React, { useState } from 'react'
-import { FaHeart, FaComment } from 'react-icons/fa'
-import { Modal, Button, Form } from 'react-bootstrap'
-import { CircleX} from 'lucide-react'
-import './AvaliarGuias.css'
-import { guias } from "../guias"
+import React, { useEffect, useState } from 'react';
+import { FaHeart, FaComment } from 'react-icons/fa';
+import { Modal, Button, Form, Spinner } from 'react-bootstrap';
+import { CircleX } from 'lucide-react';
+import './AvaliarGuias.css';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  fetchGuideDetails,
+  likeGuide,
+  addGuideComment,
+  addGuideReply
+} from '../../../app/thunks/guidesThunks';
 
-function getTimeNow() {
-  return "agora"
-}
-
-export default function AvaliarGuias({ guiaId, initialLikes = 0, initialComments = 0, onLike }) {
-  const guia = guias.find(g => g.id === guiaId)
-  const [likes, setLikes] = useState(initialLikes)
-  const [isLiked, setIsLiked] = useState(false)
-  const [showComments, setShowComments] = useState(false)
-  const [comentarios, setComentarios] = useState(guia.comentarios ?? [])
-  const [novoComentario, setNovoComentario] = useState("")
-  const [replyParentId, setReplyParentId] = useState(null)
-  const [replyTexto, setReplyTexto] = useState({})
-  const [comentariosExpandido, setComentariosExpandido] = useState({})
-  const [likedComments, setLikedComments] = useState({})
-  const [likedReplies, setLikedReplies] = useState({})
-
-  const handleLike = () => {
-    const newLikeCount = isLiked ? likes - 1 : likes + 1
-    setLikes(newLikeCount)
-    setIsLiked(!isLiked)
-    if (onLike) onLike({ guiaId, likes: newLikeCount, isLiked: !isLiked })
-  }
-
-  const handleComment = () => setShowComments(true)
-  const handleClose = () => {
-    setShowComments(false)
-    setReplyParentId(null)
-    setReplyTexto({})
-  }
-
-  const adicionarComentario = () => {
-    if (!novoComentario.trim()) return
-    const novo = {
-      id: Date.now(),
-      autor: "Você",
-      texto: novoComentario,
-      likes: 0,
-      timestamp: getTimeNow(),
-      replies: []
+export default function AvaliarGuias({ guiaId }) {
+  const dispatch = useDispatch();
+  const { guideDetails, loading } = useSelector(state => state.guides);
+  const [showComments, setShowComments] = useState(false);
+  const [novoComentario, setNovoComentario] = useState("");
+  const [replyParentId, setReplyParentId] = useState(null);
+  const [replyTexto, setReplyTexto] = useState({});
+  const [comentariosExpandido, setComentariosExpandido] = useState({});
+  const [erro, setErro] = useState('');
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [commentLoading, setCommentLoading] = useState(false);
+useEffect(() => {
+    dispatch(fetchGuideDetails(guiaId));
+  }, [dispatch, guiaId, showComments]);
+const handleLike = async () => {
+    setLikeLoading(true);
+    setErro('');
+    try {
+      await dispatch(likeGuide(guiaId)).unwrap();
+    } catch (error) {
+      setErro('Erro ao curtir/descurtir guia.');
+    } finally {
+      setLikeLoading(false);
     }
-    setComentarios([novo, ...comentarios])
-    setNovoComentario("")
-  }
-
-  const curtirComentario = (id, parentId = null) => {
-    if (parentId === null) {
-      setLikedComments(prev => ({
-        ...prev,
-        [id]: !prev[id]
-      }))
-      setComentarios(comentarios =>
-        comentarios.map(c => {
-          if (c.id === id) {
-            return { ...c, likes: likedComments[id] ? c.likes - 1 : c.likes + 1 }
-          }
-          return c
-        })
-      )
-    } else {
-      setLikedReplies(prev => ({
-        ...prev,
-        [id]: !prev[id]
-      }))
-      setComentarios(comentarios =>
-        comentarios.map(c => {
-          if (c.id === parentId) {
-            return {
-              ...c,
-              replies: c.replies.map(r =>
-                r.id === id
-                  ? { ...r, likes: likedReplies[id] ? r.likes - 1 : r.likes + 1 }
-                  : r
-              )
-            }
-          }
-          return c
-        })
-      )
+  };
+const handleComment = () => setShowComments(true);
+const handleClose = () => {
+    setShowComments(false);
+    setReplyParentId(null);
+    setReplyTexto({});
+  };
+const adicionarComentario = async () => {
+    if (!novoComentario.trim()) return;
+    setCommentLoading(true);
+    setErro('');
+    try {
+      await dispatch(addGuideComment({ id: guiaId, texto: novoComentario })).unwrap();
+      setNovoComentario("");
+    } catch (error) {
+      setErro('Erro ao adicionar comentário.');
+    } finally {
+      setCommentLoading(false);
     }
-  }
-
-  const adicionarReply = (parentId) => {
-    if (!replyTexto[parentId]?.trim()) return
-    setComentarios(comentarios =>
-      comentarios.map(c => {
-        if (c.id === parentId) {
-          return {
-            ...c,
-            replies: [
-              ...c.replies,
-              {
-                id: Date.now(),
-                autor: "Você",
-                texto: replyTexto[parentId],
-                likes: 0,
-                timestamp: getTimeNow(),
-              }
-            ]
-          }
-        }
-        return c
-      })
-    )
-    setReplyParentId(null)
-    setReplyTexto({ ...replyTexto, [parentId]: "" })
-    setComentariosExpandido(exp => ({ ...exp, [parentId]: true }))
-  }
-
-  const toggleReplies = (id) => {
-    setComentariosExpandido(exp => ({ ...exp, [id]: !exp[id] }))
-  }
-
-  const renderComentarios = (lista, isReply = false, parentId = null) => (
+  };
+const adicionarReply = async (parentId) => {
+    if (!replyTexto[parentId]?.trim()) return;
+    setCommentLoading(true);
+    setErro('');
+    try {
+      await dispatch(addGuideReply({ id: guiaId, commentId: parentId, texto: replyTexto[parentId] })).unwrap();
+      setReplyParentId(null);
+      setReplyTexto({ ...replyTexto, [parentId]: "" });
+      setComentariosExpandido(exp => ({ ...exp, [parentId]: true }));
+    } catch (error) {
+      setErro('Erro ao adicionar resposta.');
+    } finally {
+      setCommentLoading(false);
+    }
+  };
+const toggleReplies = (id) => {
+    setComentariosExpandido(exp => ({ ...exp, [id]: !exp[id] }));
+  };
+const renderComentarios = (lista, isReply = false, parentId = null) => (
     <ul className="comentarios-lista">
       {lista.map(com => (
         <li
@@ -130,35 +85,24 @@ export default function AvaliarGuias({ guiaId, initialLikes = 0, initialComments
           }}
         >
           <div style={{ fontWeight: "bold" }}>
-            {com.autor} <span style={{ fontWeight: "normal", color: "#aaa", fontSize: 12 }}>• {com.timestamp}</span>
+            {com.author} <span style={{ fontWeight: "normal", color: "#aaa", fontSize: 12 }}>• {com.timestamp}</span>
           </div>
           <div style={{ margin: "8px 0" }}>{com.texto}</div>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <Button
-              className={`comentario-btn${(parentId === null ? likedComments[com.id] : likedReplies[com.id]) ? " liked" : ""}`}
-              variant={((parentId === null ? likedComments[com.id] : likedReplies[com.id])) ? "danger" : "outline-light"}
-              size="sm"
-              onClick={() => curtirComentario(com.id, parentId)}
-            >
-              <FaHeart style={{ color: ((parentId === null ? likedComments[com.id] : likedReplies[com.id])) ? "#fff" : "#e74c3c" }} />
-              <span>{com.likes}</span>
-            </Button>
-            {/* Só comentários principais têm botão de responder */}
             {!isReply && (
               <Button
                 className="comentario-btn"
                 variant="outline-light"
                 size="sm"
                 onClick={() => {
-                  setReplyParentId(com.id)
-                  setReplyTexto({ ...replyTexto, [com.id]: "" }) // Limpa texto ao abrir nova caixa
+                  setReplyParentId(com.id);
+                  setReplyTexto({ ...replyTexto, [com.id]: "" });
                 }}
               >
                 Responder
               </Button>
             )}
-            {/* Só comentários principais podem ter replies */}
-            {!isReply && com.replies.length > 0 && (
+            {!isReply && com.replies && com.replies.length > 0 && (
               <Button
                 className="comentario-btn"
                 variant="link"
@@ -170,12 +114,11 @@ export default function AvaliarGuias({ guiaId, initialLikes = 0, initialComments
               </Button>
             )}
           </div>
-          {/* campo reply: só para comentários principais */}
           {!isReply && replyParentId === com.id && (
             <Form style={{ marginTop: 10 }}
               onSubmit={e => {
-                e.preventDefault()
-                adicionarReply(com.id)
+                e.preventDefault();
+                adicionarReply(com.id);
               }}>
               <Form.Control
                 as="textarea"
@@ -192,8 +135,8 @@ export default function AvaliarGuias({ guiaId, initialLikes = 0, initialComments
                 }}
                 onKeyDown={e => {
                   if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    adicionarReply(com.id)
+                    e.preventDefault();
+                    adicionarReply(com.id);
                   }
                 }}
               />
@@ -204,8 +147,9 @@ export default function AvaliarGuias({ guiaId, initialLikes = 0, initialComments
                   size="sm"
                   style={{ marginTop: 4 }}
                   onClick={() => adicionarReply(com.id)}
+                  disabled={commentLoading}
                 >
-                  Adicionar resposta
+                  {commentLoading ? <Spinner animation="border" size="sm" /> : "Adicionar resposta"}
                 </Button>
               )}
               <Button
@@ -218,24 +162,31 @@ export default function AvaliarGuias({ guiaId, initialLikes = 0, initialComments
               </Button>
             </Form>
           )}
-          {/* replies: só para comentários principais */}
-          {!isReply && com.replies.length > 0 && comentariosExpandido[com.id] && renderComentarios(com.replies, true, com.id)}
+          {!isReply && com.replies && com.replies.length > 0 && comentariosExpandido[com.id] && renderComentarios(com.replies, true, com.id)}
         </li>
       ))}
     </ul>
-  )
-
-  return (
+  );
+if (loading || !guideDetails) {
+    return (
+      <div className="guia-actions-icons">
+        <Spinner animation="border" variant="light" />
+      </div>
+    );
+  }
+const guia = guideDetails;
+return (
     <>
       <div className="guia-actions-icons">
         <div
           className="action-item"
           onClick={handleLike}
           role="button"
-          aria-label={isLiked ? 'Descurtir guia' : 'Curtir guia'}
+          aria-label="Curtir guia"
         >
-          <FaHeart className={`action-icon heart-icon ${isLiked ? 'liked' : ''}`} aria-hidden="true" />
-          <span className="action-count">{likes}</span>
+          <FaHeart className="action-icon heart-icon" aria-hidden="true" />
+          <span className="action-count">{guia.likes}</span>
+          {likeLoading && <Spinner animation="border" size="sm" />}
         </div>
         <div
           className="action-item"
@@ -244,29 +195,26 @@ export default function AvaliarGuias({ guiaId, initialLikes = 0, initialComments
           aria-label="Ver comentários"
         >
           <FaComment className="action-icon comment-icon" aria-hidden="true" />
-          <span className="action-count">{comentarios.length}</span>
+          <span className="action-count">{guia.comments?.length || 0}</span>
         </div>
       </div>
-
       <Modal show={showComments} onHide={handleClose} centered dialogClassName="comentarios-modal-dark">
         <div className="modal-header comentarios-modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <Modal.Title className="text-light" style={{ fontSize: 24 }}>Comentários da Guia</Modal.Title>
-            {/* Título da guia */}
             <div style={{ color: "#f8f9fa", fontWeight: "bold", fontSize: 18, marginTop: 4 }}>
               {guia.title}
             </div>
           </div>
-          {/* Botão de X da Lucid */}
           <Button variant="link" style={{ color: "white", padding: 0 }} onClick={handleClose} aria-label="Fechar">
-            <CircleX  color="white" size={28} />
+            <CircleX color="white" size={28} />
           </Button>
         </div>
         <Modal.Body className="comentarios-modal-body">
           <Form
             onSubmit={e => {
-              e.preventDefault()
-              adicionarComentario()
+              e.preventDefault();
+              adicionarComentario();
             }}>
             <Form.Control
               as="textarea"
@@ -283,8 +231,8 @@ export default function AvaliarGuias({ guiaId, initialLikes = 0, initialComments
               }}
               onKeyDown={e => {
                 if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault()
-                  adicionarComentario()
+                  e.preventDefault();
+                  adicionarComentario();
                 }
               }}
             />
@@ -295,17 +243,19 @@ export default function AvaliarGuias({ guiaId, initialLikes = 0, initialComments
                 size="sm"
                 style={{ marginTop: 4 }}
                 onClick={adicionarComentario}
+                disabled={commentLoading}
               >
-                Adicionar comentário
+                {commentLoading ? <Spinner animation="border" size="sm" /> : "Adicionar comentário"}
               </Button>
             )}
           </Form>
           <hr style={{ background: "#eee", margin: "12px 0" }} />
-          {comentarios.length === 0 ? (
+          {guia.comments && guia.comments.length === 0 ? (
             <div style={{ color: "#aaa" }}>Nenhum comentário ainda. Seja o primeiro!</div>
           ) : (
-            renderComentarios(comentarios)
+            guia.comments && renderComentarios(guia.comments)
           )}
+          {erro && <div className="text-danger mt-2">{erro}</div>}
         </Modal.Body>
         <Modal.Footer className="comentarios-modal-footer">
           <Button variant="secondary" onClick={handleClose}>
@@ -314,5 +264,5 @@ export default function AvaliarGuias({ guiaId, initialLikes = 0, initialComments
         </Modal.Footer>
       </Modal>
     </>
-  )
+  );
 }

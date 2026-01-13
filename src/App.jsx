@@ -21,8 +21,8 @@ import SignUp from "./pages/User/SignUp";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/User/Profile";
 import Shop from "./RankingScreens/Shop";
-import CriarGuia from "./pages/Guias/CriarGuia/CriarGuia";
 import ListaGuias from "./pages/Guias/ListaGuias/ListaGuias";
+import DetalheGuias from './pages/Guias/DetalheGuias/DetalheGuias'
 import AdicionarJogo from "./pages/Biblioteca/adicionarJogo";
 
 function App() {
@@ -45,6 +45,7 @@ function App() {
               </ProtectedRoute>} />
             <Route path="/biblioteca/user/:userId/detalhes/:id" element={<Detalhes />} />
             <Route path="/guias" element={<ListaGuias />} />
+            <Route path="/guias/:id" element={<DetalheGuias />} />
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/jogos" element={<Jogos />} />
             <Route path="/challenge" element={<Challenge />} />
