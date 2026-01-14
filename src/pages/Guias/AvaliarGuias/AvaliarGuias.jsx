@@ -30,7 +30,8 @@ const handleLike = async () => {
     setErro('');
     try {
       await dispatch(likeGuide(guiaId)).unwrap();
-    } catch (error) {
+    } catch (err) {
+      console.error('Erro ao curtir/descurtir guia:', err);
       setErro('Erro ao curtir/descurtir guia.');
     } finally {
       setLikeLoading(false);
@@ -49,7 +50,8 @@ const adicionarComentario = async () => {
     try {
       await dispatch(addGuideComment({ id: guiaId, texto: novoComentario })).unwrap();
       setNovoComentario("");
-    } catch (error) {
+    } catch (err) {
+      console.error('Erro ao adicionar comentário:', err);
       setErro('Erro ao adicionar comentário.');
     } finally {
       setCommentLoading(false);
@@ -64,7 +66,8 @@ const adicionarReply = async (parentId) => {
       setReplyParentId(null);
       setReplyTexto({ ...replyTexto, [parentId]: "" });
       setComentariosExpandido(exp => ({ ...exp, [parentId]: true }));
-    } catch (error) {
+    } catch (err) {
+      console.error('Erro ao adicionar resposta:', err);
       setErro('Erro ao adicionar resposta.');
     } finally {
       setCommentLoading(false);
@@ -73,7 +76,7 @@ const adicionarReply = async (parentId) => {
 const toggleReplies = (id) => {
     setComentariosExpandido(exp => ({ ...exp, [id]: !exp[id] }));
   };
-const renderComentarios = (lista, isReply = false, parentId = null) => (
+const renderComentarios = (lista, isReply = false) => (
     <ul className="comentarios-lista">
       {lista.map(com => (
         <li

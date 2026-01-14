@@ -99,7 +99,7 @@ export const fetchUserLibrary = (options = {}, forceRefresh = false) => async (d
             const customGameData = await customGamesApi.getCustomGameById(item.gameId, getState);
             return normalizeLibraryItem(item, customGameData);
           } catch (customErr) {
-            console.warn(`Failed to fetch game ${item.gameId}:`, err.message);
+            console.warn(`Failed to fetch game ${item.gameId}:`, err.message, customErr?.message || customErr);
             return normalizeLibraryItem(item, null);
           }
         }

@@ -9,7 +9,7 @@ import "./Shop.css";
 function Shop() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { coins, ownedTitles, equippedTitle, availableTitles, loading } = useSelector((state) => state.shop);
+  const { coins, ownedTitles, equippedTitle, availableTitles } = useSelector((state) => state.shop);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const isAdmin = isAuthenticated && user?.roles?.includes('ADMIN');
   const [showModal, setShowModal] = useState(false);

@@ -9,10 +9,8 @@ import LibraryStatus from '../../components/LibraryStatus';
 import './adicionarJogo.css';
 
 const AdicionarJogo = () => {
-  const { register, handleSubmit, formState: { errors }, setError, reset, setValue } = useForm();
-  const user = useSelector((state) => state.auth.user);
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
   const loading = useSelector((state) => state.library.loading);
-  const library = useSelector((state) => state.library.library);
   const error = useSelector((state) => state.library.error);
   const availableGenres = useSelector((state) => state.genrePlatform?.genres || []);
 
@@ -21,13 +19,16 @@ const AdicionarJogo = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { userId: routeUserId } = useParams();
+  const user = useSelector((state) => state.auth.user);
+
+  const localUserId = JSON.parse(localStorage.getItem('user') || 'null')?.id;
 
   useEffect(() => {
-    const idToFetch = user?.id ?? 1;
+    const idToFetch = localUserId ?? 1;
     dispatch(fetchUserLibrary(idToFetch));
     dispatch(fetchGenres());
     //dispatch(fetchPlatforms());
-  }, [dispatch]);
+  }, [dispatch, localUserId]);
 
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [genreInput, setGenreInput] = useState('');
@@ -63,8 +64,8 @@ const AdicionarJogo = () => {
       backgroundimage: null,
       playtime: 0,
       genres: genresForSave,
+      platforms: platforms
     };
-
     // Use a temporary gameId (in production, you'd select from existing games or create new one)
     const tempGameId = String(Date.now());
 

@@ -44,7 +44,8 @@ function Challenge() {
             points: selectedChallenge.points 
         })).unwrap();
         dispatch(fetchRankingList());
-    } catch (error) {
+    } catch (err) {
+        console.error('Erro ao completar desafio:', err);
         alert("Erro ao completar desafio.");
     }
   };

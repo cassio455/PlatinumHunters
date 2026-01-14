@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Button, Badge, Spinner, Modal, Form, Alert } from 'react-bootstrap';
 import './DetalheGuias.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchGuideDetails, clearGuideDetails } from '../../../app/slices/guidesSlice';
+import { clearGuideDetails } from '../../../app/slices/guidesSlice';
+import { fetchGuideDetails } from '../../../app/thunks/guidesThunks';
 import { apiRequest } from '../../../services/api';
 
 export default function DetalheGuias() {
@@ -66,6 +67,7 @@ const guia = guideDetails;
       setShowEdit(false);
       dispatch(fetchGuideDetails(id));
     } catch (err) {
+      console.error('Erro ao editar guia:', err);
       setEditError('Erro ao editar guia.');
     } finally {
       setEditLoading(false);
@@ -80,6 +82,7 @@ const guia = guideDetails;
       setShowDeleteConfirm(false);
       navigate('/guias');
     } catch (err) {
+      console.error('Erro ao deletar guia:', err);
       setDeleteError('Erro ao deletar guia.');
     } finally {
       setDeleteLoading(false);
