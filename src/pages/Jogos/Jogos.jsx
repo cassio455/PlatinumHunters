@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { Search, X, PlusCircle, CheckCircle, Filter } from 'lucide-react';
 import { Card, InputGroup, Form, Button, Spinner, Pagination, Alert, Row, Col, Accordion } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectIsGameInLibrary } from '../../app/slices/librarySlice';
+
 import { addGameToLibrary } from '../../app/thunks/libraryThunks';
 import { fetchGames } from '../../app/thunks/gamesThunks';
 import axios from 'axios'; 

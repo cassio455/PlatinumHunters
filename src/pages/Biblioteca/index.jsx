@@ -20,14 +20,13 @@ const Biblioteca = () => {
   const library = useSelector((state) => state.library.library);
   const loading = useSelector((state) => state.library.loading);
   const error = useSelector((state) => state.library.error);
-  const user = useSelector((state) => state.auth.user);
   const availableGenres = useSelector((state) => state.genrePlatform?.genres || []);
   const availablePlatforms = useSelector((state) => state.genrePlatform?.platforms || []);
 
   const { userId: routeUserId } = useParams();
 
   // Estados para o modal de adicionar jogo
-  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [genreInput, setGenreInput] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);

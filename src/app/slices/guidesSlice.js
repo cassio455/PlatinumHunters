@@ -64,4 +64,5 @@ const guidesSlice = createSlice({
 });
 
 export const { clearGuideDetails } = guidesSlice.actions;
+export { fetchGuides, createGuide, fetchGuideDetails };
 export default guidesSlice.reducer;

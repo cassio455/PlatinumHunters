@@ -8,7 +8,6 @@ function RankingMain() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const rankingList = useSelector((state) => state.ranking?.list || []);
-  const { rankingPoints } = useSelector((state) => state.shop);
   const [activeTab, setActiveTab] = useState("all"); 
 
   useEffect(() => {

@@ -39,7 +39,8 @@ const dispatch = useDispatch();
       try {
         const data = await apiRequest(`/games?search=${encodeURIComponent(gameSearch)}`, { method: 'GET' });
         setGames(data);
-      } catch (error) {
+      } catch (err) {
+        console.error('Erro ao buscar jogos:', err);
         setGames([]);
       }
     }
@@ -63,7 +64,8 @@ const dispatch = useDispatch();
           dicasInit[trof.id] = '';
         });
         setDicas(dicasInit);
-      } catch (error) {
+      } catch (err) {
+        console.error('Erro ao buscar troféus do jogo:', err);
         setErro('Erro ao buscar troféus do jogo.');
         setTrophies([]);
       } finally {
