@@ -240,3 +240,50 @@ ul.nav.nav-tabs .nav-link:hover {
     display: none;
   }
 }
+
+.page-header-container {
+  position: relative;
+  display: flex;
+  justify-content: center; /* Centraliza o título */
+  align-items: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.nav-corner-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  
+  /* Estilo do botão */
+  background-color: transparent;
+  border: 1px solid #fa5f69;
+  color: #fa5f69;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-corner-btn:hover {
+  background-color: #fa5f69;
+  color: white;
+  box-shadow: 0 0 10px rgba(250, 95, 105, 0.5);
+}
+
+/* Ajuste para Celular: Empilha se a tela for muito pequena */
+@media (max-width: 576px) {
+  .page-header-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .nav-corner-btn {
+    position: static; /* Remove posição absoluta no mobile */
+    transform: none;
+  }
+}

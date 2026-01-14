@@ -1,3 +1,11 @@
+/* --- TrophyMain.css --- */
+
+.trophy-main-container {
+  padding-top: 120px;
+  padding-bottom: 50px;
+  min-height: 90vh;
+}
+
 .trophy-card {
   display: flex;
   flex-direction: column;
@@ -8,18 +16,21 @@
   max-width: 250px;
   width: 100%; 
   text-decoration: none;
-  height: fit-content !important;
+  height: 100%; 
   margin: 0 auto;
+  background-color: #202020; 
 }
 
 .trophy-card:hover {
   transform: scale(1.05);
+  z-index: 10; 
 }
 
 .trophy-card .trophy-main-card-img {
   width: 100%;
-  height: auto;
-  object-fit: cover;
+  height: 350px; 
+  object-fit: cover; 
+  object-position: center top; 
   transition: transform 0.3s ease, filter 0.3s ease;
   display: block; 
   border-radius: 12px 12px 0 0;
@@ -74,57 +85,6 @@
   opacity: 1;
 }
 
-.trophy-main-card-img-overlay {
-  background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0));
-  border-radius: 12px;
-}
-
-.trophy-main-icon-button {
-  border: none;
-  font-size: 1.6rem;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #dc3545;
-  text-decoration: none;
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.trophy-main-icon-button:hover {
-  color: #ff6b81;
-  transform: scale(1.1);
-}
-
-.trophy-main-icon-button i {
-  color: inherit;
-}
-
-.trophy-main-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.trophy-main-title {
-  color: #e0e0e0;
-  font-family: 'Arial', sans-serif;
-  font-size: 2.5rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 0;
-}
-
-.trophy-main-line {
-  height: 2px;
-  width: 100%;
-  background-color: #ffffff;
-  margin: 0 auto 2rem auto; 
-  border-radius: 0;
-}
-
 .platinum-overlay {
   position: absolute;
   top: 50%; 
@@ -146,4 +106,16 @@
 .platinum-overlay i {
   color: inherit; 
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); 
+}
+
+.trophy-main-line {
+  height: 2px;
+  width: 100%;
+  background-color: #ffffff; /* <--- ALTERADO PARA BRANCO */
+  margin: 10px 0 30px 0;
+  border-radius: 5px;
+}
+
+.header-container {
+    padding: 0 10px;
 }

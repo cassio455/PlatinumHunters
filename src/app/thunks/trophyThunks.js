@@ -1,27 +1,46 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getAuthHeaders } from '../../services/api';
+import { trophyApi, gamesApi } from '../../services/api';
 
-const API_URL = 'http://localhost:3000'; 
-
-const getAuthHeader = () => {
-    const token = localStorage.getItem('token');
-    return { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` 
-    };
+const createSlug = (text) => {
+    if (!text) return '';
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/:/g, '')
+      .replace(/'/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\-]+/g, '')
+      .replace(/\-\-+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '');
 };
+
+export const fetchAvailableGamesThunk = createAsyncThunk(
+    'trophies/fetchAvailableGames',
+    async (_, { rejectWithValue, getState }) => {
+        try {
+            // AJUSTE: Reduzi o limite para 50 para evitar o erro 400 de validação do backend
+            const games = await gamesApi.getAllGames({ limit: 220 }, getState); 
+            
+            return games.map(game => ({
+                ...game,
+                originalId: game.id || game._id,
+                id: createSlug(game.nome || game.name) 
+            }));
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
 
 export const fetchUserProgress = createAsyncThunk(
     'trophies/fetchUserProgress',
-    async (_, { rejectWithValue }) => {
+    async (_, { rejectWithValue, getState }) => {
         try {
-            const response = await fetch(`${API_URL}/trophies/my-progress`, {
-                method: 'GET',
-                headers: getAuthHeaders(),
-            });
-
-            if (!response.ok) throw new Error('Falha ao buscar troféus');
-            return await response.json(); 
+            // Passando o getState para o trophyApi usar o token do Redux
+            const response = await trophyApi.getMyProgress(getState);
+            return response; 
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -30,16 +49,22 @@ export const fetchUserProgress = createAsyncThunk(
 
 export const trackGameThunk = createAsyncThunk(
     'trophies/trackGame',
-    async ({ gameId, isTracked }, { rejectWithValue }) => {
+    async ({ gameId, isTracked }, { rejectWithValue, getState }) => {
         try {
-            const response = await fetch(`${API_URL}/trophies/track`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ gameId, isTracked }),
-            });
+            const response = await trophyApi.trackGame({ gameId, isTracked }, getState);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
 
-            if (!response.ok) throw new Error('Erro ao atualizar lista de jogos');
-            return { gameId, isTracked }; 
+export const fetchGameTrophiesThunk = createAsyncThunk(
+    'trophies/fetchGameTrophies',
+    async (gameId, { rejectWithValue, getState }) => {
+        try {
+            const response = await trophyApi.getTrophiesByGame(gameId, getState);
+            return response;
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -48,23 +73,10 @@ export const trackGameThunk = createAsyncThunk(
 
 export const toggleTrophyThunk = createAsyncThunk(
     'trophies/toggleTrophy',
-    async ({ gameId, trophyName, originalIndex }, { rejectWithValue }) => {
+    async ({ gameId, trophyName }, { rejectWithValue, getState }) => {
         try {
-            const response = await fetch(`${API_URL}/trophies/toggle`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ gameId, trophyName }),
-            });
-
-            if (!response.ok) throw new Error('Erro ao atualizar troféu');
-
-            const data = await response.json();
-            return { 
-                gameId, 
-                trophyName, 
-                isCompleted: data.isCompleted, 
-                originalIndex 
-            }; 
+            const response = await trophyApi.toggleTrophy({ gameId, trophyName }, getState);
+            return { gameId, trophyName, progress: response };
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -73,36 +85,10 @@ export const toggleTrophyThunk = createAsyncThunk(
 
 export const toggleAllTrophiesThunk = createAsyncThunk(
     'trophies/toggleAll',
-    async ({ gameId, allTrophies, markAll }, { rejectWithValue }) => {
+    async ({ gameId, allTrophies, markAll }, { rejectWithValue, getState }) => {
         try {
-            const response = await fetch(`${API_URL}/trophies/toggle-all`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ gameId, allTrophies, markAll }),
-            });
-
-            if (!response.ok) throw new Error('Erro ao atualizar todos os troféus');
-            const data = await response.json();
-            return { 
-                gameId, 
-                completedTrophies: data.completedTrophies, 
-                markAll 
-            };
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
-    }
-);
-
-export const fetchGameTrophiesThunk = createAsyncThunk(
-    'trophies/fetchGameData',
-    async (gameId, { rejectWithValue }) => {
-        try {
-            const response = await fetch(`${API_URL}/trophies/list/${gameId}`, {
-                 headers: getAuthHeader()
-            });
-            if (!response.ok) throw new Error('Erro ao carregar lista de troféus');
-            return await response.json();
+            const response = await trophyApi.toggleAllTrophies({ gameId, allTrophies, markAll }, getState);
+            return { gameId, progress: response };
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -111,15 +97,10 @@ export const fetchGameTrophiesThunk = createAsyncThunk(
 
 export const createTrophyThunk = createAsyncThunk(
     'trophies/create',
-    async (trophyData, { rejectWithValue }) => {
+    async (trophyData, { rejectWithValue, getState }) => {
         try {
-            const response = await fetch(`${API_URL}/trophies/create`, {
-                method: 'POST',
-                headers: getAuthHeader(),
-                body: JSON.stringify(trophyData),
-            });
-            if (!response.ok) throw new Error('Erro ao criar troféu');
-            return await response.json();
+            const response = await trophyApi.createTrophy(trophyData, getState);
+            return response;
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -128,13 +109,9 @@ export const createTrophyThunk = createAsyncThunk(
 
 export const deleteTrophyThunk = createAsyncThunk(
     'trophies/delete',
-    async (trophyId, { rejectWithValue }) => {
+    async (trophyId, { rejectWithValue, getState }) => {
         try {
-            const response = await fetch(`${API_URL}/trophies/delete/${trophyId}`, {
-                method: 'DELETE',
-                headers: getAuthHeader(),
-            });
-            if (!response.ok) throw new Error('Erro ao deletar troféu');
+            await trophyApi.deleteTrophy(trophyId, getState);
             return trophyId; 
         } catch (error) {
             return rejectWithValue(error.message);
@@ -144,15 +121,10 @@ export const deleteTrophyThunk = createAsyncThunk(
 
 export const editTrophyThunk = createAsyncThunk(
     'trophies/edit',
-    async ({ id, data }, { rejectWithValue }) => {
+    async ({ id, data }, { rejectWithValue, getState }) => {
         try {
-            const response = await fetch(`${API_URL}/trophies/edit/${id}`, {
-                method: 'PUT',
-                headers: getAuthHeader(),
-                body: JSON.stringify(data),
-            });
-            if (!response.ok) throw new Error('Erro ao editar');
-            return await response.json();
+            const response = await trophyApi.editTrophy(id, data, getState);
+            return response;
         } catch (error) {
             return rejectWithValue(error.message);
         }

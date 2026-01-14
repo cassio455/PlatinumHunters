@@ -3,20 +3,19 @@ import { logout } from './authSlice';
 import { 
     fetchUserProgress, 
     trackGameThunk, 
-    toggleTrophyThunk,
+    toggleTrophyThunk, 
     toggleAllTrophiesThunk,
-    fetchGameTrophiesThunk,
+    fetchGameTrophiesThunk, 
     createTrophyThunk,
-    deleteTrophyThunk
+    deleteTrophyThunk,
+    editTrophyThunk,
+    fetchAvailableGamesThunk
 } from '../thunks/trophyThunks';
-import { TROPHIES } from '../../data/trophiesData';
 
 const initialState = {
-  gameTrophiesList: [],
-  completedTrophies: {},
-  trackedGameIds: [],   
-  customTrophyCounts: {}, 
-  
+  availableGames: [], 
+  userProgress: [],   
+  gameTrophiesList: [], 
   status: 'idle',       
   error: null,
 };
@@ -26,10 +25,9 @@ export const trophySlice = createSlice({
   initialState,
   reducers: {
     clearTrophies: (state) => {
-        state.completedTrophies = {};
-        state.trackedGameIds = [];
+        state.availableGames = [];
+        state.userProgress = [];
         state.gameTrophiesList = [];
-        state.customTrophyCounts = {};
         state.status = 'idle';
     }
   },
@@ -37,11 +35,14 @@ export const trophySlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(logout, (state) => {
-        state.completedTrophies = {}; 
-        state.trackedGameIds = []; 
+        state.availableGames = [];
+        state.userProgress = [];
         state.gameTrophiesList = [];
-        state.customTrophyCounts = {};
         state.status = 'idle';
+      })
+
+      .addCase(fetchAvailableGamesThunk.fulfilled, (state, action) => {
+          state.availableGames = action.payload;
       })
 
       .addCase(fetchUserProgress.pending, (state) => {
@@ -49,38 +50,7 @@ export const trophySlice = createSlice({
       })
       .addCase(fetchUserProgress.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        const backendData = action.payload; 
-
-        const newCompletedTrophies = {};
-        const newTrackedIds = [];
-        const newCustomCounts = {};
-
-        Object.keys(backendData).forEach(gameId => {
-            const gameData = backendData[gameId];
-
-            if (gameData.isTracked) {
-                newTrackedIds.push(gameId);
-            }
-
-            newCustomCounts[gameId] = gameData.customTrophyCount || 0;
-
-            if (gameData.completedTrophies && gameData.completedTrophies.length > 0) {
-                newCompletedTrophies[gameId] = {};
-                const gameTrophyList = TROPHIES[gameId] || [];
-
-                gameData.completedTrophies.forEach(trophyName => {
-                    const originalIndex = gameTrophyList.findIndex(t => t.name === trophyName);
-                    newCompletedTrophies[gameId][trophyName] = {
-                        isCompleted: true,
-                        originalIndex: originalIndex !== -1 ? originalIndex : 999
-                    };
-                });
-            }
-        });
-
-        state.completedTrophies = newCompletedTrophies;
-        state.trackedGameIds = newTrackedIds;
-        state.customTrophyCounts = newCustomCounts;
+        state.userProgress = action.payload;
       })
       .addCase(fetchUserProgress.rejected, (state, action) => {
         state.status = 'failed';
@@ -88,64 +58,73 @@ export const trophySlice = createSlice({
       })
 
       .addCase(trackGameThunk.fulfilled, (state, action) => {
-        const { gameId, isTracked } = action.payload;
-        if (isTracked) {
-            if (!state.trackedGameIds.includes(gameId)) state.trackedGameIds.push(gameId);
-        } else {
-            state.trackedGameIds = state.trackedGameIds.filter(id => id !== gameId);
+        const updatedProgress = action.payload;
+        if (updatedProgress && updatedProgress.gameId) {
+             const index = state.userProgress.findIndex(p => p.gameId === updatedProgress.gameId);
+             if (index !== -1) {
+                 // Mantém campos antigos (como total) e atualiza novos
+                 state.userProgress[index] = { ...state.userProgress[index], ...updatedProgress };
+             } else if (updatedProgress.isTracked) {
+                 state.userProgress.push(updatedProgress);
+             }
         }
       })
 
       .addCase(toggleTrophyThunk.fulfilled, (state, action) => {
-         const { gameId, trophyName, isCompleted, originalIndex } = action.payload;
-         if (!state.completedTrophies[gameId]) {
-             state.completedTrophies[gameId] = {};
+         const { gameId, progress } = action.payload; 
+         if (progress) {
+             const index = state.userProgress.findIndex(p => p.gameId === gameId);
+             if (index !== -1) {
+                 // CRÍTICO: Mescla o progresso novo com o antigo para não perder o 'total'
+                 state.userProgress[index] = { ...state.userProgress[index], ...progress };
+                 // Garante que a lista de IDs completados está atualizada
+                 state.userProgress[index].completedTrophies = progress.completedTrophies;
+             } else {
+                 state.userProgress.push(progress);
+             }
          }
-         state.completedTrophies[gameId][trophyName] = {
-             isCompleted: isCompleted,
-             originalIndex: originalIndex
-         };
       })
 
       .addCase(toggleAllTrophiesThunk.fulfilled, (state, action) => {
-        const { gameId, completedTrophies } = action.payload;
-        state.completedTrophies[gameId] = {};
-        if (completedTrophies && completedTrophies.length > 0) {
-            const gameTrophyList = TROPHIES[gameId] || [];
-            completedTrophies.forEach(trophyName => {
-                const originalIndex = gameTrophyList.findIndex(t => t.name === trophyName);
-                state.completedTrophies[gameId][trophyName] = {
-                    isCompleted: true,
-                    originalIndex: originalIndex !== -1 ? originalIndex : 999
-                };
-            });
+        const { gameId, progress } = action.payload;
+        if (progress) {
+             const index = state.userProgress.findIndex(p => p.gameId === gameId);
+             if (index !== -1) {
+                 state.userProgress[index] = { ...state.userProgress[index], ...progress };
+             } else {
+                 state.userProgress.push(progress);
+             }
         }
       })
-
       
       .addCase(fetchGameTrophiesThunk.fulfilled, (state, action) => {
-        state.gameTrophiesList = action.payload; 
+        if (Array.isArray(action.payload)) {
+            state.gameTrophiesList = action.payload;
+        } else if (action.payload && action.payload.trophies) {
+            state.gameTrophiesList = action.payload.trophies;
+        } else {
+            state.gameTrophiesList = [];
+        }
       })
 
       .addCase(createTrophyThunk.fulfilled, (state, action) => {
         state.gameTrophiesList.push(action.payload);
-        const gameId = action.payload.gameId;
-        state.customTrophyCounts[gameId] = (state.customTrophyCounts[gameId] || 0) + 1;
       })
-
+      .addCase(editTrophyThunk.fulfilled, (state, action) => {
+          const index = state.gameTrophiesList.findIndex(t => t._id === action.payload._id);
+          if (index !== -1) {
+              state.gameTrophiesList[index] = action.payload;
+          }
+      })
       .addCase(deleteTrophyThunk.fulfilled, (state, action) => {
         const trophyId = action.payload;
-        const trophy = state.gameTrophiesList.find(t => t._id === trophyId);
-        if (trophy) {
-            const gameId = trophy.gameId;
-            state.customTrophyCounts[gameId] = Math.max(0, (state.customTrophyCounts[gameId] || 0) - 1);
-        }
         state.gameTrophiesList = state.gameTrophiesList.filter(t => t._id !== trophyId);
       });
   },
 });
 
 export const { clearTrophies } = trophySlice.actions;
+
 export { 
     fetchUserProgress, 
     trackGameThunk, 
@@ -153,6 +132,9 @@ export {
     toggleAllTrophiesThunk,
     fetchGameTrophiesThunk, 
     createTrophyThunk,
-    deleteTrophyThunk
-}; 
+    deleteTrophyThunk,
+    editTrophyThunk,
+    fetchAvailableGamesThunk
+};
+
 export default trophySlice.reducer;

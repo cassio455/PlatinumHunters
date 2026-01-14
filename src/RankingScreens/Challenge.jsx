@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { 
@@ -8,6 +8,8 @@ import {
     saveChallengeAPI, 
     deleteChallengeAPI 
 } from "../app/thunks/rankingThunks"; 
+import { fetchUserProgress } from "../app/thunks/trophyThunks";
+
 import { Modal, Form, Button } from 'react-bootstrap';
 import { Pencil, Trash2 } from 'lucide-react'; 
 import "./Challenge.css";
@@ -15,29 +17,140 @@ import "./Challenge.css";
 function Challenge() {
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+  
   const monthlyChallenges = useSelector((state) => state.ranking.challenges || []);
   const allUsersRanking = useSelector((state) => state.ranking.list || []);
+  
+  // Pegando o estado correto do slice (userProgress é um Array)
+  const userProgress = useSelector((state) => state.trophies.userProgress || []);
+
   const rankingPoints = user?.rankingPoints || 0;
   const completedChallengesIDs = user?.completedChallenges || [];
+  
   const [selectedDay, setSelectedDay] = useState(new Date().getDate()); 
   const today = new Date().getDate();
   const selectedChallenge = monthlyChallenges.find(ch => ch.day === selectedDay);
+  
   const isChallengeCompleted = isAuthenticated && completedChallengesIDs.includes(selectedDay) && !!selectedChallenge;
+  
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({ day: 1, title: '', points: 50 });
   const isAdmin = isAuthenticated && user?.roles?.includes('ADMIN');
 
+  const processingChallengesRef = useRef(new Set());
+
   useEffect(() => {
     dispatch(fetchChallengesList());
     dispatch(fetchRankingList());
-  }, [dispatch]);
+    if (isAuthenticated) {
+        dispatch(fetchUserProgress());
+    }
+  }, [dispatch, isAuthenticated]);
 
-  const usersWhoCompleted = allUsersRanking.filter(u => 
-    u.completedChallenges && u.completedChallenges.includes(selectedDay)
-  );
+  // --- DEBUG DE JOGOS (IMPORTANTE) ---
+  // Abra o console (F12) para ver isso e corrigir o seed se necessário
+  useEffect(() => {
+      if (userProgress.length > 0) {
+          console.log("🔍 MEUS JOGOS NO REDUX (Use estes IDs no seed):", 
+            userProgress.map(p => ({ 
+                id_correto: p.gameId, 
+                total_trofeus: p.completedTrophies?.length 
+            }))
+          );
+      }
+  }, [userProgress]);
+
+  // --- LÓGICA DE CONTAGEM E VERIFICAÇÃO ---
+
+  const userTrophiesMap = useMemo(() => {
+      const map = {};
+      userProgress.forEach(game => {
+          if (game.gameId) {
+              map[game.gameId] = game.completedTrophies || [];
+          }
+      });
+      return map;
+  }, [userProgress]);
+
+  const getUserTrophyCount = () => {
+      return userProgress.reduce((total, game) => {
+          return total + (game.completedTrophies ? game.completedTrophies.length : 0);
+      }, 0);
+  };
+
+  const checkRequirements = (challenge = selectedChallenge) => {
+      if (!challenge) return false;
+
+      // TIPO 1: GENÉRICO (CONTAR TOTAL)
+      if (challenge.type === 'COUNT') {
+          const target = challenge.targetCount || 1;
+          const current = getUserTrophyCount();
+          return current >= target;
+      }
+
+      // TIPO 2: ESPECÍFICO (JOGO OU TROFÉU)
+      if (challenge.requiredTrophy) {
+          const { gameId, trophyName, trophyId, anyTrophy } = challenge.requiredTrophy;
+          
+          const userGameTrophies = userTrophiesMap[gameId]; 
+
+          // Se não tem o jogo ou zero troféus nele, falha
+          if (!userGameTrophies || userGameTrophies.length === 0) return false;
+
+          // NOVO: MODO QUALQUER TROFÉU
+          // Se o desafio aceita qualquer troféu e o usuário tem > 0 troféus (verificado acima), sucesso!
+          if (anyTrophy) {
+              return true;
+          }
+
+          // Busca Específica (ID ou Nome)
+          const hasTrophy = userGameTrophies.some(t => {
+              if (typeof t === 'object' && t !== null) {
+                  // Prioridade: Comparar ID
+                  if (trophyId && t.trophyId) {
+                      return String(t.trophyId) === String(trophyId);
+                  }
+                  // Fallback: Comparar Nome
+                  return t.trophyName === trophyName || t.name === trophyName;
+              }
+              return String(t) === trophyName;
+          });
+
+          return hasTrophy;
+      }
+
+      return true;
+  };
+
+  // --- AUTOMAÇÃO ---
+  useEffect(() => {
+    if (!isAuthenticated || monthlyChallenges.length === 0) return;
+
+    monthlyChallenges.forEach(challenge => {
+        if (completedChallengesIDs.includes(challenge.day)) return;
+        if (processingChallengesRef.current.has(challenge.day)) return;
+
+        if (checkRequirements(challenge)) {
+            console.log(`🏆 Autocompletando desafio do dia ${challenge.day}...`);
+            processingChallengesRef.current.add(challenge.day);
+
+            dispatch(completeChallengeAPI({ 
+                day: challenge.day, 
+                points: challenge.points 
+            }))
+            .unwrap()
+            .then(() => dispatch(fetchRankingList()))
+            .catch((err) => processingChallengesRef.current.delete(challenge.day));
+        }
+    });
+  }, [monthlyChallenges, userTrophiesMap, completedChallengesIDs, isAuthenticated, dispatch]); 
+
+  const canComplete = isAuthenticated && 
+                      !isChallengeCompleted && 
+                      checkRequirements();
 
   const handleCompleteChallenge = async () => {
-    if (!isAuthenticated || !selectedChallenge) return;
+    if (!canComplete) return; 
     try {
         await dispatch(completeChallengeAPI({ 
             day: selectedDay, 
@@ -51,12 +164,12 @@ function Challenge() {
   };
 
   const handleOpenModal = () => {
-      setModalData({
-          day: selectedDay,
-          title: selectedChallenge?.title || '',
-          points: selectedChallenge?.points || 50
-      });
-      setShowModal(true);
+    setModalData({
+        day: selectedDay,
+        title: selectedChallenge?.title || '',
+        points: selectedChallenge?.points || 50
+    });
+    setShowModal(true);
   };
 
   const handleSave = async () => {
@@ -73,14 +186,32 @@ function Challenge() {
       }
   };
 
+  let progressPercent = 0;
+  let currentCount = 0;
+  let targetCount = 0;
+
+  if (selectedChallenge?.type === 'COUNT') {
+      currentCount = getUserTrophyCount();
+      targetCount = selectedChallenge.targetCount || 1;
+      progressPercent = Math.min(100, Math.floor((currentCount / targetCount) * 100));
+  }
+
+  const usersWhoCompleted = allUsersRanking.filter(u => 
+    u.completedChallenges && u.completedChallenges.includes(selectedDay)
+  );
+
   return (
     <div className="container mt-3 pt-5 text-center">
-      <div className="d-flex justify-content-center align-items-center mb-4">
-        <h2 className="title-text me-2">Desafios</h2>
-        <Link to="/ranking" className="btn btn-sm">
-          <i className="bi bi-arrow-repeat text-danger"></i>
+      
+      {/* --- CABEÇALHO MODIFICADO --- */}
+      <div className="page-header-container">
+        <h2 className="title-text m-0">Desafios</h2>
+        
+        <Link to="/ranking" className="nav-corner-btn">
+          Ir para Ranking <i className="bi bi-trophy ms-1"></i>
         </Link>
       </div>
+      {/* ----------------------------- */}
 
       <div className="mb-3">
         {isAuthenticated ? (
@@ -94,6 +225,7 @@ function Challenge() {
         )}
       </div>
 
+      {/* ... (O resto do componente, challenge-divider-line etc, continua IGUAL) ... */}
       <div className="challenge-divider-line"></div>
 
       <Link to="/shop" className="floating-shop" aria-label="Abrir Loja">
@@ -103,7 +235,7 @@ function Challenge() {
       <div className="calendar mb-4">
         {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
           const challenge = monthlyChallenges.find(ch => ch.day === day);
-          const isFuture = day > today;
+          const isFuture = day > today; 
           const hasChallenge = !!challenge;
           const isDone = isAuthenticated && completedChallengesIDs.includes(day) && hasChallenge;
           
@@ -123,8 +255,8 @@ function Challenge() {
         })}
       </div>
 
-    <div className="challenge-card p-4 mb-4 container position-relative">
-      {isAdmin && (
+      <div className="challenge-card p-4 mb-4 container position-relative">
+        {isAdmin && (
           <button 
             className="btn btn-sm position-absolute top-0 end-0 m-3 text-white"
             onClick={handleOpenModal}
@@ -133,7 +265,7 @@ function Challenge() {
           >
               <Pencil size={16} /> {selectedChallenge ? "Editar" : "Criar"}
           </button>
-      )}
+        )}
 
       {selectedChallenge ? (
           <>
@@ -142,18 +274,40 @@ function Challenge() {
                 {selectedChallenge.points} pontos
             </p>
             
+            {selectedChallenge.type === 'COUNT' && (
+                <div className="mb-3 px-4">
+                    <div className="progress-container-challenge">
+                        <div className="progress-text">
+                            {currentCount} / {targetCount} Troféus ({progressPercent}%)
+                        </div>
+                        <div 
+                            className="progress-bar-challenge" 
+                            style={{ width: `${progressPercent}%` }}
+                        ></div>
+                    </div>
+                </div>
+            )}
+
+            {selectedChallenge.requiredTrophy && selectedChallenge.type !== 'COUNT' && !checkRequirements() && !isChallengeCompleted ? (
+                 <div className="alert alert-warning">
+                    <small>Requer troféu: <strong>{selectedChallenge.requiredTrophy.trophyName}</strong></small>
+                 </div>
+            ) : null}
+
             <button 
-                className="btn btn-outline-pink"
+                className={`btn ${canComplete ? 'btn-outline-pink' : 'btn-secondary'}`}
                 onClick={handleCompleteChallenge}
-                disabled={!isAuthenticated || isChallengeCompleted || selectedDay > today}
+                disabled={!canComplete}
                 style={
-                !isAuthenticated || isChallengeCompleted || selectedDay > today
-                    ? { opacity: 0.5, cursor: 'not-allowed' }
+                   !canComplete
+                    ? { opacity: 0.7, cursor: 'not-allowed' }
                     : { cursor: 'pointer' }
                 }
             >
                 {isChallengeCompleted ? "✓ Completado" : 
-                 selectedDay > today ? "Trancado" : "Completar Desafio"}
+                 (selectedChallenge.type === 'COUNT' && !checkRequirements()) ? "Troféus Insuficientes" :
+                 (selectedChallenge.requiredTrophy && !checkRequirements()) ? "Troféu Bloqueado" : 
+                 "Completar Desafio"}
             </button>
 
             {usersWhoCompleted.length > 0 && (

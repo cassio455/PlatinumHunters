@@ -286,11 +286,80 @@ export const authApi = {
   },
 };
 
+/**
+ * Trophy API Service
+ * Adicionada para gerenciar as rotas de troféus sem modificar o resto
+ */
+export const trophyApi = {
+  /**
+   * Get trophies for a specific game
+   * GET /trophies/game/:gameId
+   */
+  getTrophiesByGame: async (gameId, getState = null) => {
+    return apiRequest(`/trophies/game/${gameId}`, { method: 'GET' }, getState);
+  },
+
+  /**
+   * Get user's trophy progress
+   * GET /trophies/my-progress
+   */
+  getMyProgress: async (getState = null) => {
+    return apiRequest('/trophies/my-progress', { method: 'GET' }, getState);
+  },
+
+  /**
+   * List available games specifically for trophy tracking
+   * GET /trophies/available-games
+   */
+  getAvailableGames: async (getState = null) => {
+    return apiRequest('/trophies/available-games', { method: 'GET' }, getState);
+  },
+
+  /**
+   * Track or untrack a game
+   * POST /trophies/track
+   */
+  trackGame: async (data, getState = null) => {
+    return apiRequest('/trophies/track', { method: 'POST', body: JSON.stringify(data) }, getState);
+  },
+
+  /**
+   * Toggle trophy status
+   * POST /trophies/toggle
+   */
+  toggleTrophy: async (data, getState = null) => {
+    return apiRequest('/trophies/toggle', { method: 'POST', body: JSON.stringify(data) }, getState);
+  },
+
+  /**
+   * Toggle All Trophies status
+   * POST /trophies/toggle-all
+   */
+  toggleAllTrophies: async (data, getState = null) => {
+    return apiRequest('/trophies/toggle-all', { method: 'POST', body: JSON.stringify(data) }, getState);
+  },
+
+  // Admin Routes (CRUD)
+  createTrophy: async (data, getState = null) => {
+    return apiRequest('/trophies/create', { method: 'POST', body: JSON.stringify(data) }, getState);
+  },
+
+  editTrophy: async (id, data, getState = null) => {
+    return apiRequest(`/trophies/edit/${id}`, { method: 'PUT', body: JSON.stringify(data) }, getState);
+  },
+
+  deleteTrophy: async (id, getState = null) => {
+    return apiRequest(`/trophies/delete/${id}`, { method: 'DELETE' }, getState);
+  }
+};
+
 export default {
   apiRequest,
   libraryApi,
   gamesApi,
   authApi,
+  trophyApi, // Adicionado ao export default
   API_BASE_URL,
   getAuthHeaders,
+  customGamesApi,
 };
